@@ -18,7 +18,9 @@ secrets/
 node_modules/
 .DS_Store
 Thumbs.db
-.vscode/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
 .idea/
 
 # Temp files

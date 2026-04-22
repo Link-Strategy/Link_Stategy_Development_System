@@ -1,0 +1,20 @@
+{
+  "mermaid-pdf.type": "puppeteer",
+  "mermaid-preview.previewLock": true,
+  "markdown.extension.toc.omittedFromToc": {
+    "**/README.md": [
+      "# Header"
+    ]
+  },
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.wordWrap": "on",
+    "editor.quickSuggestions": {
+      "comments": "on",
+      "strings": "on",
+      "other": "on"
+    }
+  }
+}

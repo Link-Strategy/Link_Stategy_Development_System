@@ -37,6 +37,6 @@ graph TD
 ## DEFINITION OF DONE (DoD Checklist)
 - [x] Git repository initialized locally.
 - [x] Initial commit created with all project files.
-- [ ] Remote origin added.
-- [ ] Codebase pushed successfully to GitHub.
-- [ ] Documentation (LOGS.md) updated.
+- [x] Remote origin added.
+- [x] Codebase pushed successfully to GitHub.
+- [x] Documentation (LOGS.md) updated.

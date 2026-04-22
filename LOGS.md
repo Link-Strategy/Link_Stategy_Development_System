@@ -7,6 +7,7 @@
 - [x] Khởi tạo local Git repository và commit mã nguồn thành công.
 - [x] Sử dụng `gh CLI` để tạo repository private `Link-Strategy/Link_Stategy_Development_System`.
 - [x] Push toàn bộ mã nguồn lên GitHub thành công (branch `main`).
+- [x] Cấu hình `.vscode/settings.json` để tối ưu hóa hiển thị Markdown và Mermaid.
 
 ### 2. BLOCK (Điểm nghẽn)
 - Đã giải quyết: Tự động tạo repository khi phát hiện chưa tồn tại.

@@ -1,0 +1,28 @@
+# Link Strategy Master ignore rules (Updated for Hidden Structure)
+
+# Private Operational Folders (Hidden in .LinkStrategy)
+.LinkStrategy/business/
+.LinkStrategy/Certiificate/
+.LinkStrategy/Contract/
+.LinkStrategy/Assets/
+.LinkStrategy/image/
+
+# Security & Secrets
+.env
+.env.*
+*.pem
+*.key
+secrets/
+
+# Environment & Dependencies
+node_modules/
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Temp files
+*.log
+tmp/
+dist/
+build/

@@ -1,0 +1,19 @@
+# CODEOWNERS - Link Strategy Master Monorepo
+# Định nghĩa quyền sở hữu và thẩm quyền review.
+
+# Master Sovereign: Mọi thay đổi trong repo phải được duyệt bởi Brain.
+*       @LinkStrategy-Brain
+
+# Governance Layer: Chỉ Brain được sửa hiến pháp và các quy tắc cốt lõi.
+/.LinkStrategy/      @LinkStrategy-Brain
+/GEMINI.md           @LinkStrategy-Brain
+
+# Agent Infrastructure: AI Agents có thể đề xuất thay đổi nhưng Brain phải phê duyệt.
+/.agents/            @LinkStrategy-Brain
+
+# Execution Plane: Các dự án cụ thể.
+/projects/           @LinkStrategy-Brain
+
+# Asset Library
+/components/         @LinkStrategy-Brain
+/scripts/            @LinkStrategy-Brain

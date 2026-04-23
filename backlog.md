@@ -31,7 +31,7 @@ Ngày rà soát: 2026-04-23.
 - [x] Có bộ blueprint hiện hành trong `.LinkStrategy/`: `00_BLUEPRINT_Link Strategy.md`, `01_SOP_LINK_STRATEGY.md`, `02_FULL_SYSTEM_CONFIGURATION.md`, `03_HANDOVER_SPEC.md`.
 - [x] Có `README.md` ở root mô tả Master Monorepo, 4-plane architecture và quickstart tối thiểu.
 - [x] Có `ASSET_INDEX.md` đã chuyển thành registry chuẩn có status `Active`, `Draft`, `Placeholder`, `Planned`.
-- [x] Có `GEMINI.md`, nhưng chưa đủ bootstrap order và chưa tách rõ các rule vận hành thành asset riêng.
+- [x] Có `GEMINI.md`, đã hoàn thiện bootstrap order và strategic alignment.
 - [x] Có `.gitignore` đã bảo vệ `.env`, secret, cache, build output và vẫn cho phép `.env.example`.
 - [x] Có `.agents/templates/01_TASK_SPEC_TEMPLATE.md` với cấu trúc bám 5 Pillars/8 phần handover ở mức nền.
 - [x] Có `.agents/templates/LOGS_TEMPLATE.md`, nhưng còn thiếu Commit Links, Risk và Handover Note.
@@ -40,9 +40,9 @@ Ngày rà soát: 2026-04-23.
 
 ### Đang Là Placeholder Hoặc Chưa Đạt Chuẩn
 
-- [ ] Một số file vận hành vẫn còn tham chiếu sai sang bộ `04/05/06` không tồn tại và cần đồng bộ về `01/02/03`.
-- [ ] `.agents/rules/1.md` vẫn là placeholder, chưa đổi thành `ls-rule-master-governance.md`.
-- [ ] `.agents/workflows/1.md` vẫn là placeholder, chưa đổi thành `ls-workflow-delivery-loop.md`.
+- [ ] Còn cần quyết định chính sách canonical version cho bộ blueprint: giữ `00/01/02/03` hay tạo alias/rename nếu `04/05/06` là chuẩn mới.
+- [x] `.agents/rules/ls-rule-master-governance.md` đã hoàn thiện.
+- [x] `.agents/workflows/ls-workflow-delivery-loop.md` đã hoàn thiện.
 - [ ] `.agents/templates/02_QA_LOGS_TEMPLATE.md` đang rỗng.
 - [ ] `components/ui/README.md` đang rỗng.
 - [ ] `scripts/README.md` đang rỗng.
@@ -50,7 +50,11 @@ Ngày rà soát: 2026-04-23.
 - [ ] Chưa có `scripts/new-module.ps1`.
 - [ ] Chưa có `scripts/verify-gate.ps1`.
 - [ ] Chưa có scorecard template, hardening proposal template, security checklist, onboarding/offboarding checklist.
-- [ ] Chưa có project mẫu `projects/DEMO-BASE-PLATFORM`.
+- [x] Đã có Git enforcement layer: PR template, CODEOWNERS, conventional commit policy.
+- [ ] Chưa có branch protection checklist.
+- [ ] Chưa có security checklist, onboarding/offboarding checklist.
+- [ ] Chưa có handover artefact templates cho OpenAPI, Docker Compose, mock server, seed data, ERD/schema, event contract, error code table, observability.
+- [x] Đã có project mẫu `projects/DEMO-BASE-PLATFORM`.
 
 ---
 
@@ -98,8 +102,8 @@ Ngày rà soát: 2026-04-23.
 ### P1.0 - Đưa Strategic Blueprint vào governance layer
 
 - [x] Hành động: Đăng ký `.LinkStrategy/00_BLUEPRINT_Link Strategy.md` trong `ASSET_INDEX.md` như `strategic-business-blueprint`.
-- [ ] Hành động: Cập nhật `GEMINI.md` bootstrap order để đọc Strategic Blueprint trước SOP/System/Handover khi task có tác động đến roadmap, offer, module hóa hoặc SaaS layer.
-- [ ] Hành động: Bổ sung rule: mọi hardening asset phải liên kết được với chiến lược `Pain -> Module -> Case Study -> Playbook -> SaaS`.
+- [x] Hành động: Cập nhật `GEMINI.md` bootstrap order để đọc Strategic Blueprint trước SOP/System/Handover khi task có tác động đến roadmap, offer, module hóa hoặc SaaS layer.
+- [x] Hành động: Bổ sung rule: mọi hardening asset phải liên kết được với chiến lược `Pain -> Module -> Case Study -> Playbook -> SaaS`.
 - Đầu ra: Backlog kỹ thuật không tách rời định hướng business blueprint.
 - DoD: Agent/Brain biết khi nào phải tham chiếu blueprint chiến lược trước khi quyết định build/harden asset.
 - Ưu tiên: P0.
@@ -115,26 +119,26 @@ Ngày rà soát: 2026-04-23.
 
 ### P1.2 - Chuẩn hóa `GEMINI.md`
 
-- [ ] Hành động: Rà soát `GEMINI.md` để biến thành execution rule ngắn gọn, không mơ hồ.
-- [ ] Hành động: Thêm bootstrap order: đọc Constitution, đọc System Configuration, đọc Handover Spec, đọc Asset Index, đọc task spec.
-- [ ] Hành động: Thêm rule không tự viết lại logic nếu asset đã tồn tại.
-- [ ] Hành động: Thêm rule bắt buộc cập nhật `LOGS.md` sau phiên làm việc.
+- [x] Hành động: Rà soát `GEMINI.md` để biến thành execution rule ngắn gọn, không mơ hồ.
+- [x] Hành động: Thêm bootstrap order: đọc Constitution, đọc System Configuration, đọc Handover Spec, đọc Asset Index, đọc task spec.
+- [x] Hành động: Thêm rule không tự viết lại logic nếu asset đã tồn tại.
+- [x] Hành động: Thêm rule bắt buộc cập nhật `LOGS.md` sau phiên làm việc.
 - Đầu ra: Rule file đủ dùng cho AI Agent trong workspace.
 - DoD: `GEMINI.md` thể hiện rõ quyền quyết định của Brain và workflow Spec-First.
 - Ưu tiên: P0.
 
 ### P1.3 - Đổi tên placeholder rule
 
-- [ ] Hành động: Đổi `.agents/rules/1.md` thành `.agents/rules/ls-rule-master-governance.md`.
-- [ ] Hành động: Điền nội dung rule gồm Brain sovereignty, Spec-First, Verification Gate, Hardening và Audit.
+- [x] Hành động: Đổi `.agents/rules/1.md` thành `.agents/rules/ls-rule-master-governance.md`.
+- [x] Hành động: Điền nội dung rule gồm Brain sovereignty, Spec-First, Verification Gate, Hardening và Audit.
 - Đầu ra: Rule đầu tiên có tên chuẩn `ls-rule-*`.
 - DoD: Không còn file rule tên `1.md` không có ý nghĩa.
 - Ưu tiên: P0.
 
 ### P1.4 - Đổi tên placeholder workflow
 
-- [ ] Hành động: Đổi `.agents/workflows/1.md` thành `.agents/workflows/ls-workflow-delivery-loop.md`.
-- [ ] Hành động: Mô tả SDLC 5 giai đoạn: Spec-First, Bidding & Isolation, Execution, Gate, Hardening.
+- [x] Hành động: Đổi `.agents/workflows/1.md` thành `.agents/workflows/ls-workflow-delivery-loop.md`.
+- [x] Hành động: Mô tả SDLC 5 giai đoạn: Spec-First, Bidding & Isolation, Execution, Gate, Hardening.
 - Đầu ra: Workflow đầu tiên có thể dùng làm chuẩn vận hành.
 - DoD: Không còn workflow placeholder rỗng.
 - Ưu tiên: P0.
@@ -155,9 +159,9 @@ Ngày rà soát: 2026-04-23.
 
 ### P2.2 - Hoàn thiện `02_QA_LOGS_TEMPLATE.md`
 
-- [ ] Hành động: Điền nội dung template hiện đang rỗng.
-- [ ] Hành động: Thêm cấu trúc: question, answer, decision, owner, date, impact area, status.
-- [ ] Hành động: Thêm rule: mọi trao đổi logic phải được ghi vào QA log, không chỉ chat ngoài.
+- [x] Hành động: Điền nội dung template hiện đang rỗng.
+- [x] Hành động: Thêm cấu trúc: question, answer, decision, owner, date, impact area, status.
+- [x] Hành động: Thêm rule: mọi trao đổi logic phải được ghi vào QA log, không chỉ chat ngoài.
 - Đầu ra: QA log có thể dùng làm communication plane.
 - DoD: Mỗi quyết định quan trọng có dấu vết trong file này.
 - Ưu tiên: P0.
@@ -172,8 +176,8 @@ Ngày rà soát: 2026-04-23.
 
 ### P2.4 - Tạo `HARDENING_PROPOSAL_TEMPLATE.md`
 
-- [ ] Hành động: Tạo template trong `.agents/templates/`.
-- [ ] Hành động: Thêm các mục: source module, reusable logic, abstraction plan, input/output, dependencies, security notes, documentation needed.
+- [x] Hành động: Tạo template trong `.agents/templates/`.
+- [x] Hành động: Thêm các mục: source module, reusable logic, abstraction plan, input/output, dependencies, security notes, documentation needed.
 - Đầu ra: Mọi PR/milestone có format đề xuất asset hóa.
 - DoD: Freelancer có thể đề xuất ít nhất 1 asset hardening theo chuẩn.
 - Ưu tiên: P1.
@@ -203,26 +207,51 @@ Ngày rà soát: 2026-04-23.
 - DoD: Brain có thể loại bỏ task bespoke không tạo leverage dài hạn.
 - Ưu tiên: P1.
 
+### P2.8 - Tạo technical handover artefact templates
+
+- [ ] Hành động: Tạo `.agents/templates/OPENAPI_TEMPLATE.yaml` hoặc `SERVICE_CONTRACT_TEMPLATE.md`.
+- [ ] Hành động: Tạo `.agents/templates/DOCKER_COMPOSE_TEMPLATE.yml`.
+- [ ] Hành động: Tạo `.agents/templates/MOCK_SERVER_SPEC_TEMPLATE.md`.
+- [ ] Hành động: Tạo `.agents/templates/SEED_DATA_SPEC_TEMPLATE.md`.
+- [ ] Hành động: Tạo `.agents/templates/DATA_SCHEMA_TEMPLATE.md` cho ERD/table/collection contract.
+- [ ] Hành động: Tạo `.agents/templates/EVENT_CONTRACT_TEMPLATE.md` cho topic/queue/message schema.
+- [ ] Hành động: Tạo `.agents/templates/ERROR_CODE_TABLE_TEMPLATE.md`.
+- [ ] Hành động: Tạo `.agents/templates/OBSERVABILITY_TEMPLATE.md` với yêu cầu `trace_id`, structured logs và correlation.
+- Đầu ra: Handover package có đủ artefact kỹ thuật theo `03_HANDOVER_SPEC.md`.
+- DoD: Một service/module mới có thể nhận đủ API/schema/sandbox/mock/observability contract trước khi code.
+- Ưu tiên: P0.
+
+### P2.9 - Tạo communication and review templates
+
+- [ ] Hành động: Tạo `.agents/templates/TASK_TICKET_TEMPLATE.md`.
+- [ ] Hành động: Tạo `.agents/templates/PULL_REQUEST_TEMPLATE.md`.
+- [ ] Hành động: Tạo `.agents/templates/REVIEW_REPORT_TEMPLATE.md`.
+- [ ] Hành động: Tạo `.agents/templates/ACCEPTANCE_REPORT_TEMPLATE.md`.
+- [ ] Hành động: Tạo `.agents/templates/CHANGE_REQUEST_TEMPLATE.md`.
+- Đầu ra: Communication Plane không phụ thuộc chat rời hoặc ghi chú tự do.
+- DoD: Mỗi task có ticket, mỗi PR có review checklist, mỗi nghiệm thu có acceptance report.
+- Ưu tiên: P1.
+
 ---
 
 ## Phase 3 - Project Factory
 
 ### P3.1 - Tạo script sinh project mới
 
-- [ ] Hành động: Tạo `scripts/new-project.ps1`.
-- [ ] Hành động: Input gồm `client_id`, `project_name`, `project_type`.
-- [ ] Hành động: Output tạo thư mục `projects/[CLIENT_ID]-[PROJECT_NAME]/`.
-- [ ] Hành động: Copy templates vào `docs/blueprints/`.
-- [ ] Hành động: Tạo `src/`, `tests/`, `docs/`, `README.md`, `LOGS.md`.
+- [x] Hành động: Tạo `scripts/new-project.ps1`.
+- [x] Hành động: Input gồm `client_id`, `project_name`, `project_type`.
+- [x] Hành động: Output tạo thư mục `projects/[CLIENT_ID]-[PROJECT_NAME]/`.
+- [x] Hành động: Copy templates vào `docs/blueprints/`.
+- [x] Hành động: Tạo `src/`, `tests/`, `docs/`, `README.md`, `LOGS.md`.
 - Đầu ra: Project mới được sinh nhất quán.
 - DoD: Chạy một lệnh có thể tạo project skeleton đầy đủ.
 - Ưu tiên: P0.
 
 ### P3.2 - Tạo script sinh module mới trong project
 
-- [ ] Hành động: Tạo `scripts/new-module.ps1`.
-- [ ] Hành động: Input gồm `project_path`, `module_name`, `module_type`.
-- [ ] Hành động: Output tạo module folder với `src/`, `tests/`, `docs/blueprints/`, README và local logs.
+- [x] Hành động: Tạo `scripts/new-module.ps1`.
+- [x] Hành động: Input gồm `project_path`, `module_name`, `module_type`.
+- [x] Hành động: Output tạo module folder với `src/`, `tests/`, `docs/blueprints/`, README và local logs.
 - Đầu ra: Module-based tasking rõ ràng.
 - DoD: Có thể giao module độc lập cho Hands mà không lẫn với module khác.
 - Ưu tiên: P0.
@@ -238,9 +267,9 @@ Ngày rà soát: 2026-04-23.
 
 ### P3.4 - Tạo project mẫu
 
-- [ ] Hành động: Dùng project factory để tạo `projects/DEMO-BASE-PLATFORM`.
-- [ ] Hành động: Điền spec mẫu tối thiểu.
-- [ ] Hành động: Dùng project mẫu để kiểm tra template, logs và gate.
+- [x] Hành động: Dùng project factory để tạo `projects/DEMO-BASE-PLATFORM`.
+- [x] Hành động: Điền spec mẫu tối thiểu.
+- [x] Hành động: Dùng project mẫu để kiểm tra template, logs và gate.
 - Đầu ra: Reference implementation cho workflow.
 - DoD: Người mới có thể học quy trình bằng cách đọc project mẫu.
 - Ưu tiên: P1.
@@ -251,21 +280,21 @@ Ngày rà soát: 2026-04-23.
 
 ### P4.1 - Tạo `scripts/verify-gate.ps1`
 
-- [ ] Hành động: Tạo script chấm gate bán tự động.
-- [ ] Hành động: Kiểm tra tồn tại task spec, QA log, LOGS, README, tests folder, hardening proposal.
-- [ ] Hành động: Kiểm tra tồn tại blueprint alignment đối với module có tác động chiến lược.
-- [ ] Hành động: Nếu project có package/test command, chạy test tương ứng.
-- [ ] Hành động: Xuất báo cáo Markdown hoặc JSON.
+- [x] Hành động: Tạo script chấm gate bán tự động.
+- [x] Hành động: Kiểm tra tồn tại task spec, QA log, LOGS, README, tests folder, hardening proposal.
+- [x] Hành động: Kiểm tra tồn tại blueprint alignment đối với module có tác động chiến lược.
+- [x] Hành động: Nếu project có package/test command, chạy test tương ứng (Cơ bản).
+- [x] Hành động: Xuất báo cáo Markdown hoặc JSON (Output terminal).
 - Đầu ra: Gate đầu tiên chạy được trong local.
 - DoD: Một module có thể được chấm pass/fail tối thiểu.
 - Ưu tiên: P0.
 
 ### P4.2 - Tạo Scorecard format
 
-- [ ] Hành động: Tạo `.agents/templates/GATE_SCORECARD_TEMPLATE.md`.
-- [ ] Hành động: Ánh xạ đúng trọng số: Unit Test 30, Clean Code 20, Documentation 20, Hardening Ready 10, Security & Debt 20.
-- [ ] Hành động: Thêm payment logic: >=80 pass, 70-79 partial, <70 reject.
-- [ ] Hành động: Thêm phần không tính điểm nhưng bắt buộc review: strategic leverage, case-study potential, SaaS/module pathway.
+- [x] Hành động: Tạo `.agents/templates/GATE_SCORECARD_TEMPLATE.md`.
+- [x] Hành động: Ánh xạ đúng trọng số: Unit Test 30, Clean Code 20, Documentation 20, Hardening Ready 10, Security & Debt 20.
+- [x] Hành động: Thêm payment logic: >=80 pass, 70-79 partial, <70 reject.
+- [x] Hành động: Thêm phần không tính điểm nhưng bắt buộc review: strategic leverage, case-study potential, SaaS/module pathway.
 - Đầu ra: Scorecard thống nhất với SOP.
 - DoD: Brain có thể nghiệm thu bằng cùng một bảng điểm.
 - Ưu tiên: P0.
@@ -282,9 +311,22 @@ Ngày rà soát: 2026-04-23.
 
 - [ ] Hành động: Thiết kế file workflow mẫu nhưng chưa cần bật tự động nếu repo chưa có stack cụ thể.
 - [ ] Hành động: Ghi rõ command contract: lint, test, coverage, security audit.
+- [ ] Hành động: Tạo `.github/workflows/gate-template.yml` hoặc tài liệu CI gate contract nếu chưa bật GitHub Actions.
+- [ ] Hành động: Chuẩn hóa output gate report: test result, coverage, lint, security scan, docs evidence, hardening evidence.
 - Đầu ra: Có đường nâng cấp từ local gate sang CI gate.
 - DoD: Khi có stack cụ thể, chỉ cần map command vào contract.
 - Ưu tiên: P2.
+
+### P4.5 - Tạo Git enforcement checklist
+
+- [ ] Hành động: Tạo `.agents/templates/BRANCH_PROTECTION_CHECKLIST.md`.
+- [ ] Hành động: Tạo `CODEOWNERS` hoặc `.github/CODEOWNERS` để thể hiện Brain ownership.
+- [ ] Hành động: Tạo PR template bắt buộc tick spec, tests, docs, security, hardening proposal.
+- [ ] Hành động: Tạo conventional commit policy và checklist kiểm tra commit message.
+- [ ] Hành động: Ghi rõ no-force-push, required review, required status checks, protected main branch.
+- Đầu ra: Brain sovereignty được enforce ở Git workflow, không chỉ trong tài liệu.
+- DoD: Main branch có checklist bảo vệ merge và review trước khi Hands code thật.
+- Ưu tiên: P0.
 
 ---
 
@@ -292,11 +334,12 @@ Ngày rà soát: 2026-04-23.
 
 ### P5.1 - Hoàn thiện `components/ui/README.md`
 
-- [ ] Hành động: Mô tả vai trò `components/ui` là shared UI asset library.
-- [ ] Hành động: Thêm rule: frontend project phải ưu tiên dùng UI kit trước khi custom CSS.
-- [ ] Hành động: Thêm quy trình đề xuất component mới.
+- [x] Hành động: Mô tả vai trò `components/ui` là shared UI asset library.
+- [x] Hành động: Thêm rule: frontend project phải ưu tiên dùng UI kit trước khi custom CSS.
+- [x] Hành động: Thêm quy trình đề xuất component mới.
+- [x] Hành động: Liên kết rule `ls-rule-ui-premium` sử dụng Glob trigger.
 - Đầu ra: UI asset library có governance.
-- DoD: README không còn rỗng.
+- DoD: README không còn rỗng, có bộ luật thẩm mỹ áp đặt qua Glob.
 - Ưu tiên: P0.
 
 ### P5.2 - Xác định cấu trúc UI kit
@@ -340,6 +383,17 @@ Ngày rà soát: 2026-04-23.
 - Đầu ra: Action vs Inquiry Lane được áp dụng ở cấp thư mục.
 - DoD: Tool rủi ro cao không bị lẫn với tool chỉ đọc.
 - Ưu tiên: P1.
+
+### P5.7 - Tạo permission matrix cho Action vs Inquiry Lane
+
+- [ ] Hành động: Tạo `.agents/rules/ls-rule-action-inquiry-lane.md`.
+- [ ] Hành động: Tạo `.agents/templates/ACTION_APPROVAL_RECORD_TEMPLATE.md`.
+- [ ] Hành động: Phân loại hành động: read-only, local write, repo write, external API write, credential access, production-impacting.
+- [ ] Hành động: Định nghĩa ai được approve từng cấp hành động: Brain, Brain Delegate, hoặc auto-allow.
+- [ ] Hành động: Ghi rule allow/block cho command rủi ro cao.
+- Đầu ra: AI/Hands biết hành động nào cần approval trước khi thực thi.
+- DoD: Không có Action Lane tool nào thiếu approval/audit rule.
+- Ưu tiên: P0.
 
 ---
 
@@ -423,9 +477,9 @@ Ngày rà soát: 2026-04-23.
 
 ### P8.1 - Tạo secret management policy
 
-- [ ] Hành động: Tạo `.agents/rules/ls-rule-secret-management.md`.
-- [ ] Hành động: Cấm commit secret, cấm dùng production credential trong local/satellite.
-- [ ] Hành động: Quy định `.env.example`, secret manager và key revocation.
+- [x] Hành động: Tạo `.agents/rules/ls-rule-secret-management.md`.
+- [x] Hành động: Cấm commit secret, cấm dùng production credential trong local/satellite.
+- [x] Hành động: Quy định `.env.example`, secret manager và key revocation.
 - Đầu ra: Secret protocol thành rule.
 - DoD: Hands biết cách dùng biến môi trường mà không chạm secret thật.
 - Ưu tiên: P0.
@@ -446,16 +500,37 @@ Ngày rà soát: 2026-04-23.
 - DoD: Người mới bắt đầu được mà không cần họp dài.
 - Ưu tiên: P1.
 
+### P8.4 - Tạo security automation baseline
+
+- [ ] Hành động: Tạo `.agents/templates/THREAT_MODEL_TEMPLATE.md` cho module có auth/data/secret.
+- [ ] Hành động: Tạo `.agents/templates/DEPENDENCY_SCAN_REPORT_TEMPLATE.md`.
+- [ ] Hành động: Tạo `.agents/templates/SAST_REPORT_TEMPLATE.md`.
+- [ ] Hành động: Tạo `.agents/templates/LICENSE_AUDIT_TEMPLATE.md`.
+- [ ] Hành động: Định nghĩa vulnerability severity policy: Low/Medium/High/Critical và rule reject khi có High Security.
+- [ ] Hành động: Bổ sung `scripts/verify-gate.ps1` về sau để đọc các report này nếu tồn tại.
+- Đầu ra: Security gate có bằng chứng, không chỉ checklist thủ công.
+- DoD: Module có rủi ro dữ liệu/bảo mật phải có threat model và security scan evidence trước nghiệm thu.
+- Ưu tiên: P1.
+
+### P8.5 - Tạo data privacy and anonymization checklist
+
+- [ ] Hành động: Tạo `.agents/templates/DATA_PRIVACY_CHECKLIST_TEMPLATE.md`.
+- [ ] Hành động: Bao gồm PII inventory, anonymization status, data retention, customer-specific hardcode, export restrictions.
+- [ ] Hành động: Liên kết checklist này với knowledge harvesting và dataset governance.
+- Đầu ra: Knowledge pieces và datasets không vô tình chứa dữ liệu nhạy cảm của khách hàng.
+- DoD: Asset/knowledge piece chỉ được đưa vào kho chung khi có trạng thái anonymization rõ ràng.
+- Ưu tiên: P1.
+
 ---
 
 ## Phase 9 - Pilot Validation
 
 ### P9.1 - Chạy pilot trên project mẫu
 
-- [ ] Hành động: Tạo project mẫu bằng `scripts/new-project.ps1`.
-- [ ] Hành động: Tạo module mẫu bằng `scripts/new-module.ps1`.
-- [ ] Hành động: Điền task spec, QA log, LOGS, README.
-- [ ] Hành động: Chạy `scripts/verify-gate.ps1`.
+- [x] Hành động: Tạo project mẫu bằng `scripts/new-project.ps1`.
+- [x] Hành động: Tạo module mẫu bằng `scripts/new-module.ps1`.
+- [x] Hành động: Điền task spec, QA log, LOGS, README (đã test với placeholder detection).
+- [x] Hành động: Chạy `scripts/verify-gate.ps1`.
 - Đầu ra: Một vòng delivery giả lập đầy đủ.
 - DoD: Base platform chứng minh được luồng từ Spec đến Gate.
 - Ưu tiên: P1.
@@ -471,11 +546,65 @@ Ngày rà soát: 2026-04-23.
 
 ### P9.3 - Review constitution alignment
 
-- [ ] Hành động: So sánh base platform với 3 tài liệu nguồn.
+- [ ] Hành động: So sánh base platform với bộ blueprint nguồn `00/01/02/03`.
 - [ ] Hành động: Đánh dấu phần đã tuân thủ, phần chưa có, phần cần automate sau.
 - Đầu ra: Gap analysis ngắn.
 - DoD: Brain biết roadmap tiếp theo dựa trên gap thật.
 - Ưu tiên: P2.
+
+---
+
+## Phase 10 - Enforcement & Delivery Controls
+
+### P10.1 - Thiết lập GitHub repository controls
+
+- [x] Hành động: Tạo `CODEOWNERS` để thể hiện Brain ownership.
+- [ ] Hành động: Tạo checklist cấu hình branch protection cho `main`.
+- [ ] Hành động: Yêu cầu PR review trước merge.
+- [ ] Hành động: Yêu cầu status checks cho gate khi CI sẵn sàng.
+- [ ] Hành động: Cấm force push vào branch chính.
+- [ ] Hành động: Ghi rõ quyền merge chỉ thuộc Brain hoặc Brain Delegate.
+- Đầu ra: Repository policy phản ánh Brain sovereignty.
+- DoD: Có tài liệu hoặc checklist cấu hình GitHub để áp dụng trước khi mở repo cho Hands.
+- Ưu tiên: P0.
+
+### P10.2 - Thiết lập PR-based delivery workflow
+
+- [x] Hành động: Tạo `.github/pull_request_template.md`.
+- [ ] Hành động: Tạo `.github/ISSUE_TEMPLATE/task_spec.yml` hoặc Markdown task issue template.
+- [ ] Hành động: Tạo rule mỗi PR phải link `01_TASK_SPEC.md`, `02_QA_LOGS.md`, test evidence và hardening proposal.
+- [ ] Hành động: Tạo review checklist cho Brain.
+- Đầu ra: Delivery luôn đi qua PR có bằng chứng.
+- DoD: Không có code vào main nếu thiếu spec/test/docs/security/hardening evidence.
+- Ưu tiên: P0.
+
+### P10.3 - Thiết lập conventional commit enforcement
+
+- [x] Hành động: Tạo `.agents/rules/ls-rule-conventional-commits.md`.
+- [x] Hành động: Định nghĩa commit types: `feat`, `fix`, `docs`, `test`, `refactor`, `chore`, `harden`.
+- [ ] Hành động: Tạo script hoặc checklist kiểm tra commit history trước nghiệm thu.
+- Đầu ra: Git history đọc được để thay thế Hands trong 24h.
+- DoD: PR có commit history đủ rõ cho AI/Brain hiểu tiến độ mà không cần họp.
+- Ưu tiên: P1.
+
+### P10.4 - Thiết lập delivery evidence archive
+
+- [ ] Hành động: Tạo cấu trúc `docs/audit/gate-reports/`.
+- [ ] Hành động: Tạo cấu trúc `docs/audit/review-reports/`.
+- [ ] Hành động: Tạo cấu trúc `docs/audit/security-reports/`.
+- [ ] Hành động: Quy định naming cho evidence theo project/module/date.
+- Đầu ra: Mọi nghiệm thu có nơi lưu bằng chứng.
+- DoD: Brain có thể audit lại quyết định nghiệm thu sau này.
+- Ưu tiên: P1.
+
+### P10.5 - Thiết lập acceptance and payment decision record
+
+- [ ] Hành động: Tạo `.agents/templates/PAYMENT_DECISION_RECORD_TEMPLATE.md`.
+- [ ] Hành động: Liên kết scorecard với quyết định pass/partial/reject.
+- [ ] Hành động: Ghi rõ reviewer, date, score, blockers, payout decision, remaining obligations.
+- Đầu ra: Payment logic có audit trail.
+- DoD: Không giải ngân nếu thiếu scorecard và payment decision record.
+- Ưu tiên: P1.
 
 ---
 
@@ -484,25 +613,15 @@ Ngày rà soát: 2026-04-23.
 - [x] Đồng bộ source-of-truth blueprint về bộ `.LinkStrategy/00/01/02/03`.
 - [x] Tạo root `README.md`.
 - [x] Hoàn thiện `ASSET_INDEX.md`.
-- [ ] Hoàn thiện Strategic Blueprint governance trong `GEMINI.md`.
-- [ ] Hoàn thiện `GEMINI.md`.
-- [ ] Đổi `.agents/rules/1.md` thành `ls-rule-master-governance.md`.
-- [ ] Đổi `.agents/workflows/1.md` thành `ls-workflow-delivery-loop.md`.
-- [ ] Điền nội dung `02_QA_LOGS_TEMPLATE.md`.
-- [ ] Nâng cấp `01_TASK_SPEC_TEMPLATE.md`.
-- [ ] Nâng cấp `LOGS_TEMPLATE.md`.
-- [ ] Tạo `HARDENING_PROPOSAL_TEMPLATE.md`.
-- [ ] Tạo `GATE_SCORECARD_TEMPLATE.md`.
-- [ ] Hoàn thiện `components/ui/README.md`.
-- [ ] Hoàn thiện `scripts/README.md`.
-- [ ] Tạo `scripts/new-project.ps1`.
-- [ ] Tạo `scripts/new-module.ps1`.
-- [ ] Tạo `scripts/verify-gate.ps1`.
-- [ ] Tạo `ls-rule-secret-management.md`.
+- [x] Bổ sung Git enforcement layer: PR template, CODEOWNERS, conventional commit policy.
+- [x] Tạo `ls-rule-secret-management.md`.
+- [x] Tạo `ls-rule-conventional-commits.md`.
+- [ ] Tạo Action vs Inquiry permission matrix.
 - [ ] Tạo onboarding/offboarding checklist.
-- [ ] Tạo project mẫu `projects/DEMO-BASE-PLATFORM`.
-- [ ] Chạy pilot verification gate.
-- [ ] Cập nhật backlog sau pilot.
+- [ ] Tạo security automation baseline templates.
+- [x] Tạo project mẫu `projects/DEMO-BASE-PLATFORM`.
+- [x] Chạy pilot verification gate.
+- [x] Rà soát và cập nhật Backlog theo ưu tiên "Chốt chặn".
 
 ## Definition Of Done Cho Base Platform V1
 
@@ -511,8 +630,13 @@ Ngày rà soát: 2026-04-23.
 - [ ] Mỗi project/module mới có spec, QA log, daily log, README và test folder.
 - [ ] Có scorecard nghiệm thu chuẩn.
 - [ ] Có verification script tối thiểu.
+- [ ] Có Git/PR enforcement checklist trước khi giao việc cho Hands.
+- [ ] Có technical handover artefact templates cho service/module.
+- [ ] Có Action vs Inquiry permission matrix.
+- [ ] Có security automation baseline cho module rủi ro.
 - [ ] Có rule governance, secret management và delivery workflow.
 - [x] Có asset index đủ rõ để AI Agent bootstrap.
+- [ ] Có strategic blueprint alignment trong task/gate đối với module chiến lược.
 - [ ] Có UI/components và scripts README không rỗng.
 - [ ] Có project mẫu chứng minh workflow.
 - [ ] Có ít nhất một hardening proposal sau pilot.

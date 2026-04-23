@@ -1,29 +1,35 @@
-## 🎯 Mục tiêu (Objective)
-*Mô tả ngắn gọn mục đích của PR này và liên kết đến Task Spec.*
-- **Task Spec:** [Link đến docs/blueprints/01_TASK_SPEC.md]
-- **QA Log:** [Link đến 02_QA_LOGS.md]
+## 📝 PR OVERVIEW
+*Describe the purpose of this Pull Request. Link to the relevant Task Spec.*
 
-## ✅ Checklist bàn giao (Handover Checklist)
-*Vui lòng tích vào các mục đã hoàn thiện trước khi gửi Review.*
+- **Task Spec:** [Link to 01_TASK_SPEC.md]
+- **Module:** [Module Name]
+- **Project ID:** [Project ID]
 
-- [ ] **Technical Spec:** Đã điền đầy đủ 5 Pillars trong Task Spec.
-- [ ] **Clean Code:** Không còn lỗi Lint, mã màu Hex thủ công (nếu là UI).
-- [ ] **Tests:** Đã viết Unit Test và đạt Coverage > 80%.
-- [ ] **Documentation:** Đã cập nhật README và LOGS.md (Done/Block/Next).
-- [ ] **Security:** Đã kiểm tra không lộ Secret (Sử dụng .env.example).
-- [ ] **Hardening:** Đã kèm theo `HARDENING_PROPOSAL.md` (nếu có module tái sử dụng).
-- [ ] **Video/Screenshots:** Có bằng chứng thực thi trực quan.
+## 🛠 CHANGES
+*Summary of changes made.*
+- [ ] List significant change 1
+- [ ] List significant change 2
 
-## 🕵️ Tự đánh giá (Self-Scorecard)
-*Dựa trên GATE_SCORECARD_TEMPLATE.md, Hands tự đánh giá PR này bao nhiêu điểm?*
-- **Tự chấm:** / 100
+## 🛡 SECURITY & COMPLIANCE
+- [ ] No secrets committed (Verified via .env protocol)
+- [ ] PII data handled according to Data Privacy Checklist (if applicable)
+- [ ] Security scan / Threat Model updated (if applicable)
 
-## 🧪 Bằng chứng kiểm thử (Verification Evidence)
-*Copy kết quả chạy `scripts/verify-gate.ps1` vào đây:*
+## ✅ VERIFICATION & DOD
+- [ ] Unit Tests passed (Attach evidence below)
+- [ ] Clean Code Checklist followed
+- [ ] `scripts/verify-gate.ps1` score: [Score]/100
+- [ ] LOGS.md updated with this PR session
 
-```text
-[Dán kết quả tại đây]
+## 💎 ASSET HARDENING
+- [ ] Hardening Proposal included (if reusable logic was found)
+- [ ] Asset registered in ASSET_INDEX.md (if applicable)
+
+## 📸 EVIDENCE
+*Screenshots, Logs, or Video links.*
+```
+[Insert output of verify-gate.ps1 here]
 ```
 
 ---
-*Note: PR sẽ bị từ chối tự động (REJECT) nếu thiếu bất kỳ tài liệu nào trong Checklist.*
+*By submitting this PR, I confirm that all Link Strategy Master Constitution rules have been followed.*

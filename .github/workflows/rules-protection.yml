@@ -1,0 +1,17 @@
+name: Governance Protection Gate
+
+on:
+  pull_request:
+    paths:
+      - '.agents/**'
+      - '.cursorrules'
+
+jobs:
+  block-illegal-changes:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Reject PR logic
+        run: |
+          echo "ERROR: Bạn không có quyền sửa đổi Rule hoặc Governance assets."
+          echo "Mọi thay đổi đối với .agents/ hoặc .cursorrules chỉ có thể được thực hiện bởi Brain."
+          exit 1

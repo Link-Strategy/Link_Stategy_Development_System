@@ -13,6 +13,46 @@ if (-not (Test-Path $projectPath)) {
 
 $score = 100
 
+# 6. KIỂM TRA TÀI SẢN (HARDENING POTENTIAL)
+$HardeningFile = Join-Path $projectPath ".agents/templates/HARDENING_PROPOSAL_TEMPLATE.md"
+if (-not (Test-Path $HardeningFile)) {
+    Write-Warning "Thiếu đề xuất hardening."
+    $score -= 5
+}
+
+# --- NEW: GOVERNANCE INTEGRITY CHECK (RULE PROTECTION) ---
+Write-Host "`n[Rule Protection] Examining Governance Integrity..." -ForegroundColor Cyan
+
+$MasterRulesFolder = ".agents/rules"
+$ProjectRulesFolder = Join-Path $projectPath ".agents/rules"
+
+if (Test-Path $ProjectRulesFolder) {
+    $RulesToProtect = Get-ChildItem -Path $MasterRulesFolder -Filter *.md
+    foreach ($rule in $RulesToProtect) {
+        $masterRulePath = $rule.FullName
+        $projectRulePath = Join-Path $ProjectRulesFolder $rule.Name
+        
+        if (Test-Path $projectRulePath) {
+            $MasterHash = (Get-FileHash $masterRulePath -Algorithm MD5).Hash
+            $ProjectHash = (Get-FileHash $projectRulePath -Algorithm MD5).Hash
+
+            if ($MasterHash -ne $ProjectHash) {
+                Write-Error "VI PHẠM: Bộ luật $($rule.Name) đã bị sửa đổi trái phép!"
+                $score -= 30 # Trừ điểm cho mỗi file bị sửa
+                $GateStatus = "REJECTED (Integrity Violation: $($rule.Name))"
+            }
+        } else {
+            Write-Error "VI PHẠM: Luật $($rule.Name) đã bị xóa!"
+            $score -= 40
+        }
+    }
+} else {
+    Write-Error "VI PHẠM CỰC NGHIÊM TRỌNG: Toàn bộ thư mục luật đã bị xóa!"
+    $score = 0
+    $GateStatus = "REJECTED (Rules Folder Missing)"
+}
+# ----------------------------------------------------------
+
 function Test-Requirement {
     param($Name, $Path, $Penalty)
     if (Test-Path $Path) {

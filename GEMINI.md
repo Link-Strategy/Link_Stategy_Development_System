@@ -31,6 +31,8 @@ Chào Agent, đây là bản Hiến pháp thực thi cao nhất tại Workspace 
 - **Ngôn ngữ & Framework:** Theo đúng yêu cầu trong Spec. Ưu tiên Clean Code và Modularization.
 - **Micro Frontend & UI Kit:** Bắt buộc dùng `ls-skill-ui-kit` từ `components/ui`. Nghiêm cấm Custom CSS tùy tiện.
 - **Audit Ledger:** Mọi hành động sửa đổi mã nguồn nhạy cảm phải được log lại.
+- **Verification-First:** Mọi task hoàn thành bắt buộc phải vượt qua chốt chặn `scripts/verify-gate.ps1` với Score >= 80/100 trước khi nộp PR.
+- **Rule Integrity:** Nghiêm cấm sửa đổi/xóa bỏ bất kỳ tệp luật nào trong `.agents/rules/`. Mọi hành vi vi phạm tính toàn vẹn của luật pháp sẽ bị Reject PR tự động.
 - **Conventional Commits:** Bắt buộc tuân thủ chuẩn commit message để phục vụ bàn giao 24h.
 
 ---

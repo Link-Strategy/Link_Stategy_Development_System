@@ -24,9 +24,10 @@ Nơi lưu trữ toàn bộ "linh hồn" và tài sản của Link Strategy. Ch�
 /link-strategy-engine
 ├── .agents/ (AI Assets: rules, skills, workflows, scripts)
 ├── .LinkStrategy/ (Hidden: Constitution, Contracts, Certificates)
-│   ├── 04_SOP_LINK_STRATEGY.md
-│   ├── 05_FULL_SYSTEM_CONFIGURATION.md
-│   └── 06_HANDOVER_SPEC.md
+│   ├── 00_BLUEPRINT_Link Strategy.md
+│   ├── 01_SOP_LINK_STRATEGY.md
+│   ├── 02_FULL_SYSTEM_CONFIGURATION.md
+│   └── 03_HANDOVER_SPEC.md
 ├── scripts/ (Common Infrastructure)
 ├── components/
 │   └── /ui (Shared Components)

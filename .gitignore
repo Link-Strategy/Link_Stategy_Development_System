@@ -10,12 +10,21 @@
 # Security & Secrets
 .env
 .env.*
+!.env.example
+!.env.*.example
 *.pem
 *.key
+*.p12
+*.pfx
+*.crt
+*.cert
 secrets/
 
 # Environment & Dependencies
 node_modules/
+.pnpm-store/
+.yarn/
+.npm/
 .DS_Store
 Thumbs.db
 .vscode/*
@@ -23,8 +32,17 @@ Thumbs.db
 !.vscode/extensions.json
 .idea/
 
-# Temp files
+# Build, coverage, cache, and temp files
 *.log
 tmp/
+temp/
 dist/
 build/
+coverage/
+.nyc_output/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.cache/
+__pycache__/
+*.pyc

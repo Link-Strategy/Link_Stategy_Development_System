@@ -1,11 +1,7 @@
 # Link Strategy Master ignore rules (Updated for Hidden Structure)
 
-# Private Operational Folders (Hidden in .LinkStrategy)
-.LinkStrategy/business/
-.LinkStrategy/Certiificate/
-.LinkStrategy/Contract/
-.LinkStrategy/Assets/
-.LinkStrategy/image/
+# Private Strategic Vault (Strictly Brain Only)
+.LinkStrategy/
 
 # Security & Secrets
 .env

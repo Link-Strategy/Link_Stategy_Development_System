@@ -8,6 +8,9 @@ Tài liệu này là guide nội bộ để đội ngũ Auditor của Link Strat
 - Auditor thuộc Layer 1 và vận hành theo logic pain-first
 - Mục tiêu cuối là tạo ra `Account Thesis -> Pain Map -> Problem Classification -> Intervention Thesis -> Commercial Framing`
 
+> [!TIP]
+> Tham khảo lộ trình đào tạo thực thi tại: [Training/auditor/README.md](./Training/auditor/README.md)
+
 ---
 
 ## I. NGUYÊN TẮC XÂY ĐỘI NGŨ

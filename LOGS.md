@@ -60,3 +60,22 @@
 
 ---
 *Note: File này phải được cập nhật hàng ngày trước khi kết thúc phiên làm việc.*
+
+---
+
+## [2026-04-28] - Antigravity (AI Agent)
+
+### 1. DONE (Đã hoàn thành)
+- [x] **Xây dựng Training Folder:** Chuyển hóa `.LinkStrategy/05_AUDITOR_CAPABILITY.md` thành cấu trúc đào tạo thực thi.
+- [x] **Spec-First Implementation:** Khởi tạo `docs/blueprints/02_AUDITOR_TRAINING_FOLDER_SPEC.md`.
+- [x] **Cấu trúc Module:** Tạo 6 module chương trình đào tạo với đầy đủ `curriculum.md` và Output requirement.
+- [x] **Harden Handbook:** Khởi tạo các template cốt lõi (`Account Thesis`, `Pain Map`, `Problem Classification`, `Intervention Thesis`) trong thư mục `handbook/templates/`.
+- [x] **Cập nhật Asset Registry:** Đồng bộ các tài sản đào tạo mới vào `ASSET_INDEX.md`.
+
+### 2. BLOCK (Điểm nghẽn)
+- Không có.
+
+### 3. NEXT (Bước tiếp theo)
+- [ ] Bổ sung nội dung chi tiết cho Checklist và Prompt Pack trong Handbook.
+- [ ] Thu thập các Case Study thực tế để đưa vào Case Library.
+- [ ] Xây dựng bộ công cụ verify năng lực cho từng module (Quizzes/Review Rubrics).

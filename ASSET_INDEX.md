@@ -141,6 +141,13 @@ Every asset should be tracked with these fields:
 | `root-blueprint-task` | Project | `docs/blueprints/01_TASK_SPEC.md` | Brain | Draft | Existing task spec for pushing the production engine to GitHub. | Repository setup objective. | Completed infrastructure task spec. | Historical reference only. | `LOGS.md` |
 | `demo-base-platform` | Project | `projects/DEMO-BASE-PLATFORM/` | Brain | Active | Reference project proving project factory, templates, logs, and gate verification. | Project factory scripts and templates. | Demo project workspace. | Required for Base Platform V1 validation. | `backlog.md` |
 
+## Training Registry
+
+| Name | Type | Path | Owner | Status | Purpose | Input | Output | Mandatory Usage | Related Docs |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `auditor-training-root` | Project | `.LinkStrategy/Training/auditor/README.md` | Brain | Active | Root directory for the Auditor training program. | `.LinkStrategy/05_AUDITOR_CAPABILITY.md`. | Structured training path. | Required for onboarding new Auditors. | `.LinkStrategy/Training/auditor/modules/` |
+| `auditor-handbook` | Project | `.LinkStrategy/Training/auditor/handbook/` | Brain | Draft | Collection of checklists, templates, and prompts for Auditors. | Field audit requirements. | Standardized diagnostic outputs. | Mandatory for all training modules. | `.LinkStrategy/Training/auditor/README.md` |
+
 ---
 
 ## Registration Rules

@@ -26,9 +26,10 @@ Xây dựng một hệ thống có thể:
 Hệ thống Link Strategy phát triển theo 3 giai đoạn hội tụ để chuyển dịch từ "Dịch vụ" sang "Cỗ máy":
 
 ### Giai đoạn 1: Hardening & Enforcement (0 - 6 tháng) - [TRẠNG THÁI: 100% HOÀN THÀNH]
-*   **Mục tiêu:** Xây dựng "Bộ khung thép". Đồng bộ hóa Hiến pháp và các chốt chặn thực thi.
-*   **Trọng tâm:** Master-Satellite Sync, Governance Enforcement, `ls-gitpush` Integrity, Asset Registry.
-*   **Key Milestone:** Hệ thống hạ tầng, bảo mật và quy trình bàn giao đã được "Bọc thép" hoàn toàn.
+*   **Mục tiêu:** Xây dựng "Bộ khung thép" ở cấp cơ chế nền: khởi tạo repo/project, đồng bộ Master-Satellite, cưỡng chế luật và Verification Gate.
+*   **Trọng tâm:** Master-Satellite Sync, Governance Enforcement, GitHub Actions Automation, `ls-gitpush` Integrity, Asset Registry.
+*   **Key Milestone:** Hệ thống hạ tầng, đồng bộ luật và gate kỹ thuật đã được "Bọc thép" và tự động hóa qua GitHub Verification Gate.
+*   **Ngoài phạm vi Phase 1:** Nghiệm thu bởi Brain, giải ngân, review checklist chuyên sâu, onboarding/offboarding Hands, SAST/dependency scan đầy đủ và kho audit dài hạn thuộc Phase 2+.
 
 ### Giai đoạn 2: Scale & Production (6 - 18 tháng) - [TRẠNG THÁI: ĐANG TRIỂN KHAI]
 *   **Mục tiêu:** Vận hành thực địa diện rộng. Auditor chẩn đoán và Dev thi công module hàng loạt.
@@ -42,7 +43,76 @@ Hệ thống Link Strategy phát triển theo 3 giai đoạn hội tụ để ch
 
 
 ## Phase 1: Hardening & Enforcement
-*Thiết lập hạ tầng cốt lõi, luật pháp và các chốt chặn bảo mật tuyệt đối trước khi mở repo.*
+*Thiết lập hạ tầng cốt lõi, luật pháp và các chốt chặn kỹ thuật tự động trước khi mở repo.*
+
+> [!SCOPE]
+> **Phạm vi Phase 1:** chỉ harden cơ chế thiết lập, đồng bộ và verify gate: project factory, satellite contract, rule sync, `.agents/tools/ls-engine`, GitHub Actions gate, `ls-gitpush`, integrity hash và branch-protection checklist. Phase 1 không chịu trách nhiệm hoàn thiện thủ tục nghiệm thu Brain, giải ngân, clean-code checklist, security automation đầy đủ, evidence archive dài hạn hoặc công cụ hỗ trợ vận hành hàng loạt cho Hands.
+
+### Sơ đồ Vòng đời Sản xuất (Production Life Cycle)
+
+```mermaid
+graph TD
+    A[1. Brain + Agent: Chiến lược & Khởi tạo] --> C[2. Brain + Agent: Chuẩn hóa Đặc tả Spec]
+    C --> D[3. Hands: Thi công & Nhật ký]
+    D -->|src - tests - 03_LOGS.md| E{4. Verification Gate}
+    E -->|npm run verify-gate| F[FAIL: Sửa lỗi]
+    F --> D
+    E -->|PASS| G[5. Secure Delivery]
+    G -->|npm run ls-gitpush| H[GitHub PR & Integrity Hash]
+    H --> I[6. Brain: Duyệt & Nghiệm thu]
+    I --> J[7. Hardening: Hóa thạch tài sản]
+    J -->|ASSET_INDEX.md| K[Nâng cấp Cỗ máy Tri thức]
+    K --> A
+```
+
+> [!IMPORTANT]
+> **Nguyên tắc "Cưỡng chế":** Trong phạm vi Phase 1, hệ thống tự động khóa tại Verification Gate và Secure Delivery nếu thiếu cấu trúc bắt buộc, lệch luật, thiếu test runnable, thiếu report hoặc hash không khớp. Các quyết định nghiệm thu/giải ngân của Brain được chuẩn hóa ở Phase 2+.
+
+Dựa trên hệ thống "Bộ khung thép" chúng ta vừa hoàn thiện, vòng đời sản xuất (Production Life Cycle) của Link Strategy được tóm tắt qua 6 giai đoạn khép kín, đảm bảo code đi ra từ "Cỗ máy" luôn đạt chuẩn:
+
+### 1. Khởi tạo (Initialization) - "Xây xưởng"
+*   **Người thực hiện:** Brain + Agent.
+*   **Hành động:** Brain định hướng chiến lược, Agent chạy script `npm run new-project` để thực thi.
+*   **Kết quả:** Một **Satellite Repo** (Kho chứa vệ tinh) được sinh ra với đầy đủ cấu trúc chuẩn và các bộ luật (Rules) được "nhúng" sẵn. Brain bàn giao kho này cho Freelancer (Hands).
+
+### 2. Đặc tả (Spec-First) - "Lập bản vẽ"
+*   **Người thực hiện:** Brain + Agent (Hands hỗ trợ thi công bản thảo).
+*   **Hành động:** Brain chốt yêu cầu, Agent rà soát và phê duyệt file `01_TASK_SPEC.md` theo chuẩn 5 Pillars.
+*   **Luật:** Tuyệt đối không được viết code khi bản vẽ chưa được Brain + Agent phê duyệt. Đây là chốt chặn quan trọng nhất để chống "Rule Drift".
+
+### 3. Thi công & Nhật ký (Dev & Log) - "Sản xuất"
+*   **Người thực hiện:** Hands.
+*   **Hành động:** 
+    *   Viết code tại `src/`, viết test tại `tests/`.
+    *   Cập nhật `03_LOGS.md` hàng ngày (Done/Block/Next).
+    *   Trao đổi logic phức tạp qua `02_DECISION_LOGS.md`.
+*   **Mục tiêu:** Tạo ra bằng chứng thực thi liên tục, không để tri thức bị thất lạc trong các đoạn chat rời rạc.
+
+### 4. Kiểm định (Verification Gate) - "KCS"
+*   **Người thực hiện:** Hệ thống tự động (Script `npm run verify-gate`).
+*   **Hành động:** Quét toàn bộ dự án về: Tính toàn vẹn của luật, Cấu trúc file, Chất lượng Spec, Kết quả Test (phải Pass 100%) và Bảo mật.
+*   **Kết quả:** Chỉ khi đạt trạng thái **PASS**, Hands mới có quyền đi tiếp.
+
+### 5. Bàn giao an toàn (Secure Delivery) - "Xuất xưởng"
+*   **Người thực hiện:** Hands + Script `npm run ls-gitpush`.
+*   **Hành động:** 
+    *   Hệ thống niêm phong mã nguồn bằng mã **Integrity Hash** (Dấu vân tay).
+    *   Tự động đóng gói mọi báo cáo kiểm định thành một Pull Request (PR) trên GitHub.
+*   **Ý nghĩa:** Brain nhận được một gói hàng "nguyên đai nguyên kiện" kèm theo đầy đủ bằng chứng chất lượng.
+
+### 6. Nghiệm thu & Hóa thạch (Acceptance & Hardening) - "Lưu kho"
+*   **Người thực hiện:** Brain + Agent.
+*   **Hành động:** 
+    *   Brain duyệt PR dựa trên báo cáo tóm tắt của Agent.
+    *   **Hardening:** Agent bóc tách những phần code tốt, có tính tái sử dụng để đưa vào thư viện `.agents/skills/` hoặc `components/ui/`.
+*   **Kết quả:** Dự án kết thúc nhưng tri thức được "Hóa thạch" để làm giàu cho cỗ máy, giúp các dự án sau chạy nhanh hơn.
+
+---
+
+**Sơ đồ tóm lược:**
+`Brain (Yêu cầu) -> Agent (Khởi tạo) -> Hands (Thi công + Log) -> Gate (Kiểm định) -> PR (Bằng chứng) -> Brain (Duyệt) -> Asset (Hóa thạch tri thức)`
+
+Đây là một vòng lặp **Evidence-based (Dựa trên bằng chứng)**. Bạn không cần tin vào lời nói của freelancer, bạn chỉ tin vào kết quả đã được Gate và Agent xác nhận qua mã Hash và Báo cáo Quyết định (Decision Logs).
 
 ### 1.0.0 - Chuẩn hóa Nguồn chân lý Blueprint
 
@@ -69,18 +139,18 @@ Hệ thống Link Strategy phát triển theo 3 giai đoạn hội tụ để ch
 
 ### 1.3.1 - Tạo script sinh project mới
 
-- [x] Hành động: Tạo `scripts/new-project.ps1`.
+- [x] Hành động: Tạo `npm run new-project`.
 - [x] Hành động: Input gồm `client_id`, `project_name`, `project_type`.
 - [x] Hành động: Output tạo thư mục `projects/[CLIENT_ID]-[PROJECT_NAME]/`.
-- [x] Hành động: Copy templates vào `docs/blueprints/`.
-- [x] Hành động: Tạo `src/`, `tests/`, `docs/`, `README.md`, `LOGS.md`.
+- [x] Hành động: Copy templates vào Root dự án.
+- [x] Hành động: Tạo `src/`, `tests/`, `01_TASK_SPEC.md`, `02_DECISION_LOGS.md`, `03_LOGS.md`, `README.md`.
 - Đầu ra: Project mới được sinh nhất quán.
 - DoD: Chạy một lệnh có thể tạo project skeleton đầy đủ.
 - Ưu tiên: P0.
 
 ### 1.3.2 - Tạo script sinh module mới trong project
 
-- [x] Hành động: Tạo `scripts/new-module.ps1`.
+- [x] Hành động: Tạo `npm run new-module`.
 - [x] Hành động: Input gồm `project_path`, `module_name`, `module_type`.
 - [x] Hành động: Output tạo module folder với `src/`, `tests/`, `docs/blueprints/`, README và local logs.
 - Đầu ra: Module-based tasking rõ ràng.
@@ -104,10 +174,10 @@ Hệ thống Link Strategy phát triển theo 3 giai đoạn hội tụ để ch
 - DoD: Người mới có thể học quy trình bằng cách đọc project mẫu.
 - Ưu tiên: P1.
 
-### 1.4.1 - Tạo `scripts/verify-gate.ps1`
+### 1.4.1 - Tạo `npm run verify-gate`
 
 - [x] Hành động: Tạo script chấm gate bán tự động.
-- [x] Hành động: Kiểm tra tồn tại task spec, QA log, LOGS, README, tests folder, hardening proposal.
+- [x] Hành động: Kiểm tra tồn tại 01_TASK_SPEC.md, 02_DECISION_LOGS.md, 03_LOGS.md, README.md, tests folder.
 - [x] Hành động: Kiểm tra tồn tại blueprint alignment đối với module có tác động chiến lược.
 - [x] Hành động: Nếu project có package/test command, chạy test tương ứng (Cơ bản).
 - [x] Hành động: Xuất báo cáo Markdown hoặc JSON (Output terminal).
@@ -117,20 +187,20 @@ Hệ thống Link Strategy phát triển theo 3 giai đoạn hội tụ để ch
 
 ### 1.4.2 - Nghiệm thu dựa trên Bằng chứng thực thi (Evidence-based)
 
-- [x] Hành động: Xác lập cơ chế nghiệm thu dựa trên bằng chứng thực tế ghi nhận trong `LOGS.md`.
+- [x] Hành động: Xác lập cơ chế nghiệm thu dựa trên bằng chứng thực tế ghi nhận trong `03_LOGS.md`.
 - [x] Hành động: Duy trì các tiêu chuẩn bắt buộc: Kiểm thử (Tests) vượt qua 100%, Mã nguồn sạch, Bảo mật được đảm bảo.
 - [x] Hành động: Tích hợp việc giải ngân vào dấu xác nhận Hash trực tiếp trong Log dự án sau khi vượt qua Verification Gate.
-- **Tiêu chuẩn đạt chuẩn:** Mọi quyết định nghiệm thu đều dựa trên bằng chứng thực tế và có đối soát trong Logs.
+- **Tiêu chuẩn đạt chuẩn:** Mọi quyết định nghiệm thu đều dựa trên bằng chứng thực tế và có đối soát trong `03_LOGS.md`.
 
 
 
-### 1.4.4 - Chuẩn bị CI/CD gate về sau
-- [x] Hành động: Thiết kế file workflow mẫu cho GitHub Actions (`.agents/templates/verify-gate.yml`).
-- [x] Hành động: Ghi rõ command contract: lint, test, coverage, security audit.
-- [x] Hành động: Chuẩn hóa output gate report: test result, coverage, lint, security scan, docs evidence, hardening evidence.
-- Đầu ra: Có đường nâng cấp từ local gate sang CI gate.
-- DoD: Khi có stack cụ thể, chỉ cần map command vào contract.
-- Ưu tiên: P2.
+### 1.4.4 - Triển khai CI/CD gate (GitHub Actions)
+- [x] Hành động: Thiết lập file workflow thực thi cho GitHub Actions (`.github/workflows/verify-gate.yml`).
+- [x] Hành động: Tích hợp cơ chế đối soát Integrity Hash tự động trên Cloud để chặn PR lỗi.
+- [x] Hành động: Chuẩn hóa output gate report: test result, coverage, lint, security scan.
+- Đầu ra: Hệ thống tự động chặn PR nếu không vượt qua kiểm định hoặc bị sửa đổi trái phép.
+- DoD: PR không thể merge nếu dấu X đỏ xuất hiện tại GitHub Verification Gate.
+- Ưu tiên: P0 (Hardened & Automated).
 
 ### 1.4.5 - Tạo Git enforcement checklist
 
@@ -145,7 +215,7 @@ Hệ thống Link Strategy phát triển theo 3 giai đoạn hội tụ để ch
 
 ### 1.5.1 - Thiết lập Permission Matrix (Action vs Inquiry) (URGENT)
 - [x] Hành động: Tạo `.agents/rules/ls-rule-master-governance.md` (Enforced No-Manual-Push).
-- [x] Hành động: Tạo script `ls-gitpush.ps1` làm cổng kiểm soát duy nhất (Action Lane Gate).
+- [x] Hành động: Tạo script `npm run ls-gitpush` làm cổng kiểm soát duy nhất (Action Lane Gate).
 - [x] Hành động: Thiết lập cơ chế **Integrity Hash** (Dấu vân tay code) chống sửa code lén.
 - [x] Hành động: Cưỡng chế chốt chặn PR tại GitHub Action (Chặn push thủ công).
 - Đầu ra: Cơ chế bảo vệ hệ thống tuyệt đối khỏi các hành động tự ý của Hands.
@@ -156,7 +226,7 @@ Hệ thống Link Strategy phát triển theo 3 giai đoạn hội tụ để ch
 
 ### 1.7.1 - Thiết lập satellite repo contract
 - [x] Hành động: Tạo `docs/satellite-repo-contract.md`. (Đã tích hợp vào Sync Linkage).
-- [x] Hành động: Mô tả cấu trúc satellite: `src/`, `tests/`, `docs/blueprints/`, `GEMINI.md`, `README.md`. (Đã tích hợp vào Sync Linkage).
+- [x] Hành động: Mô tả cấu trúc satellite: `src/`, `tests/`, `01_TASK_SPEC.md`, `02_DECISION_LOGS.md`, `03_LOGS.md`, `GEMINI.md`, `README.md`. (Đã tích hợp vào Sync Linkage).
 - [x] Hành động: Mô tả file nào read-only từ Brain.
 - Đầu ra: Contract rõ cho repo giao freelancer.
 - DoD: Có thể tạo satellite thủ công hoặc tự động theo contract.
@@ -171,13 +241,13 @@ Hệ thống Link Strategy phát triển theo 3 giai đoạn hội tụ để ch
 - DoD: Brain biết dữ liệu đi chiều nào, lúc nào, ai duyệt.
 - Ưu tiên: P0 (Hardened).
 
-### 1.7.3 - Tạo `GEMINI.md` hoặc agent rules template cho satellite
-- [x] Hành động: Tạo `GEMINI.md` template. (Đã tích hợp vào Project Factory).
-- [x] Hành động: Nội dung ép đọc task spec, QA log, LOGS, asset index và rules.
-- [x] Hành động: Tạo script đồng bộ tự động `push-rules-to-satellite.ps1` và `pull-code-from-satellite.ps1`.
+### 1.7.3 - Tạo `GEMINI.md` và Cơ chế đồng bộ Satellite
+- [x] Hành động: Tạo `GEMINI.md` template và tích hợp vào Project Factory.
+- [x] Hành động: Nội dung ép đọc 01_TASK_SPEC.md, 02_DECISION_LOGS.md, 03_LOGS.md, asset index và rules.
+- [x] Hành động: Tạo script đồng bộ tự động `npm run push-rules` (Đồng bộ Rules, Workflows và cấu trúc `.github/`).
 - [x] Hành động: Triển khai cơ chế auto-registry vào `active-projects.json`.
-- Đầu ra: Context injection và registry tự động.
-- DoD: Satellite mới có rule bootstrapping nhất quán và có cơ chế đồng bộ tự động.
+- Đầu ra: Context injection và registry tự động, kích hoạt gác cổng tự động tại Vệ tinh.
+- DoD: Satellite mới có rule bootstrapping nhất quán và có cơ chế đồng bộ tự động bao gồm cả CI/CD.
 - Ưu tiên: P0 (Hardened).
 
 
@@ -223,38 +293,38 @@ Hệ thống Link Strategy phát triển theo 3 giai đoạn hội tụ để ch
 
 ### 2.1.0 - Hardening Security & Enforcement (Strategic Deferral from Phase 1)
 
-#### 1.5.2 - Thiết lập Security Automation Baseline
+#### 2.1.1 - Thiết lập Security Automation Baseline
 - [ ] Hành động: Tạo `.agents/templates/THREAT_MODEL_TEMPLATE.md`.
 - [ ] Hành động: Tích hợp Dependency Scan và SAST baseline vào workflow.
 - Đầu ra: Quy trình rà quét rủi ro tự động.
 - DoD: Module rủi ro cao phải có bằng chứng quét bảo mật trước khi vào Gate.
 - Ưu tiên: P1.
 
-#### 1.8.1 - Thực thi Secret Management Protocol
+#### 2.1.2 - Thực thi Secret Management Protocol
 - [x] Hành động: Tạo `.agents/rules/ls-rule-secret-management.md`.
 - [ ] Hành động: Đảm bảo mọi Hands (Freelancer) đều tuân thủ việc không bao giờ chạm vào Secret thật thông qua các buổi In-boarding.
 - [ ] Hành động: Quy định `.env.example`, secret manager và key revocation trong môi trường satellite.
 - Đầu ra: Secret protocol được thực thi triệt để.
 
-### 2.1.1 - Quality & Audit Standardization (Strategic Deferral from Phase 1)
+### 2.1.2 - Quality & Audit Standardization (Strategic Deferral from Phase 1)
 
-#### 1.4.3 - Tạo clean-code checklist
+#### 2.1.3 - Tạo clean-code checklist
 - [ ] Hành động: Tạo `.agents/templates/CLEAN_CODE_CHECKLIST_TEMPLATE.md`.
 - [ ] Hành động: Bao gồm modularity, naming, duplication, error handling, tests, dependency usage.
 - Đầu ra: Review kỹ thuật có checklist thống nhất.
 
-#### 1.10.4 - Thiết lập delivery evidence archive
+#### 2.1.4 - Thiết lập delivery evidence archive
 - [ ] Hành động: Tạo cấu trúc `docs/audit/gate-reports/`.
 - [ ] Hành động: Tạo cấu trúc `docs/audit/review-reports/`.
 - [ ] Hành động: Tạo cấu trúc `docs/audit/security-reports/`.
 - [ ] Hành động: Quy định naming for evidence theo project/module/date.
 
-#### 1.10.5 - Quy trình Phê duyệt và Giải ngân dựa trên Log
-- [ ] Hành động: Thiết lập cơ chế ghi nhận quyết định phê duyệt trực tiếp vào `LOGS.md` dự án.
-- [ ] Hành động: Sử dụng bằng chứng trong Log để làm căn cứ giải ngân thay vì các biểu mẫu rời rạc.
+#### 2.1.5 - Quy trình Phê duyệt và Giải ngân dựa trên Log
+- [ ] Hành động: Thiết lập cơ chế ghi nhận quyết định phê duyệt trực tiếp vào `03_LOGS.md` dự án.
+- [ ] Hành động: Sử dụng bằng chứng trong `03_LOGS.md` để làm căn cứ giải ngân thay vì các biểu mẫu rời rạc.
 - [ ] Hành động: Ghi nhận mã Hash phê duyệt cuối cùng để đảm bảo tính đối soát.
 
-### 2.1.3 - Skill Activation & Integration (NEW)
+### 2.1.6 - Skill Activation & Integration (NEW)
 *Kích hoạt các bộ kỹ năng đã có sẵn trong .agents/skills/ vào quy trình sản xuất hàng loạt.*
 
 - [ ] Hành động: Tích hợp `prompt-engineering-patterns` vào quy trình Review của AI Agent để tối ưu hóa câu lệnh.
@@ -265,7 +335,7 @@ Hệ thống Link Strategy phát triển theo 3 giai đoạn hội tụ để ch
 - DoD: Mỗi skill có ít nhất 1 dự án mẫu (Demo) áp dụng thành công.
 
 
-#### 2.1.2 - Brain Review Support (Moved from Phase 1)
+#### 2.1.7 - Brain Review Support (Moved from Phase 1)
 - [ ] Hành động: Tạo Review Checklist chuẩn cho Brain để tối ưu hóa việc duyệt bài.
 - [ ] Hành động: Thiết lập các tiêu chuẩn phản hồi nhanh (Quick feedback loop) cho Hands.
 
@@ -280,8 +350,8 @@ Hệ thống Link Strategy phát triển theo 3 giai đoạn hội tụ để ch
 
 ### 2.2.2 - Hoàn thiện bộ Communication & Review Plane Templates
 
-- [x] Hành động: Hoàn thiện `02_QA_LOGS_TEMPLATE.md` cho việc trao đổi logic.
-- [ ] Hành động: Chuẩn hóa `LOGS_TEMPLATE.md` (Done/Block/Next) và `DECISION_LOG_TEMPLATE.md` (Kiến trúc).
+- [x] Hành động: Hoàn thiện `02_DECISION_LOGS_TEMPLATE.md` cho việc chốt logic.
+- [x] Hành động: Chuẩn hóa `03_LOGS_TEMPLATE.md` (Hành động) và `01_TASK_SPEC_TEMPLATE.md` (Đặc tả).
 - [ ] Hành động: Tạo bộ template giao tiếp: Task Ticket, Pull Request, Review Report và Acceptance Report.
 - **Tiêu chuẩn đạt chuẩn:** Mọi trao đổi và quyết định đều được văn bản hóa đồng bộ, không phụ thuộc chat rời.
 
@@ -319,7 +389,7 @@ Hệ thống Link Strategy phát triển theo 3 giai đoạn hội tụ để ch
 
 ### 2.5.4 - Tạo hardening register script
 
-- [ ] Hành động: Tạo `scripts/register-asset.ps1`.
+- [ ] Hành động: Tạo command `npm run register-asset`.
 - [ ] Hành động: Input gồm asset name, type, path, description, owner, status.
 - [ ] Hành động: Cập nhật `ASSET_INDEX.md` hoặc tạo entry draft để Brain review.
 - Đầu ra: Việc thêm asset không bị quên đăng ký.
@@ -380,7 +450,7 @@ Hệ thống Link Strategy phát triển theo 3 giai đoạn hội tụ để ch
 ### 2.6.5 - Tạo daily harvesting workflow
 
 - [ ] Hành động: Tạo `.agents/workflows/ls-workflow-daily-harvesting.md`.
-- [ ] Hành động: Mô tả cách Brain đọc LOGS, commit, QA log để rút asset, risk và knowledge piece.
+- [ ] Hành động: Mô tả cách Brain đọc 03_LOGS.md, commit, 02_DECISION_LOGS.md để rút asset, risk và knowledge piece.
 - Đầu ra: Knowledge governance thành workflow cụ thể.
 - DoD: Cuối ngày biết phải harvest gì và lưu ở đâu.
 - Ưu tiên: P2.
@@ -422,10 +492,10 @@ Hệ thống Link Strategy phát triển theo 3 giai đoạn hội tụ để ch
 
 ### 2.9.1 - Chạy pilot trên project mẫu
 
-- [x] Hành động: Tạo project mẫu bằng `scripts/new-project.ps1`.
-- [x] Hành động: Tạo module mẫu bằng `scripts/new-module.ps1`.
-- [x] Hành động: Điền task spec, QA log, LOGS, README (đã test with placeholder detection).
-- [x] Hành động: Chạy `scripts/verify-gate.ps1`.
+- [x] Hành động: Tạo project mẫu bằng `npm run new-project`.
+- [x] Hành động: Tạo module mẫu bằng `npm run new-module`.
+- [x] Hành động: Điền 01_TASK_SPEC.md, 02_DECISION_LOGS.md, 03_LOGS.md, README.md (đã test with placeholder detection).
+- [x] Hành động: Chạy `npm run verify-gate`.
 - Đầu ra: Một vòng delivery giả lập đầy đủ.
 - DoD: Base platform chứng minh được luồng từ Spec đến Gate.
 - Ưu tiên: P1.

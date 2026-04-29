@@ -9,8 +9,8 @@ Tai lieu nay dung de cau hinh GitHub Branch Protection nham bao ve "Brain Sovere
 - [ ] Require review from Code Owners.
 - [ ] Require status checks to pass before merging.
 - [ ] Require branches to be up to date before merging.
-- [ ] Required check: `verification-gate` from `.github/workflows/verify-gate.yml`.
-- [ ] Do not merge if the GitHub Verification Gate is red, skipped, or missing.
+- [ ] Required check: `verification-gate`.
+- [ ] Required check: `block-illegal-changes`.
 - [ ] Require conversation resolution before merging.
 - [ ] Restrict direct pushes to Brain or Brain Delegate only.
 

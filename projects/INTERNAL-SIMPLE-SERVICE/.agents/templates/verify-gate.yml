@@ -1,0 +1,65 @@
+name: Link Strategy Verification Gate
+
+on:
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  verification-gate:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Global Tools
+        shell: pwsh
+        run: |
+          if (Test-Path "package.json") { npm install -g pnpm; npm install }
+          if (Test-Path "requirements.txt") { pip install -r requirements.txt }
+          if (Test-Path "pytest.ini") { pip install pytest }
+
+      - name: Setup PowerShell
+        shell: pwsh
+        run: |
+          Write-Host "--- LINK STRATEGY REMOTE VERIFICATION GATE ---" -ForegroundColor Cyan
+
+      - name: Execute Verify Gate Script
+        shell: pwsh
+        run: |
+          # Tìm đường dẫn đến script
+          $ScriptPath = "./.agents/skills/ls-skill-engine-ops/scripts/verify-gate.ps1"
+          
+          if (-not (Test-Path $ScriptPath)) {
+            Write-Host "ERROR: verify-gate.ps1 not found in satellite repo." -ForegroundColor Red
+            exit 1
+          }
+
+          # Thực thi script tại root của satellite repo
+          & $ScriptPath -ProjectPath "."
+          
+          # Nếu verify-gate exit code != 0, Action sẽ fail
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "GATE REJECTED: Your code does not meet Link Strategy Phase 1 requirements." -ForegroundColor Red
+            exit 1
+          }
+          
+          Write-Host "GATE PASSED: Phase 1 requirements met." -ForegroundColor Green
+
+      - name: Upload Gate Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gate-report
+          path: GATE_REPORT.md

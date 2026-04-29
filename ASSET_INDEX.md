@@ -44,9 +44,9 @@ Every asset should be tracked with these fields:
 
 | Name | Type | Path | Owner | Status | Purpose | Input | Output | Mandatory Usage | Related Docs |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `master-agent-governance` | Rule | `GEMINI.md` | Brain | Draft | Defines current AI agent behavior and workspace-level execution discipline. | Any AI agent session. | Operating rules for agent behavior. | Required at the start of every AI-assisted session. | `ASSET_INDEX.md` |
+| `master-agent-governance` | Rule | `GEMINI.md` | Brain | Active | Defines current AI agent behavior and workspace-level execution discipline. | Any AI agent session. | Operating rules for agent behavior. | Required at the start of every AI-assisted session. | `ASSET_INDEX.md` |
 | `base-platform-backlog` | Project | `backlog.md` | Brain | Active | Tracks implementation work for Base Platform V1. | Current repo state and governance docs. | Prioritized checklist and status. | Required when choosing next platform task. | `README.md`, `ASSET_INDEX.md` |
-| `workspace-progress-log` | Dataset | `LOGS.md` | Brain | Draft | Captures workspace-level done/block/next handover notes. | End-of-session progress. | Continuity log for the next operator. | Required after meaningful work sessions. | `.agents/templates/LOGS_TEMPLATE.md` |
+| `workspace-progress-log` | Dataset | `03_LOGS.md` | Brain | Active | Captures workspace-level done/block/next handover notes. | End-of-session progress. | Continuity log for the next operator. | Required after meaningful work sessions. | `.agents/templates/03_LOGS_TEMPLATE.md` |
 | `antigravity-technical-spec` | Constitution | `.agents/README.md` | Brain | Active | Official technical specification for Antigravity directory structure, rule formatting, and hierarchy. | Agent configuration or asset creation. | Technical compliance for the production engine. | Required when creating new rules, workflows, or skills. | `backlog.md`, https://antigravity.codes |
 
 
@@ -68,22 +68,22 @@ Every asset should be tracked with these fields:
 | Name | Type | Path | Owner | Status | Purpose | Input | Output | Mandatory Usage | Related Docs |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `ls-workflow-gitpush` | Workflow | `.agents/workflows/ls-workflow-gitpush.md` | Brain | Active | Quy trình bàn giao và nộp bài an toàn (Agent-led Secure Delivery). | Task/module delivery request. | Standard execution sequence. | Mandatory for all delivery work. | N/A |
-| `ls-workflow-new-project` | Workflow | `.agents/workflows/ls-workflow-new-project.md` | Brain | Planned | Step-by-step for setting up a brand new project. | New project request. | Initialized project folder. | Required for project consistency. | `scripts/new-project.ps1` |
-| `ls-workflow-daily-harvesting` | Workflow | `.agents/workflows/ls-workflow-daily-harvesting.md` | Brain | Planned | End-of-day workflow for extracting knowledge, risks, and hardening candidates from logs and commits. | `LOGS.md`, commits, QA logs. | Knowledge pieces and hardening candidates. | Required for Brain daily review once created. | N/A |
+| `ls-workflow-new-project` | Workflow | `.agents/workflows/ls-workflow-new-project.md` | Brain | Planned | Step-by-step for setting up a brand new project. | New project request. | Initialized project folder. | Required for project consistency. | `npm run new-project` |
+| `ls-workflow-daily-harvesting` | Workflow | `.agents/workflows/ls-workflow-daily-harvesting.md` | Brain | Planned | End-of-day workflow for extracting knowledge, risks, and hardening candidates from logs and commits. | `03_LOGS.md`, commits, `02_DECISION_LOGS.md`. | Knowledge pieces and hardening candidates. | Required for Brain daily review once created. | N/A |
 
 ## Template Registry
 
 | Name | Type | Path | Owner | Status | Purpose | Input | Output | Mandatory Usage | Related Docs |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `task-spec-template` | Template | `.agents/templates/01_TASK_SPEC_TEMPLATE.md` | Brain | Active | Provides the base Spec-First structure for task/module handover. | Feature/module objective and context. | `01_TASK_SPEC.md`. | Required before implementation starts. | N/A |
-| `qa-logs-template` | Template | `.agents/templates/02_QA_LOGS_TEMPLATE.md` | Brain | Active | Planned communication-plane template for questions, decisions, owners, and status. | Questions and decisions during delivery. | `02_QA_LOGS.md`. | Required for all project/module work. | N/A |
-| `daily-logs-template` | Template | `.agents/templates/LOGS_TEMPLATE.md` | Brain | Draft | Provides Done/Block/Next daily handover format. Needs commit links, risk, and handover note fields. | Daily or session-end work state. | `LOGS.md`. | Required for all project/module work. | N/A |
+| `decision-logs-template` | Template | `.agents/templates/02_DECISION_LOGS_TEMPLATE.md` | Brain | Active | Decision ledger template for logic alignment and architectural consensus. | Questions and decisions during delivery. | `02_DECISION_LOGS.md`. | Required for all project/module work. | N/A |
+| `progress-logs-template` | Template | `.agents/templates/03_LOGS_TEMPLATE.md` | Brain | Active | Provides Done/Block/Next daily action format. | Daily or session-end work state. | `03_LOGS.md`. | Required for all project/module work. | N/A |
 | `hardening-proposal-template` | Template | `.agents/templates/HARDENING_PROPOSAL_TEMPLATE.md` | Brain | Active | Captures reusable logic candidates and abstraction plan after PR/milestone. | Completed implementation or module. | Hardening proposal for asset extraction. | Required before macro-hardening review. | `backlog.md` |
 | `gate-scorecard-template` | Template | `.agents/templates/GATE_SCORECARD_TEMPLATE.md` | Brain | Active | Standard 100-point delivery scorecard. | Test/lint/docs/security/hardening evidence. | Gate score and payment decision basis. | Required for delivery acceptance. | N/A |
 | `decision-log-template` | Template | `.agents/templates/DECISION_LOG_TEMPLATE.md` | Brain | Planned | Captures architectural decisions and consequences. | Architecture or governance decision. | Decision log entry. | Required for significant architecture changes. | N/A |
 | `security-checklist-template` | Template | `.agents/templates/SECURITY_CHECKLIST_TEMPLATE.md` | Brain | Planned | Security review checklist for handover and gate review. | Module/service implementation. | Security review evidence. | Required before accepting modules that handle data/auth/secrets. | N/A |
 | `pr-template` | Template | `.github/pull_request_template.md` | Brain | Active | Standard GitHub PR template for delivery checkpoints. | Completed task implementation. | PR description with checklist evidence. | Required for all merge requests. | `backlog.md` |
-| `verify-gate-action` | Template | `.agents/templates/verify-gate.yml` | Brain | Active | GitHub Action workflow that runs the mandatory remote verification gate. | PR event on GitHub. | Verified/failed status on PR. | Mandatory for all satellite repositories. | `scripts/verify-gate.ps1` |
+| `verify-gate-action` | Template | `.agents/templates/verify-gate.yml` | Brain | Active | GitHub Action workflow that runs the mandatory remote verification gate. | PR event on GitHub. | Verified/failed status on PR. | Mandatory for all satellite repositories. | `npm run verify-gate` |
 | `branch-protection-checklist` | Template | `.agents/templates/BRANCH_PROTECTION_CHECKLIST.md` | Brain | Active | Guidance for configuring GitHub branch protection to secure the main branch. | GitHub repository settings. | Secure branch configuration. | Required before onboarding Hands. | `backlog.md`, `ls-rule-master-governance` |
 | `codeowners-policy` | Template | `.github/CODEOWNERS` | Brain | Active | Defines repo ownership and mandatory review authority. | Repo configuration. | Automated PR assignment and protection. | Required for monorepo governance. | `GEMINI.md` |
 | `env-example-template` | Template | `.agents/templates/ENV_EXAMPLE_TEMPLATE` | Brain | Planned | Standard environment variable example file. | Service/module config requirements. | `.env.example`. | Required for projects/modules with runtime config. | `.gitignore`, `ls-rule-secret-management` |
@@ -108,21 +108,21 @@ Every asset should be tracked with these fields:
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `ls-tool-mcp-bridge` | Tool | `.agents/tools/ls-tool-mcp-bridge/` | Brain | Planned | Planned bridge between AI context and live system data. | Agent query/context. | Real-time data response. | Required for live data inquiry once implemented. | N/A |
 | `ls-tool-auditor-proxy` | Tool | `.agents/tools/ls-tool-auditor-proxy/` | Brain | Planned | Planned control layer for risky AI/Hands commands. | Proposed command/action. | Allow/block decision and audit record. | Required for Action Lane once implemented. | N/A |
-| `ls-tool-dev-sandbox` | Tool | `.agents/tools/ls-tool-dev-sandbox/` | Brain | Planned | Planned Dockerized isolated execution environment. | Project/module source code. | Safe local runtime. | Required for satellite handover once implemented. | N/A |
+| `ls-tool-dev-sandbox` | Tool | `.agents/tools/ls-tool-dev-sandbox/` | Brain | Planned | Planned dockerized isolated execution environment. | Project/module source code. | Safe local runtime. | Required for satellite handover once implemented. | N/A |
 
 ## Script Registry
 
 | Name | Type | Path | Owner | Status | Purpose | Input | Output | Mandatory Usage | Related Docs |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `scripts-catalog` | Script | `scripts/README.md` | Brain | Active | Planned catalog for platform automation scripts. | Script user or maintainer. | Script usage guidance. | Required before adding automation scripts. | `README.md` |
-| `new-project` | Script | `.agents/skills/ls-skill-engine-ops/scripts/new-project.ps1` | Brain | Active | Generates project workspace skeleton. | `client_id`, `project_name`, `project_type`. | `projects/[CLIENT_ID]-[PROJECT_NAME]/`. | Required for consistent project creation. | `README.md`, `backlog.md` |
-| `new-module` | Script | `.agents/skills/ls-skill-engine-ops/scripts/new-module.ps1` | Brain | Active | Generates module workspace inside a project. | `project_path`, `module_name`, `module_type`. | Module folder with docs/src/tests/logs. | Required for module-based tasking. | N/A |
-| `init-satellite` | Script | `.agents/skills/ls-skill-engine-ops/scripts/init-satellite.ps1` | Brain | Active | Automates GitHub repo creation, remote setup, and initial governance push. | Project path, Repo name. | Production-ready Satellite Repository. | Required for external project onboarding. | `docs/sync-linkage.md` |
-| `verify-gate` | Script | `.agents/skills/ls-skill-engine-ops/scripts/verify-gate.ps1` | Brain | Active | Performs local gate checks and creates pass/fail evidence. | Project or module path. | Gate report. | Required before acceptance. | `gate-scorecard-template` |
-| `push-rules` | Script | `.agents/skills/ls-skill-engine-ops/scripts/push-rules-to-satellite.ps1` | Brain | Active | Pushes governance assets from Master to Satellite. | Project path. | Updated rules in satellite. | Post-governance update. | `docs/sync-linkage.md` |
-| `pull-code` | Script | `.agents/skills/ls-skill-engine-ops/scripts/pull-code-from-satellite.ps1` | Brain | Active | Pulls (harvests) source code from Satellite to Master. | Project path, Remote URL. | Source code integrated in Master. | Post-milestone acceptance. | `docs/sync-linkage.md` |
-| `ls-gitpush` | Script | `.agents/skills/ls-skill-engine-ops/scripts/ls-gitpush.ps1` | Brain | Active | Agent-led delivery: runs local gate, checks compliance, and creates GitHub PR. | Project path, PR Title, PR Body. | Created Pull Request on GitHub. | Mandatory for all Hands submissions. | `.LinkStrategy/01_SOP_LINK_STRATEGY.md` |
-| `register-asset` | Script | `scripts/register-asset.ps1` | Brain | Planned | Helps register new hardened assets in this index. | Asset metadata. | Updated or draft index entry. | Required after hardening once implemented. | `ASSET_INDEX.md` |
+| `ls-engine-cli` | Tool | `.agents/tools/ls-engine/cli.mjs` | Brain | Active | Node.js CLI source of truth for Phase 1 operations. | npm command arguments. | Project/satellite/gate/sync actions. | Required for all platform automation. | `package.json`, `README.md`, `backlog.md` |
+| `new-project` | Script | `npm run new-project` | Brain | Active | Generates project workspace skeleton. | `--client-id`, `--project-name`, `--project-type`. | `projects/[CLIENT_ID]-[PROJECT_NAME]/`. | Required for consistent project creation. | `README.md`, `backlog.md` |
+| `new-module` | Script | `npm run new-module` | Brain | Active | Generates module workspace inside a project. | `--project-path`, `--module-name`. | Module folder with 01/02/03/src/tests. | Required for module-based tasking. | N/A |
+| `init-satellite` | Script | `npm run init-satellite` | Brain | Active | Automates GitHub repo creation, remote setup, initial governance push, and branch protection. | `--project-path`, `--repo-name`. | Production-ready Satellite Repository. | Required for external project onboarding. | `docs/sync-linkage.md` |
+| `verify-gate` | Script | `npm run verify-gate` | Brain | Active | Performs local/CI gate checks and creates pass/fail evidence. | `--project-path`. | `GATE_REPORT.md`. | Required before delivery. | `gate-scorecard-template` |
+| `push-rules` | Script | `npm run push-rules` | Brain | Active | Pushes governance assets and Node engine from Master to Satellite. | `--project-path`, optional `--dry-run`. | Updated rules/tooling in satellite. | Post-governance update. | `docs/sync-linkage.md` |
+| `pull-code` | Script | `npm run pull-code` | Brain | Active | Pulls (harvests) source code from Satellite to Master. | `--project-path`, optional `--remote-url`, `--dry-run`. | Source code integrated in Master. | Post-milestone acceptance. | `docs/sync-linkage.md` |
+| `ls-gitpush` | Script | `npm run ls-gitpush` | Brain | Active | Agent-led delivery: runs gate, stages allowed delivery files, pushes branch, and creates GitHub PR. | `--project-path`, `--title`, optional `--body`. | Created Pull Request on GitHub. | Mandatory for all Hands submissions. | `.LinkStrategy/01_SOP_LINK_STRATEGY.md` |
+| `register-asset` | Script | `npm run register-asset` | Brain | Planned | Helps register new hardened assets in this index. | Asset metadata. | Updated or draft index entry. | Required after hardening once implemented. | `ASSET_INDEX.md` |
 
 ## Component Registry
 
@@ -142,13 +142,14 @@ Every asset should be tracked with these fields:
 
 | Name | Type | Path | Owner | Status | Purpose | Input | Output | Mandatory Usage | Related Docs |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `root-blueprint-task` | Project | `docs/blueprints/01_TASK_SPEC.md` | Brain | Draft | Existing task spec for pushing the production engine to GitHub. | Repository setup objective. | Completed infrastructure task spec. | Historical reference only. | `LOGS.md` |
 | `demo-base-platform` | Project | `projects/DEMO-BASE-PLATFORM/` | Brain | Active | Reference project proving project factory, templates, logs, and gate verification. | Project factory scripts and templates. | Demo project workspace. | Required for Base Platform V1 validation. | `backlog.md` |
+| `INTERNAL-SIMPLE-SERVICE` | Project | `projects/INTERNAL-SIMPLE-SERVICE/` | Brain | Active | Automatically generated hardened satellite project. | N/A | Project structure | Mandatory | N/A |
 
 ## Training Registry
 
 | Name | Type | Path | Owner | Status | Purpose | Input | Output | Mandatory Usage | Related Docs |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `auditor-training` | Dataset | `.LinkStrategy/Training/auditor/` | Brain | Active | Auditor Capability Training curriculum and handbook. | Candidate profile. | Trained Auditor. | Required for Auditor onboarding. | N/A |
 
 ---
 

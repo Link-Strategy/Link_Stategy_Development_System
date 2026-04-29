@@ -1,0 +1,18 @@
+{
+  "name": "link-strategy-development-system",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "new-project": "node .agents/tools/ls-engine/cli.mjs new-project",
+    "new-module": "node .agents/tools/ls-engine/cli.mjs new-module",
+    "verify-gate": "node .agents/tools/ls-engine/cli.mjs verify-gate",
+    "ls-gitpush": "node .agents/tools/ls-engine/cli.mjs ls-gitpush",
+    "push-rules": "node .agents/tools/ls-engine/cli.mjs push-rules-to-satellite",
+    "pull-code": "node .agents/tools/ls-engine/cli.mjs pull-code-from-satellite",
+    "init-satellite": "node .agents/tools/ls-engine/cli.mjs init-satellite"
+  }
+}

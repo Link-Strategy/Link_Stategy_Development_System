@@ -17,11 +17,11 @@ Chào Hands, đây là quy trình **BẮT BUỘC TỐI THƯỢNG**. Mọi hành 
 - Nếu không vượt qua, Agent phải Reject và yêu cầu Hands sửa đổi ngay tại Local.
 *   **Hard-coded Secrets:** Tuyệt đối không có API Keys, Passwords trong code.
 *   **Dry Principle:** Phát hiện mã nguồn lặp lại > 3 lần.
-*   **Rule Integrity:** Kiểm tra SHA256 integrity của bộ luật. Mọi sai lệch phải được báo cáo.
+*   **Rule Integrity:** Kiểm tra MD5 của bộ luật. Mọi sai lệch phải được báo cáo.
 *   **Naming Convention:** Check chuẩn CamelCase cho biến và PascalCase cho class.
 
 ## BƯỚC 2: CẬP NHẬT TIẾN ĐỘ TỰ ĐỘNG (PROGRESS UPDATE)
-Agent tự động cập nhật nhật ký vào `03_LOGS.md` dự án:
+Agent tự động cập nhật nhật ký vào `LOGS.md` dự án:
 *   Đánh dấu `[x]` các task đã hoàn thành.
 *   Ghi chú các điểm nghẽn (Blockers) nếu có.
 
@@ -30,8 +30,8 @@ Agent tự động cập nhật nhật ký vào `03_LOGS.md` dự án:
 
 ## BƯỚC 4: THỰC THI NỘP BÀI (TURBO DELIVERY)
 // turbo
-*   **Lệnh:** `npm run ls-gitpush -- --title "feat: delivery"`
-*   **Chốt chặn:** Nếu `npm run verify-gate` thất bại hoặc `GATE_REPORT.md` không khớp SHA256 integrity, GitHub Action sẽ **REJECT** tự động.
+*   **Lệnh:** `.\.agents\skills\ls-skill-engine-ops\scripts\ls-gitpush.ps1`
+*   **Chốt chặn:** Nếu không có `AGENT_REVIEW_REPORT.md`, GitHub Action sẽ **REJECT** tự động.
 
 ---
 **Status:** ACTIVE HARDENED WORKFLOW
@@ -40,4 +40,3 @@ Agent tự động cập nhật nhật ký vào `03_LOGS.md` dự án:
 ---
 **Status:** **ACTIVE WORKFLOW**
 **Mandatory for:** All Satellite Operations
-

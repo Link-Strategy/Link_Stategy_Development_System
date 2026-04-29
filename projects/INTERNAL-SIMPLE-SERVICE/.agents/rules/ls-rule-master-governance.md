@@ -55,14 +55,13 @@ Mỗi khi bắt đầu phiên làm việc mới, Agent phải thực hiện:
 ## 7. NO-MANUAL-PUSH POLICY (CẤM PUSH THỦ CÔNG)
 
 - **Nguyên tắc:** Hands không được phép sử dụng `git push` thủ công để đẩy code trực tiếp lên nhánh chính hoặc tạo PR mà không thông qua sự kiểm soát của Agent.
-- **Agent-Led Review:** Mọi đợt nộp bài (Delivery) phải được thực hiện thông qua script `npm run ls-gitpush`. Agent sẽ thực hiện một "Internal Review" cực kỳ khắt khe:
+- **Agent-Led Review:** Mọi đợt nộp bài (Delivery) phải được thực hiện thông qua script `ls-gitpush.ps1`. Agent sẽ thực hiện một "Internal Review" cực kỳ khắt khe:
     *   **Anti-pattern Detection:** Kiểm tra các lỗi thiết kế, mã nguồn lặp lại hoặc vi phạm Clean Code.
     *   **Strict Testing:** Đảm bảo toàn bộ Unit Test và Integration Test mô tả trong Spec đã được thực thi và Pass.
-    *   **Security & Rules:** SHA256 integrity check cho luật pháp và rà quét Secret.
+    *   **Security & Rules:** MD5 Hash check cho luật pháp và rà quét Secret.
     *   **Documentation:** Cập nhật nhật ký bàn giao khẩn cấp trong `03_LOGS.md`.
 - **Enforcement:** Mọi PR không chứa bằng chứng (Artifact) từ Agent-Led Review sẽ bị Brain REJECT ngay lập tức mà không cần xem xét code.
 
 ---
 **Status:** ACTIVE MASTER RULE
 **Priority:** LEVEL 1
-

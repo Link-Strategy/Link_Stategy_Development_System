@@ -164,22 +164,36 @@ if (-not (Test-Path -LiteralPath $ProjectRulesFolder)) {
     }
 }
 
-$MasterGeminiPath = Join-Path $MasterRoot "GEMINI.md"
+$MasterScriptsFolder = Join-Path $MasterRoot ".agents\skills\ls-skill-engine-ops\scripts"
+$ProjectScriptsFolder = Join-Path $ResolvedProjectPath ".agents\scripts"
+
+if (Test-Path -LiteralPath $ProjectScriptsFolder) {
+    $ScriptsToProtect = @("verify-gate.ps1", "ls-gitpush.ps1")
+    foreach ($scriptName in $ScriptsToProtect) {
+        $sourceScript = Join-Path $MasterScriptsFolder $scriptName
+        $targetScript = Join-Path $ProjectScriptsFolder $scriptName
+        if (Test-Path -LiteralPath $sourceScript) {
+            Test-FileHashMatch -SourcePath $sourceScript -TargetPath $targetScript -Label "Script $scriptName"
+        }
+    }
+}
+
+$MasterGeminiTemplate = Join-Path $MasterRoot ".agents\templates\GEMINI_SATELLITE_TEMPLATE.md"
 $ProjectGeminiPath = Join-Path $ResolvedProjectPath "GEMINI.md"
-if (Test-Path -LiteralPath $MasterGeminiPath) {
-    Test-FileHashMatch -SourcePath $MasterGeminiPath -TargetPath $ProjectGeminiPath -Label "GEMINI.md"
+if (Test-Path -LiteralPath $MasterGeminiTemplate) {
+    Test-FileHashMatch -SourcePath $MasterGeminiTemplate -TargetPath $ProjectGeminiPath -Label "GEMINI.md"
 }
 
 Write-Host "`n[2/5] Required Project Structure" -ForegroundColor Cyan
 Test-RequiredPath -Label "README.md" -Path (Join-Path $ResolvedProjectPath "README.md") | Out-Null
-Test-RequiredPath -Label "LOGS.md" -Path (Join-Path $ResolvedProjectPath "LOGS.md") | Out-Null
-Test-RequiredPath -Label "02_QA_LOGS.md" -Path (Join-Path $ResolvedProjectPath "02_QA_LOGS.md") | Out-Null
-Test-RequiredPath -Label "docs/blueprints/01_TASK_SPEC.md" -Path (Join-Path $ResolvedProjectPath "docs\blueprints\01_TASK_SPEC.md") | Out-Null
+Test-RequiredPath -Label "03_LOGS.md" -Path (Join-Path $ResolvedProjectPath "03_LOGS.md") | Out-Null
+Test-RequiredPath -Label "02_DECISION_LOGS.md" -Path (Join-Path $ResolvedProjectPath "02_DECISION_LOGS.md") | Out-Null
+Test-RequiredPath -Label "01_TASK_SPEC.md" -Path (Join-Path $ResolvedProjectPath "01_TASK_SPEC.md") | Out-Null
 Test-RequiredPath -Label "src/" -Path (Join-Path $ResolvedProjectPath "src") | Out-Null
 Test-RequiredPath -Label "tests/" -Path (Join-Path $ResolvedProjectPath "tests") | Out-Null
 
 Write-Host "`n[3/5] Spec-First Compliance" -ForegroundColor Cyan
-$SpecPath = Join-Path $ResolvedProjectPath "docs\blueprints\01_TASK_SPEC.md"
+$SpecPath = Join-Path $ResolvedProjectPath "01_TASK_SPEC.md"
 if (Test-Path -LiteralPath $SpecPath) {
     $specContent = Get-Content -LiteralPath $SpecPath -Raw
     $requiredSpecMarkers = @(

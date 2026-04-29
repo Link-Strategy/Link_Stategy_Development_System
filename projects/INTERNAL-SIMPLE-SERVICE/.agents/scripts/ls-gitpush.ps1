@@ -30,7 +30,14 @@ if (-not (Test-Path $VerifyScript)) {
 # Thực thi verify-gate với project path rõ ràng
 $ResolvedProjectPath = (Resolve-Path -LiteralPath $ProjectPath).Path
 & $VerifyScript -ProjectPath $ResolvedProjectPath
-# Đã loại bỏ việc check $LASTEXITCODE >= 80 theo yêu cầu của Brain.
+
+# CƯỠNG CHẾ KHÓA: Nếu Gate thất bại (Exit Code != 0), dừng ngay lập tức.
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "`n[ERROR] VERIFICATION GATE FAILED!" -ForegroundColor Red
+    Write-Host "Giao hàng bị từ chối. Bạn phải sửa toàn bộ các lỗi trên trước khi nộp bài." -ForegroundColor Red
+    exit 1
+}
+Write-Host "Verification Gate Passed. Proceeding to Agent Review..." -ForegroundColor Green
 
 # 2. Agent-Led Internal Review (Khắt khe)
 Write-Host "`n[2/4] Agent is performing Internal Review..." -ForegroundColor Yellow
@@ -60,9 +67,9 @@ $ReviewContent = @"
 - [x] Edge Cases: Covered
 
 ## 3. 📝 DOCUMENTATION COMPLIANCE
-- [x] LOGS.md: Updated (Done/Block/Next)
+- [x] 03_LOGS.md: Updated (Done/Block/Next)
 - [x] 01_TASK_SPEC.md: Full compliance
-- [x] 02_QA_LOGS.md: All decisions closed
+- [x] 02_DECISION_LOGS.md: All decisions closed
 - [x] README.md: Operational
 
 ## 🔐 GOVERNANCE VERDICT: [APPROVED FOR PR]
@@ -73,15 +80,15 @@ Write-Host "Agent Review Complete. Report generated at $ReviewReportPath" -Foreg
 
 # 3. Cập nhật tiến độ tự động (Progress Update)
 Write-Host "`n[3/4] Updating Progress in LOGS.md..." -ForegroundColor Yellow
-$LogsPath = Join-Path $ResolvedProjectPath "LOGS.md"
+$LogsPath = Join-Path $ResolvedProjectPath "03_LOGS.md"
 if (Test-Path $LogsPath) {
     $LogsContent = Get-Content $LogsPath
     # Logic: Tìm các dòng có [ ] và đánh dấu [x] nếu Agent xác nhận task đã xong
     $UpdatedLogs = $LogsContent -replace "\[\s\]", "[x]"
     $UpdatedLogs | Out-File $LogsPath -Encoding utf8
-    Write-Host "LOGS.md updated: Progress marked as completed." -ForegroundColor Green
+    Write-Host "03_LOGS.md updated: Progress marked as completed." -ForegroundColor Green
 } else {
-    Write-Host "WARNING: LOGS.md not found. Progress update skipped." -ForegroundColor Yellow
+    Write-Host "WARNING: 03_LOGS.md not found. Progress update skipped." -ForegroundColor Yellow
 }
 
 # 4. Tạo Pull Request

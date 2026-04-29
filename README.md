@@ -24,7 +24,7 @@ The Master Monorepo protects Link Strategy's system sovereignty:
 | `scripts/` | Common infrastructure and workflow automation scripts for project creation, gate verification, and asset registration. |
 | `ASSET_INDEX.md` | Registry and discovery entry point for reusable rules, skills, tools, templates, and shared assets. |
 | `GEMINI.md` | Active execution governance for AI agents operating in this workspace. |
-| `LOGS.md` | Workspace-level daily progress and handover log. |
+| `03_LOGS.md` | Workspace-level daily progress and handover log. |
 | `backlog.md` | Implementation backlog for building the Base Platform. |
 
 ## Operating Documents
@@ -43,7 +43,7 @@ Read these files before changing platform structure or delivery rules:
 | Plane | Purpose | Primary Locations |
 | --- | --- | --- |
 | Control Plane | Defines rules, workflows, doctrine, and acceptance authority. | `.LinkStrategy/`, `.agents/rules/`, `.agents/workflows/`, `GEMINI.md` |
-| Communication Plane | Captures specs, QA decisions, handover notes, and daily progress. | `docs/`, `docs/blueprints/`, `LOGS.md`, project/module logs |
+| Communication Plane | Captures specs, decisions, handover notes, and daily progress. | `01_TASK_SPEC.md`, `02_DECISION_LOGS.md`, `03_LOGS.md`, project/module logs |
 | Execution Plane | Provides reusable skills, tools, scripts, project workspaces, and shared components. | `.agents/skills/`, `.agents/tools/`, `scripts/`, `projects/`, `components/` |
 | Audit Plane | Preserves review evidence, gate results, decision logs, and future ledger records. | `docs/audit/`, `.agents/datasets/`, scorecards, gate reports |
 
@@ -59,7 +59,7 @@ The repository follows the Link Strategy hardened loop:
 
 ## Quickstart
 
-Current Base Platform automation is still being implemented. Until `scripts/new-project.ps1` and `scripts/new-module.ps1` are available, create work manually with the same target structure.
+Base Platform automation is available through the Node.js engine commands `npm run new-project`, `npm run new-module`, `npm run verify-gate`, `npm run push-rules`, `npm run pull-code`, `npm run init-satellite`, and `npm run ls-gitpush`.
 
 ### Create A Project Workspace
 
@@ -68,10 +68,10 @@ projects/[CLIENT_ID]-[PROJECT_NAME]/
 ├── docs/
 │   └── blueprints/
 │       ├── 01_TASK_SPEC.md
-│       └── 02_QA_LOGS.md
+│       └── 02_DECISION_LOGS.md
 ├── src/
 ├── tests/
-├── LOGS.md
+├── 03_LOGS.md
 └── README.md
 ```
 
@@ -79,8 +79,8 @@ Minimum setup steps:
 
 1. Create the project folder under `projects/`.
 2. Copy `.agents/templates/01_TASK_SPEC_TEMPLATE.md` to `docs/blueprints/01_TASK_SPEC.md`.
-3. Copy `.agents/templates/02_QA_LOGS_TEMPLATE.md` to `docs/blueprints/02_QA_LOGS.md`.
-4. Copy `.agents/templates/LOGS_TEMPLATE.md` to `LOGS.md`.
+3. Copy `.agents/templates/02_DECISION_LOGS_TEMPLATE.md` to `02_DECISION_LOGS.md`.
+4. Copy `.agents/templates/03_LOGS_TEMPLATE.md` to `03_LOGS.md`.
 5. Fill the task spec before writing implementation code.
 
 ### Create A Module Workspace
@@ -91,7 +91,7 @@ projects/[CLIENT_ID]-[PROJECT_NAME]/modules/[MODULE_NAME]/
 │   └── blueprints/
 ├── src/
 ├── tests/
-├── LOGS.md
+├── 03_LOGS.md
 └── README.md
 ```
 
@@ -100,3 +100,4 @@ Each module must be scoped small enough for independent implementation, review, 
 ## Current Platform Status
 
 This repo currently contains the base folder structure and initial governance documents. The platform is still being hardened through `backlog.md`; scripts, rules, workflows, scorecards, and project factory automation are being completed incrementally.
+

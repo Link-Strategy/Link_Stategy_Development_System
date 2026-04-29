@@ -18,8 +18,8 @@
 ## VERIFICATION AND DOD
 - [ ] Unit Tests passed (Attach evidence below)
 - [ ] Clean Code Checklist followed
-- [ ] `npm run verify-gate` passed
-- [ ] `03_LOGS.md` updated with this PR session
+- [ ] `scripts/verify-gate.ps1` passed
+- [ ] `LOGS.md` updated with this PR session
 
 ## ASSET HARDENING
 - [ ] Hardening Proposal included (if reusable logic was found)
@@ -28,9 +28,8 @@
 ## EVIDENCE
 *Screenshots, logs, or video links.*
 ```text
-[Insert output of npm run verify-gate here]
+[Insert output of verify-gate.ps1 here]
 ```
 
 ---
 *By submitting this PR, I confirm that all Link Strategy Master Constitution rules have been followed.*
-

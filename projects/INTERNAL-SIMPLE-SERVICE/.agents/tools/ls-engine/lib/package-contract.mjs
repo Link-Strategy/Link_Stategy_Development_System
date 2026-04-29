@@ -1,7 +1,8 @@
+import path from "node:path";
 import { brainOnlyPackageScripts, satellitePackageScripts } from "./constants.mjs";
 import { exists, readJson, writeText } from "./fs-utils.mjs";
 
-export function validatePackageContract(projectPath, pass, fail, path) {
+export function validatePackageContract(projectPath, pass, fail) {
   const packageJson = path.join(projectPath, "package.json");
   if (!exists(packageJson)) return;
   let pkg;

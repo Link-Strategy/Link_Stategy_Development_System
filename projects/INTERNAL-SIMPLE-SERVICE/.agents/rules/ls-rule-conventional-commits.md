@@ -29,7 +29,7 @@ Mẫu chuẩn: `<type>(<scope>): <description>`
 ## 3. ENFORCEMENT (ÉP BUỘC)
 
 - Brain sẽ kiểm tra lịch sử commit trước khi chấm điểm Gate.
-- Commit history rác sẽ bị trừ điểm trong mục **Clean Code (20đ)** của Scorecard.
+- Commit history rác sẽ bị Brain đánh dấu rủi ro trong review; scorecard 100 điểm chỉ áp dụng ở Brain Acceptance/Phase 2+.
 
 ---
 **Status:** ACTIVE OPERATIONAL RULE

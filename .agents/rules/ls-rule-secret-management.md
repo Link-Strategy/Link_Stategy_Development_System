@@ -1,33 +1,41 @@
 ---
 trigger: always_on
-description: "Chính sách quản lý bí mật và ngăn chặn rò rỉ thông tin nhạy cảm của Link Strategy."
+description: Secret and dependency safety policy for Link Strategy Satellite work.
 ---
 
 # LS-RULE-SECRET-MANAGEMENT
 
-Chào Hands, đây là bộ quy tắc nghiêm ngặt nhất để bảo vệ tài sản số của Link Strategy và khách hàng. Mọi vi phạm quy tắc này sẽ dẫn đến việc đình chỉ task ngay lập tức mà không cần báo trước.
+Quy tắc này bảo vệ secret, credential và dependency surface trong Satellite.
 
-## 1. CẤM COMMIT SECRET (NO SECRETS IN GIT)
+## 1. No Secrets In Git
 
-- **Tuyệt đối không:** Không bao giờ được commit các giá trị bí mật (API Keys, Passwords, Database URIs, Private Keys) vào Git repository.
-- **Phát hiện:** Nếu phát hiện secret đã lỡ commit, phải thực hiện quy trình "Nuke history" (Sử dụng BFG hoặc git filter-repo) và Revoke key đó ngay lập tức.
+- Không commit API key, password, database URI, token, private key, certificate thật.
+- Không commit `.env`, `.env.local`, `.env.production`, `.pem`, `.p12`, `.pfx`, `.key`.
+- `.env.example` chỉ chứa key name và dummy/empty value.
+- Nếu phát hiện secret đã lộ, phải xóa khỏi code, revoke key và ghi sự cố vào `03_LOGS.md`.
 
-## 2. GIAO THỨC BIẾN MÔI TRƯỜNG (.ENV PROTOCOL)
+## 2. Environment Isolation
 
-- **.gitignore:** File `.env` và các biến thể chứa secret thực tế bắt buộc phải nằm trong `.gitignore`.
-- **.env.example:** Chỉ được phép commit file `.env.example` chứa danh sách các khóa (Keys) nhưng giá trị (Values) phải để rỗng hoặc là dữ liệu giả (Dummy data).
-- **Local Development:** Mỗi freelancer phải tự tạo file `.env` cá nhân từ `.env.example`.
+- Hands/Freelancer không có production access.
+- Dùng mock, sandbox hoặc dummy config trong local development.
+- Không đưa production credential vào test fixture.
 
-## 3. PHÂN TÁCH MÔI TRƯỜNG (ENVIRONMENT ISOLATION)
+## 3. Node Package / Dependency Policy
 
-- **Production Access:** Freelancer (Hands) không bao giờ được cấp quyền truy cập trực tiếp vào Production Environment.
-- **Mock First:** Khuyến khích sử dụng Mock Server hoặc Sandbox database thay cho database thực tế trong giai đoạn phát triển.
+Hands Agent được thêm dependency khi cần cho implementation, nhưng phải tuân thủ:
 
-## 4. QUY TRÌNH GATE REVIEW
+- Không xóa hoặc đổi `verify-gate`, `ls-gitpush` trong `package.json`.
+- Không thêm Brain-only scripts vào Satellite.
+- Không thêm lifecycle scripts nguy hiểm như `preinstall`, `install`, `postinstall`, `prepare` nếu không được Spec/Brain cho phép.
+- Không thêm dependency không rõ mục đích; nếu dependency ảnh hưởng kiến trúc hoặc security, ghi lý do vào `02_DECISION_LOGS.md`.
+- Lockfile được phép commit nếu nó phản ánh dependency hợp lệ của project.
 
-- Brain sẽ chạy công cụ quét secret (như `trufflehog` hoặc `gitleaks`) trước khi merge bất kỳ PR nào.
-- Mọi PR chứa file `.env` sẽ bị **REJECT tự động**.
+## 4. Phase 1 Gate Review
+
+Phase 1 gate có secret scan cơ bản. Nếu fail, Hands Agent phải sửa trong phạm vi project files; không sửa gate để né scan.
+
+Full SAST/dependency scan thuộc Phase 2+ hoặc Brain review, trừ khi Spec yêu cầu rõ.
 
 ---
-**Status:** ACTIVE SECURITY RULE
-**Priority:** LEVEL 1 (CRITICAL)
+**Status:** ACTIVE SECURITY RULE  
+**Priority:** LEVEL 1

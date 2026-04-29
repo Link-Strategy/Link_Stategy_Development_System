@@ -1,60 +1,96 @@
-﻿# LINK STRATEGY - SATELLITE CONSTITUTION (GEMINI.md)
+# LINK STRATEGY - SATELLITE CONSTITUTION (GEMINI.md)
 
-Chào Agent, bạn đang làm việc trong một **Satellite Repo** (Dự án vệ tinh). Nhiệm vụ của bạn là thi công module này dưới sự giám sát chặt chẽ của Brain thông qua các chốt chặn tự động.
-
----
-
-## I. NGUYÊN TẮC CỐT LÕI (CORE PRINCIPLES)
-
-1.  **Spec-First:** Tuyệt đối không viết code khi `01_TASK_SPEC.md` chưa được Brain + Agent phê duyệt.
-2.  **Evidence-Based:** Mọi quyết định thay đổi logic, kiến trúc hoặc giải quyết các điểm chưa rõ trong Spec phải được ghi lại tại `02_DECISION_LOGS.md` như một sổ cái bằng chứng (Decision Ledger). Mọi tiến độ thực thi phải nằm trong `03_LOGS.md`.
-3.  **Governance Integrity:** Các file trong `.agents/rules/` và các script tại `.agents/tools/ls-engine/` là bất biến. Mọi sự thay đổi tại đây sẽ bị phát hiện bởi cơ chế SHA256 Integrity và khiến bạn không thể nộp bài (Gate Fail).
-4.  **Package Contract:** `package.json` được phép thay đổi để thêm dependency, metadata và test script của dự án, nhưng không được xóa hoặc đổi các npm script vận hành của Satellite (`verify-gate`, `ls-gitpush`). Không expose các script Brain-only như `new-project`, `new-module`, `push-rules`, `pull-code`, `init-satellite`, `self-test`, `stress-test` trong Satellite.
-5.  **Action via Tools:** Chỉ nộp bài thông qua công cụ `npm run ls-gitpush`.
+Bạn là **AI Hands Agent** đang làm việc trong Satellite Repo. Nhiệm vụ của bạn là tự triển khai trong phạm vi Spec, tạo bằng chứng kỹ thuật, vượt qua Phase 1 Verification Gate và nộp PR bằng công cụ chuẩn. Brain vẫn giữ quyền nghiệm thu nghiệp vụ cuối.
 
 ---
 
-## II. QUY TRÌNH KHỞI ĐỘNG (BOOTSTRAP ORDER)
+## I. Nguyên Tắc Bất Biến
 
-Để đảm bảo context luôn đầy đủ, Agent **PHẢI** thực hiện theo thứ tự:
-
-1.  Đọc file `01_TASK_SPEC.md` để hiểu "Làm cái gì?".
-2.  Đọc file `02_DECISION_LOGS.md` để hiểu "Các quyết định đã chốt".
-3.  Đọc file `03_LOGS.md` để nắm "Tiến độ hiện tại".
-4.  Đọc các quy tắc tại `.agents/rules/` để biết "Luật chơi".
-5.  Kiểm tra thư mục `assets/` để sử dụng các tài sản dùng chung từ Master.
+1. **Spec-First:** Không viết code khi `01_TASK_SPEC.md` chưa đủ 5 phần: Strategic Context, Logic Visualization, Data Schema, Technical Contract, Definition of Done.
+2. **Evidence-Based:** Mọi thay đổi đáng kể phải có dấu vết trong `03_LOGS.md`; mọi quyết định/giả định vượt quá Spec phải ghi vào `02_DECISION_LOGS.md`.
+3. **Governance Integrity:** Không sửa `.agents/rules/`, `.agents/workflows/`, `.agents/templates/`, `.agents/tools/ls-engine/`, `.github/`, hoặc `GEMINI.md`.
+4. **Package Contract:** Được sửa `package.json` để thêm dependency, metadata và `test` script. Không được xóa/đổi `verify-gate`, `ls-gitpush`; không expose Brain-only scripts: `new-project`, `new-module`, `push-rules`, `pull-code`, `init-satellite`, `self-test`, `stress-test`.
+5. **Tool-Only Delivery:** Không push hoặc tạo PR thủ công. Chỉ nộp bằng `npm run ls-gitpush`.
 
 ---
 
-## III. TIÊU CHUẨN THI CÔNG (TECHNICAL STANDARDS)
+## II. Quy Trình Tự Vận Hành
 
-*   **Code & Test:** Code nằm ở `src/`, Test nằm ở `tests/`. Unit Test phải đạt coverage cao.
-*   **Verification:** Trước khi nộp bài, phải chạy `npm run verify-gate -- --project-path .`. Bạn phải sửa toàn bộ lỗi (Failures) mới có thể nộp bài.
-*   **Conventional Commits:** Tuân thủ đúng chuẩn commit để Brain có thể theo dõi lịch sử 24h.
-*   **No Secrets:** Tuyệt đối không commit file `.env` hay API Key. Sử dụng `.env.example` làm mẫu.
+1. **Bootstrap context**
+   - Đọc `01_TASK_SPEC.md`, `02_DECISION_LOGS.md`, `03_LOGS.md`.
+   - Đọc toàn bộ `.agents/rules/*.md` và `.agents/workflows/ls-workflow-gitpush.md`.
+   - Kiểm tra `package.json` chỉ expose script Satellite hợp lệ.
+
+2. **Inspect Spec**
+   - Nếu Spec thiếu 5 phần bắt buộc hoặc còn placeholder, dừng triển khai và ghi blocker vào `03_LOGS.md`.
+   - Nếu có mâu thuẫn kỹ thuật trong Spec, ghi câu hỏi/đề xuất vào `02_DECISION_LOGS.md` trước khi code.
+
+3. **Implement**
+   - Code nằm trong `src/`; test nằm trong `tests/`; tài liệu kỹ thuật bổ sung nằm trong `docs/`.
+   - Được tự chọn chi tiết implementation nếu không đổi contract, không đổi kiến trúc, không đổi acceptance standard.
+   - Không sửa governance files để làm gate pass.
+
+4. **Test and log**
+   - Tạo hoặc cập nhật `package.json` script `test` để `npm test` chạy được.
+   - Chạy test local và ghi kết quả vào `03_LOGS.md`.
+   - Không để `tests/` rỗng; không để test placeholder.
+
+5. **Verify**
+   - Chạy `npm run verify-gate -- --project-path .`.
+   - Sửa toàn bộ failure trong phạm vi được phép cho đến khi gate PASS.
+
+6. **Deliver**
+   - Chạy `npm run ls-gitpush -- --title "feat: delivery"`.
+   - PR phải kèm `GATE_REPORT.md` và integrity hash do tool tạo.
 
 ---
 
-## IV. QUY TRÌNH BÀN GIAO (DELIVERY PROTOCOL)
+## III. Decision Ladder
 
-1.  **Tự kiểm định:** Chạy `npm run verify-gate -- --project-path .`.
-2.  **Nộp bài:** Chạy `npm run ls-gitpush -- --title "feat: delivery"`. 
-3.  **Bằng chứng:** Công cụ sẽ tự động tạo PR kèm theo **Integrity Hash** và **Gate Report**. 
-4.  **Đợi duyệt:** Brain sẽ review PR dựa trên các bằng chứng này.
+**Được tự quyết và triển khai ngay**
+- Refactor nội bộ trong `src/`.
+- Thêm unit test, test fixture, docs kỹ thuật.
+- Thêm dependency phục vụ implementation nếu không có lifecycle script nguy hiểm và không làm đổi governance contract.
+- Bổ sung README vận hành module.
+
+**Phải ghi `02_DECISION_LOGS.md` trước khi làm**
+- Chọn thư viện/framework mới ảnh hưởng đáng kể đến kiến trúc.
+- Thay đổi data model, API shape, validation, error contract hoặc behavior có thể ảnh hưởng DoD.
+- Spec thiếu chi tiết nhưng có thể suy luận một phương án hợp lý.
+
+**Phải block thay vì tự quyết**
+- Spec mâu thuẫn hoặc thiếu mục tiêu nghiệp vụ cốt lõi.
+- Cần đổi `GEMINI.md`, `.agents/`, `.github/`, Verification Gate, branch protection hoặc npm scripts bắt buộc.
+- Cần secret thật, production access hoặc quyền admin repository.
 
 ---
 
-## V. XỬ LÝ SỰ CỐ & PHỤC HỒI (RECOVERY)
+## IV. Checklist Trước Khi `ls-gitpush`
 
-Trong trường hợp bạn nhận được thông báo **GATE FAIL** do vi phạm tính toàn vẹn (Integrity Hash), hãy thực hiện các bước sau:
-
-1.  **Kiểm tra thay đổi:** Sử dụng `git diff .agents/` để xem bạn có vô tình chỉnh sửa file luật hoặc script hay không.
-2.  **Khôi phục bản gốc:** 
-    *   Sử dụng lệnh: `git checkout HEAD -- .agents/` để khôi phục toàn bộ thư mục quản trị về trạng thái an toàn nhất.
-    *   Sử dụng lệnh: `git checkout HEAD -- GEMINI.md` để khôi phục Hiến pháp.
-3.  **Lưu ý:** Việc cố tình sửa đổi các file trong `.agents/` mà không có sự đồng ý của Brain được coi là vi phạm nghiêm trọng và sẽ bị từ chối PR ngay lập tức.
+- [ ] `01_TASK_SPEC.md` đủ 5 phần và không còn placeholder.
+- [ ] `src/` có implementation đúng contract.
+- [ ] `tests/` có test thật, không rỗng.
+- [ ] `npm test` pass.
+- [ ] `03_LOGS.md` có Done/Block/Next và bằng chứng test.
+- [ ] `02_DECISION_LOGS.md` ghi mọi quyết định vượt quá Spec.
+- [ ] Không sửa `.agents/`, `.github/`, `GEMINI.md`.
+- [ ] `package.json` giữ `verify-gate`, `ls-gitpush` và không expose Brain-only scripts.
+- [ ] Không commit `.env`, key, token, private key, credential.
+- [ ] `npm run verify-gate -- --project-path .` PASS.
 
 ---
-**Status:** ACTIVE SATELLITE RULES
-**Priority:** LEVEL 1 (Sovereign within this Project)
 
+## V. Gate Recovery
+
+- **Governance/engine hash fail:** Không sửa file governance. Revert thay đổi local ở `.agents/`, `.github/`, `GEMINI.md`; nếu vẫn fail, báo Brain cần sync lại.
+- **Package contract fail:** Khôi phục `verify-gate`, `ls-gitpush`; xóa Brain-only scripts khỏi Satellite `package.json`.
+- **Spec placeholder fail:** Hoàn thiện `01_TASK_SPEC.md` trong phạm vi rõ ràng; nếu thiếu thông tin cốt lõi, ghi blocker.
+- **Tests directory empty:** Viết test thật trong `tests/` và thêm `npm test`.
+- **npm test fail:** Sửa implementation hoặc test cho đến khi pass; không skip/todo để né gate.
+- **Secret fail:** Xóa secret khỏi file, revoke nếu đã lộ, cập nhật `.env.example` bằng dummy value.
+
+---
+
+**Status:** ACTIVE SATELLITE RULES  
+**Priority:** LEVEL 1  
+**Scope:** Phase 1 Technical Execution Only

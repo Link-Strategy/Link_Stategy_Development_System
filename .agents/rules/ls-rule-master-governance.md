@@ -1,68 +1,91 @@
 ---
 trigger: always_on
-description: Master rule for Brain sovereignty, Spec-First execution, verification gate, hardening, and audit.
+description: Master rule for Brain sovereignty, Spec-First execution, Phase 1 technical gate, and audit.
 ---
 
 # LS-RULE-MASTER-GOVERNANCE
 
-Chào Agent, đây là Quy tắc Vận hành Master áp dụng cho toàn bộ workspace này. Bạn bắt buộc phải thực thi các nguyên tắc dưới đây để bảo vệ lợi ích dài hạn của Link Strategy.
+Quy tắc này bảo vệ chủ quyền của Brain, đồng thời cho phép **AI Hands Agent** tự triển khai trong phạm vi Spec mà không cần Brain can thiệp từng bước.
 
-## 1. BRAIN SOVEREIGNTY (CHỦ QUYỀN CỦA BRAIN)
+## 1. Brain Sovereignty
 
-- **The Brain:** USER là người quyết định kiến trúc, tiêu chuẩn nghiệm thu và sở hữu tài sản.
-- **The Hands:** AI Agent và Freelancer là đơn vị thực thi.
-- **Quy tắc:**
-    - Tuyệt đối không thay đổi logic lõi, kiến trúc hệ thống hoặc tiêu chuẩn nghiệm thu nếu không có phê duyệt từ Brain.
-    - Mọi thay đổi lớn phải được đề xuất qua `02_DECISION_LOGS.md` trước khi thực hiện.
-    - Quyền diễn giải cuối cùng thuộc về Brain.
+- **Brain:** USER quyết định kiến trúc, tiêu chuẩn nghiệm thu cuối và quyền sở hữu tài sản.
+- **Hands Agent:** đơn vị thực thi trong Satellite, được tự xử lý implementation nếu không vượt khỏi Spec.
+- Hands Agent không được tự đổi:
+  - logic/kiến trúc lõi đã được Brain chốt,
+  - acceptance standard,
+  - governance files,
+  - Verification Gate,
+  - branch protection,
+  - package scripts bắt buộc.
 
-## 2. SPEC-FIRST (ĐẶC TẢ TRƯỚC, CODE SAU)
+## 2. Spec-First
 
-- Không bao giờ bắt đầu viết code khi chưa có bản Đặc tả (Spec) đạt chuẩn tại `01_TASK_SPEC.md` (hoặc vị trí chỉ định trong dự án).
-- Bản Spec đạt chuẩn phải bám sát **5 Pillars**:
-    1. **Strategic Context:** Tại sao phải làm?
-    2. **Logic Visualization:** Sơ đồ Mermaid (Flowchart/State).
-    3. **Data Schema:** Cấu trúc dữ liệu chi tiết.
-    4. **Technical Contract:** API/Interface/Contract.
-    5. **Definition of Done (DoD):** Checklist nghiệm thu.
+Không bắt đầu code khi `01_TASK_SPEC.md` chưa đủ 5 phần:
 
-## 3. VERIFICATION-FIRST (KIỂM CHỨNG TRƯỚC BÁO CÁO)
+1. **Strategic Context**
+2. **Logic Visualization**
+3. **Data Schema**
+4. **Technical Contract**
+5. **Definition of Done**
 
-- Không tin vào báo cáo miệng. Chỉ tin vào kết quả có thể kiểm chứng (Tests, Logs, Screenshots, Videos).
-- **Gate Scorecard:** Việc nghiệm thu phải tuân thủ nghiêm ngặt **`ls-rule-gate-acceptance`** với điểm số >= 80/100.
+Nếu Spec thiếu hoặc mâu thuẫn, Hands Agent phải ghi blocker vào `03_LOGS.md` và đề xuất hướng xử lý trong `02_DECISION_LOGS.md`.
 
-## 4. HARDENING (HÓA THẠCH TRI THỨC)
+## 3. Hands Agent Autonomy
 
-- Mọi module/tính năng sau khi hoàn thiện phải được xem xét khả năng "Hardening".
-- **Quy trình:** Nhận diện pattern tái sử dụng -> Tổng quát hóa (Abstract) -> Đóng gói thành Asset (Rule/Skill/Tool/Template).
-- Chủ động đề xuất hardening sau mỗi Pull Request hoặc Milestone thành công.
+Hands Agent được tự quyết:
+- tổ chức code nội bộ trong `src/`,
+- thêm/cập nhật test trong `tests/`,
+- thêm tài liệu kỹ thuật trong `docs/`,
+- thêm dependency hợp lý trong `package.json`,
+- refactor để làm rõ implementation.
 
-## 5. AUDIT & LOGGING (GHI CHÉP BẤT BIẾN)
+Hands Agent phải ghi `02_DECISION_LOGS.md` trước khi:
+- thay đổi API/data model/validation/error contract,
+- thêm framework hoặc dependency có ảnh hưởng kiến trúc,
+- suy luận một phần Spec còn thiếu nhưng không mâu thuẫn.
 
-- Mọi hành động có tác động lớn phải để lại dấu vết.
-- Duy trì `03_LOGS.md` (Done/Block/Next) mỗi phiên làm việc.
-- Tuân thủ **Conventional Commits** để lịch sử Git luôn minh bạch.
+Hands Agent phải dừng và block khi:
+- cần đổi governance/engine/workflow,
+- cần secret thật hoặc production access,
+- Spec thiếu mục tiêu nghiệp vụ cốt lõi,
+- cần Brain phê duyệt kiến trúc hoặc acceptance standard mới.
 
-## 6. BOOTSTRAP ORDER (THỨ TỰ KHỞI ĐỘNG)
+## 4. Phase 1 Verification-First
 
-Mỗi khi bắt đầu phiên làm việc mới, Agent phải thực hiện:
+Phase 1 dùng gate kỹ thuật pass/fail:
+
+- `npm test` phải pass.
+- `npm run verify-gate -- --project-path .` phải pass.
+- `GATE_REPORT.md` phải có SHA256 `Integrity-Hash`.
+- `.agents/`, `.github/`, `GEMINI.md`, engine và package contract phải nguyên vẹn.
+
+Scorecard 100 điểm, giải ngân, hardening đầy đủ và nghiệm thu nghiệp vụ cuối thuộc Brain acceptance hoặc Phase 2+.
+
+## 5. Audit & Logging
+
+- `03_LOGS.md` phải ghi Done/Block/Next và bằng chứng test.
+- `02_DECISION_LOGS.md` phải ghi quyết định hoặc giả định ảnh hưởng contract.
+- Commit phải theo Conventional Commits.
+
+## 6. Bootstrap Order
+
+Mỗi phiên làm việc:
+
 1. Đọc `GEMINI.md`.
-2. Đọc các Rule Master tại `.agents/rules/` (Governance, Gate, Handover, Commits, Secrets).
-3. Quét `ASSET_INDEX.md` để nạp các Skills/Workflows hiện có.
-4. Đọc `Task Spec` hiện hành.
-5. Kiểm tra `03_LOGS.md` gần nhất để nắm bắt context.
+2. Đọc `.agents/rules/*.md`.
+3. Đọc `01_TASK_SPEC.md`.
+4. Đọc `02_DECISION_LOGS.md`.
+5. Đọc `03_LOGS.md`.
+6. Kiểm tra `package.json` và scripts Satellite.
 
-## 7. NO-MANUAL-PUSH POLICY (CẤM PUSH THỦ CÔNG)
+## 7. No Manual Push
 
-- **Nguyên tắc:** Hands không được phép sử dụng `git push` thủ công để đẩy code trực tiếp lên nhánh chính hoặc tạo PR mà không thông qua sự kiểm soát của Agent.
-- **Agent-Led Review:** Mọi đợt nộp bài (Delivery) phải được thực hiện thông qua script `npm run ls-gitpush`. Agent sẽ thực hiện một "Internal Review" cực kỳ khắt khe:
-    *   **Anti-pattern Detection:** Kiểm tra các lỗi thiết kế, mã nguồn lặp lại hoặc vi phạm Clean Code.
-    *   **Strict Testing:** Đảm bảo toàn bộ Unit Test và Integration Test mô tả trong Spec đã được thực thi và Pass.
-    *   **Security & Rules:** SHA256 integrity check cho luật pháp và rà quét Secret.
-    *   **Documentation:** Cập nhật nhật ký bàn giao khẩn cấp trong `03_LOGS.md`.
-- **Enforcement:** Mọi PR không chứa bằng chứng (Artifact) từ Agent-Led Review sẽ bị Brain REJECT ngay lập tức mà không cần xem xét code.
+- Không push trực tiếp lên protected branch.
+- Không tạo PR thủ công để né gate.
+- Delivery phải qua `npm run ls-gitpush -- --title "feat: delivery"`.
 
 ---
-**Status:** ACTIVE MASTER RULE
-**Priority:** LEVEL 1
-
+**Status:** ACTIVE MASTER RULE  
+**Priority:** LEVEL 1  
+**Scope:** Phase 1 Technical Execution + Brain Sovereignty

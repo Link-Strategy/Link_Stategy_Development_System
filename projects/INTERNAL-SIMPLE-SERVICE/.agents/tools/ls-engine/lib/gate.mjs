@@ -48,7 +48,7 @@ export function verifyGate(runtime, options = {}) {
     if (exists(path.join(projectPath, required))) pass(`${required} found.`);
     else fail(`${required} is missing.`);
   }
-  validatePackageContract(projectPath, pass, fail, path);
+  validatePackageContract(projectPath, pass, fail);
 
   const specPath = path.join(projectPath, "01_TASK_SPEC.md");
   if (exists(specPath)) {

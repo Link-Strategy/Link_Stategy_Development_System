@@ -40,7 +40,7 @@ Skill này đóng gói CLI Node.js tự động hóa hạ tầng của Link Stra
 1.  **Sovereignty First:** Luôn ưu tiên bảo vệ tính toàn vẹn của Master Monorepo. Mọi thao tác `Push Rule` sử dụng cơ chế `pull --rebase` và `push --force-with-lease` để đảm bảo an toàn dữ liệu.
 2.  **Integrity Check:** Trước khi thực hiện `Harvesting` (Pull Code), bắt buộc phải chạy `verify-gate` để đảm bảo Hands không sửa đổi bất kỳ tệp luật nào.
 3.  **Audit Trail:** Mọi hành động khởi tạo hoặc đồng bộ phải được ghi nhận vào `03_LOGS.md` của dự án tương ứng.
-4.  **Auto-Registration:** Scripts tự động cập nhật `active-projects.json` và `ASSET_INDEX.md`. AI Agent phải kiểm tra các registry này để nắm bắt hiện trạng hệ thống.
+4.  **Registry:** `new-project` cập nhật `active-projects.json` khi registry tồn tại. `ASSET_INDEX.md` là registry tài sản của Brain và phải được cập nhật thủ công khi tạo hoặc harden asset mới.
 5.  **Agent-Led Push Only:** Cấm push thủ công. Mọi nộp bài phải qua `npm run ls-gitpush` để Agent rà soát anti-patterns và ký nhận báo cáo.
 6.  **Path Mapping:** Khi thu hoạch code, scripts tự động ánh xạ tệp từ Satellite về đúng thư mục dự án trong Master, tránh làm bẩn root Monorepo.
 

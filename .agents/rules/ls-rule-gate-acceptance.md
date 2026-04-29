@@ -1,45 +1,58 @@
 # LS-RULE-GATE-ACCEPTANCE
 
-Chào Agent, đây là bộ quy tắc nghiệm thu và chấm điểm (Gate Scorecard) tối thượng của Link Strategy. Bạn phải dùng bộ quy tắc này để Review mọi Pull Request (PR) hoặc đợt nộp bài của Hands.
+Quy tắc này định nghĩa **Phase 1 Technical Gate** cho Satellite delivery. Trong Phase 1, gate là cơ chế **PASS/FAIL kỹ thuật**, không phải scorecard nghiệm thu hoặc quyết định giải ngân của Brain.
 
-## 1. NGUYÊN TẮC "THỬ LỬA" (VERIFICATION-FIRST)
+## 1. Verification-First
 
-Tuyệt đối không tin vào lời nói. Chỉ tin vào bằng chứng có thể kiểm chứng được trong mã nguồn và `03_LOGS.md`.
+Không tin báo cáo miệng. Chỉ tin bằng chứng có thể kiểm chứng:
+- `npm test`
+- `npm run verify-gate -- --project-path .`
+- `GATE_REPORT.md`
+- `03_LOGS.md`
+- PR evidence do `npm run ls-gitpush` tạo
 
-## 2. BẢNG ĐIỂM NGHIỆM THU (100-POINT SCORECARD)
+## 2. Điều Kiện PASS Phase 1
 
-Mọi task hoàn thiện phải được chấm điểm dựa trên thang 100đ. Điểm ĐẠT (Pass) là **>= 80/100**.
+Delivery chỉ được nộp khi tất cả điều kiện sau đạt:
 
-### A. Chất lượng Kỹ thuật (50đ)
-- **Unit Test (30đ):** 
-    - Phải có Unit Test cho logic nghiệp vụ. 
-    - Coverage > 80% (15đ). 
-    - Toàn bộ Test Pass (15đ). Nếu có 1 test Fail = 0đ mục này.
-- **Clean Code & Architecture (20đ):** 
-    - Không dùng "mẹo" (hacks), không code lặp. 
-    - Tuân thủ đúng Design Pattern đã yêu cầu trong Spec.
+- Governance integrity PASS: `.agents/`, `.github/`, `GEMINI.md`, engine `.agents/tools/ls-engine/**/*.mjs` khớp Master.
+- `package.json` PASS contract: có `verify-gate`, `ls-gitpush`; không expose Brain-only scripts.
+- `01_TASK_SPEC.md` đủ 5 phần bắt buộc và không còn placeholder.
+- `src/` tồn tại và chứa implementation theo Spec.
+- `tests/` tồn tại, không rỗng, có test thật.
+- `npm test` PASS.
+- Secret scan cơ bản PASS.
+- `GATE_REPORT.md` có `Integrity-Hash` SHA256.
 
-### B. Bằng chứng & Tài liệu (30đ)
-- **Log-First Documentation (20đ):** 
-    - `03_LOGS.md` phải có đầy đủ bằng chứng thực thi (Evidence).
-    - Có kết quả chạy UAT cho từng kịch bản trong Spec.
-- **README & Comments (10đ):** 
-    - Cập nhật hướng dẫn vận hành module rõ ràng.
+Nếu một điều kiện FAIL, Agent phải sửa trong phạm vi được phép hoặc ghi blocker vào `03_LOGS.md`.
 
-### C. Quản trị & Bảo mật (20đ)
-- **Hardening Ready (10đ):** 
-    - Chủ động đề xuất ít nhất 1 thành phần để đưa vào kho Hardened Assets.
-- **Security & AI Audit (10đ):** 
-    - Không có Secret trong code. 
-    - Tuân thủ đúng quy tắc Secret Management.
+## 3. Điều Không Thuộc Phase 1 Gate
 
-## 3. QUY TRÌNH KIỂM SOÁT CỦA AGENT (INTERNAL REVIEW)
+Các mục sau không phải điều kiện bắt buộc để Hands Agent nộp Phase 1, trừ khi Spec yêu cầu rõ:
 
-Trước khi trình PR cho Brain, Agent phải chạy script `npm run verify-gate` và tự chấm điểm:
-- **Score < 80:** Reject ngay lập tức, yêu cầu Hands sửa lại kèm theo danh sách lỗi.
-- **Score >= 80:** Tạo PR, đính kèm báo cáo Scorecard và Evidence vào phần mô tả PR.
+- Scorecard 100 điểm.
+- Quyết định nghiệm thu nghiệp vụ cuối.
+- Quyết định giải ngân.
+- Full SAST/dependency scan.
+- Evidence archive dài hạn.
+- Hardening proposal đầy đủ.
+- 8-pillar handover package hoàn chỉnh.
+
+Các mục này thuộc Brain acceptance hoặc Phase 2+.
+
+## 4. Quy Trình Internal Review Cho Hands Agent
+
+1. Đọc Spec, logs, rules.
+2. Tự rà lại implementation so với Technical Contract và DoD.
+3. Chạy `npm test`.
+4. Chạy `npm run verify-gate -- --project-path .`.
+5. Nếu PASS, nộp bằng `npm run ls-gitpush -- --title "feat: delivery"`.
+6. Nếu FAIL, sửa lỗi trong phạm vi được phép; nếu lỗi do thiếu thông tin từ Spec, ghi blocker vào `03_LOGS.md` và quyết định/giả định vào `02_DECISION_LOGS.md`.
+
+## 5. Scorecard Phase 2
+
+Scorecard 100 điểm chỉ dùng khi Brain hoặc Brain Delegate thực hiện nghiệm thu sâu. Hands Agent không được coi scorecard là thay thế cho `verify-gate`, và cũng không được tự quyết định giải ngân.
 
 ---
-**Status:** ACTIVE OPERATIONAL RULE
-**Priority:** LEVEL 1 (CRITICAL)
-
+**Status:** ACTIVE PHASE 1 TECHNICAL GATE RULE  
+**Priority:** LEVEL 1

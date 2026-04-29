@@ -48,10 +48,10 @@ foreach ($folder in $FoldersToSync) {
     }
 }
 
-# 4. Sao chép .cursorrules (Bản thực thi)
-if (Test-Path ".cursorrules") {
-    Write-Host "Syncing .cursorrules ..." -ForegroundColor Gray
-    Copy-Item -Path ".cursorrules" -Destination $ProjectPath -Force
+# 4. Sao chép GEMINI.md (Bản thực thi)
+if (Test-Path "GEMINI.md") {
+    Write-Host "Syncing GEMINI.md ..." -ForegroundColor Gray
+    Copy-Item -Path "GEMINI.md" -Destination $ProjectPath -Force
 }
 
 Write-Host "Local Rule Sync Complete!" -ForegroundColor Green
@@ -74,19 +74,37 @@ if ($GitPush) {
 
         Write-Host "Project is linked to: $RemoteURL" -ForegroundColor Gray
 
-        # Stage các thay đổi trong .agents và .cursorrules
+        # Stage các thay đổi trong .agents và GEMINI.md
         git add .agents/*
-        git add .cursorrules
+        git add GEMINI.md
 
         # Kiểm tra xem có thay đổi gì thực sự không
         $Diff = git status --porcelain
         if (-not $Diff) {
             Write-Host "No changes detected. Rules are already up to date." -ForegroundColor Green
         } else {
-            Write-Host "Changes detected. Committing and Pushing law to Hands..." -ForegroundColor Cyan
+            Write-Host "Changes detected. Synchronizing with remote..." -ForegroundColor Cyan
+            
+            # Pull rebase để tránh xung đột
+            Write-Host "Pulling latest from remote --rebase ..." -ForegroundColor Gray
+            git pull origin main --rebase
+            
+            if ($LASTEXITCODE -ne 0) {
+                Write-Error "Xung đột xảy ra khi Rebase. Vui lòng giải quyết thủ công tại $ProjectPath."
+                return
+            }
+
             git commit -m "$CommitMessage"
-            git push origin main --force # FORCE SYNC: Đè luật lên đầu Hands
-            Write-Host "RULE ENFORCED SUCCESSFULLY!" -ForegroundColor Green -BackgroundColor DarkGreen
+            
+            # Chỉ dùng force-with-lease thay vì force thô bạo
+            Write-Host "Pushing laws to Hands (force-with-lease)..." -ForegroundColor Yellow
+            git push origin main --force-with-lease
+            
+            if ($LASTEXITCODE -eq 0) {
+                Write-Host "RULE ENFORCED SUCCESSFULLY!" -ForegroundColor Green -BackgroundColor DarkGreen
+            } else {
+                Write-Error "Push failed. Remote may have changed since rebase."
+            }
         }
     } catch {
         Write-Error "Lỗi khi thực hiện Git Sync tại $ProjectPath"

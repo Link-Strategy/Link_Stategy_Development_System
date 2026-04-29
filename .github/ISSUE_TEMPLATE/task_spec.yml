@@ -1,0 +1,65 @@
+name: "🚀 Task Specification (Spec-First)"
+description: "Sử dụng template này để đề xuất hoặc đặc tả một Task/Module mới."
+title: "[TASK]: <Tên ngắn gọn của Task>"
+labels: ["task-spec"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Chào Hands, vui lòng điền đầy đủ thông tin đặc tả dựa trên 5 Trụ cột (5 Pillars) của Link Strategy.
+  - type: input
+    id: task_id
+    attributes:
+      label: "Task ID / Project ID"
+      placeholder: "Ví dụ: LTR-DOC-01"
+    validations:
+      required: true
+  - type: textarea
+    id: strategic_context
+    attributes:
+      label: "1. Strategic Context (Pillar 1)"
+      description: "Tại sao tính năng này cần tồn tại? Giá trị kinh doanh là gì?"
+      placeholder: "Mô tả giá trị cốt lõi..."
+    validations:
+      required: true
+  - type: textarea
+    id: logic_visualization
+    attributes:
+      label: "2. Logic Visualization (Pillar 2)"
+      description: "Sử dụng Mermaid code để vẽ flowchart hoặc state diagram."
+      placeholder: "```mermaid\nflowchart TD\n...\n```"
+    validations:
+      required: true
+  - type: textarea
+    id: data_schema
+    attributes:
+      label: "3. Data Schema (Pillar 3)"
+      description: "Cấu trúc dữ liệu chi tiết (JSON/SQL)."
+      placeholder: "Mô tả bảng hoặc đối tượng dữ liệu..."
+    validations:
+      required: true
+  - type: textarea
+    id: technical_contract
+    attributes:
+      label: "4. Technical Contract (Pillar 4)"
+      description: "Đặc tả API/Interface/Props."
+      placeholder: "Endpoint, Methods, Payload..."
+    validations:
+      required: true
+  - type: textarea
+    id: definition_of_done
+    attributes:
+      label: "5. Definition of Done (Pillar 5)"
+      description: "Checklist nghiệm thu cụ thể cho Task này."
+      placeholder: "- [ ] Unit Test pass\n- [ ] UI đúng Figma..."
+    validations:
+      required: true
+  - type: checkboxes
+    id: compliance
+    attributes:
+      label: "Compliance Check"
+      options:
+        - label: "Tôi đã đọc và tuân thủ GEMINI.md"
+          required: true
+        - label: "Tôi cam kết sử dụng ls-gitpush để nộp bài"
+          required: true

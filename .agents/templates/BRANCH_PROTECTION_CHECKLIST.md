@@ -1,34 +1,32 @@
 # BRANCH PROTECTION CHECKLIST (BRAIN DELEGATE)
 
-Tài liệu này dùng để cấu hình GitHub Branch Protection nhằm bảo vệ tuyệt đối "Brain Sovereignty" và ngăn chặn code không đạt chuẩn lọt vào `main`.
+Tai lieu nay dung de cau hinh GitHub Branch Protection nham bao ve "Brain Sovereignty" va ngan chan code khong dat chuan lot vao `main`.
 
-## 1. Cấu hình Branch Protection (GitHub Settings)
-- [ ] **Require a pull request before merging:**
-    - [ ] Checked: `Require approvals` (Số lượng: ít nhất 1).
-    - [ ] Checked: `Dismiss stale pull request approvals when new commits are pushed`.
-    - [ ] Checked: `Require review from Code Owners`.
-- [ ] **Require status checks to pass before merging:**
-    - [ ] Checked: `Require branches to be up to date before merging`.
-    - [ ] List: Thêm `verification-gate` (Nếu dùng GitHub Actions) hoặc check thủ công.
-- [ ] **Require conversation resolution before merging:**
-    - [ ] Checked: Đảm bảo mọi thảo luận trên PR đều được giải quyết.
-- [ ] **Restrict pushes:**
-    - [ ] Checked: Chỉ cho phép Brain/Brain Delegate được merge hoặc push trực tiếp nếu cần.
-- [ ] **Lock branch:**
-    - [ ] Không checked (Trừ khi dự án đang trong giai đoạn đóng băng).
+## 1. Branch Protection
+- [ ] Require a pull request before merging.
+- [ ] Require at least 1 approval.
+- [ ] Dismiss stale pull request approvals when new commits are pushed.
+- [ ] Require review from Code Owners.
+- [ ] Require status checks to pass before merging.
+- [ ] Require branches to be up to date before merging.
+- [ ] Required check: `verification-gate`.
+- [ ] Required check: `block-illegal-changes`.
+- [ ] Require conversation resolution before merging.
+- [ ] Restrict direct pushes to Brain or Brain Delegate only.
 
-## 2. Cấu hình Repository
-- [ ] **CODEOWNERS:** Đã cập nhật file `.github/CODEOWNERS` trỏ đúng vào Brain account.
-- [ ] **PR Template:** Đã tồn tại `.github/pull_request_template.md`.
-- [ ] **Issue Templates:** Đã có template cho Task Spec.
+## 2. Repository Setup
+- [ ] `.github/CODEOWNERS` points to the correct Brain account.
+- [ ] `.github/pull_request_template.md` exists.
+- [ ] Task spec template exists for project onboarding.
 
-## 3. Kiểm soát quyền lực (Permissions)
-- [ ] **Hands/Freelancers:** Chỉ có quyền `Read` hoặc `Write` (để tạo branch), KHÔNG CÓ quyền `Maintainer` hoặc `Admin`.
-- [ ] **Automated Bots:** Phải được cấu hình qua GitHub App với quyền hạn tối thiểu.
+## 3. Permissions
+- [ ] Hands/Freelancers only have `Read` or `Write` access.
+- [ ] Hands/Freelancers do not have `Maintain` or `Admin`.
+- [ ] Bots use least-privilege permissions.
 
-## 4. Audit & Verification
-- [ ] Tất cả PR merge vào `main` đều phải có file `01_TASK_SPEC.md` đi kèm.
-- [ ] Scorecard nghiệm thu phải đạt >= 80 điểm.
+## 4. Audit And Verification
+- [ ] Every PR into `main` includes `01_TASK_SPEC.md` or an explicit link to it.
+- [ ] `verify-gate` passes before merge.
 
 ---
 **Status:** ENFORCED TEMPLATE

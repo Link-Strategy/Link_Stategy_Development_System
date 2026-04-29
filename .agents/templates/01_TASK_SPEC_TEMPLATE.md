@@ -26,39 +26,46 @@ graph TD
     D --> E
 ```
 
-## 3. 📊 ĐẶC TẢ DỮ LIỆU (Data Schema)
-*Định nghĩa cấu trúc dữ liệu chi tiết (JSON, SQL, v.v.)*
+## 3. 🎨 GIAO DIỆN & TRẢI NGHIỆM (UI/UX - Dành cho FE)
+- **Figma Prototype:** [Link tới Figma file/node]
+- **Design Tokens:** [Dùng Tailwind config / CSS Variables hệ thống]
+- **Breakpoints:** [Mobile / Tablet / Desktop]
+- **Interaction Notes:** [Mô tả hiệu ứng hover, loading, animation]
 
+## 4. 📊 ĐẶC TẢ DỮ LIỆU & API (Data & API Spec - Dành cho BE)
+- **Swagger/OpenAPI:** [Link tới Swagger UI hoặc file yaml]
+- **Data Schema:** 
 ```json
 {
   "field_name": "type",
   "comment": "description"
 }
 ```
-
-## 4. 🔗 HỢP ĐỒNG KỸ THUẬT (Technical Contract)
-*Định nghĩa Interface, API, hoặc Event Contract.*
-
-- **Input Parameters:**
-- **Outputs:**
-- **Dependencies:**
-- **Error Codes:**
+- **Auth & Permissions:** [RBAC / Scopes / JWT roles]
+- **Error Codes:** [Danh sách mã lỗi đặc thù]
 
 ## 5. ✅ CHECKLIST NGHIỆM THU (Definition of Done)
-*Bộ tiêu chuẩn cụ thể để vượt qua Verification Gate.*
 
+### [ ] Tiêu chuẩn Chung
 - [ ] Hoàn thành 100% logic mô tả trong flowchart.
 - [ ] Unit Test coverage > 80%.
-- [ ] Không có mã màu Hex thủ công (Nếu là UI).
 - [ ] Hoàn thiện README và Video Demo.
 - [ ] Link hardening proposal được gửi kèm PR.
+
+### [ ] Tiêu chuẩn Frontend (Nếu có)
+- [ ] Khớp 100% Pixel-perfect với Figma.
+- [ ] Không sử dụng mã màu Hex thủ công (Chỉ dùng Design Tokens).
+- [ ] Responsive hoạt động tốt trên các breakpoints quy định.
+
+### [ ] Tiêu chuẩn Backend (Nếu có)
+- [ ] API khớp 100% với Swagger Contract.
+- [ ] Có Structured Logs (trace_id) cho mọi request.
+- [ ] Xử lý lỗi theo đúng Error Code Table.
 
 ---
 
 ## 🎁 PACKAGE BÀN GIAO (Handover Artefacts)
-*Danh sách các tệp tin hỗ trợ thực thi (Hands phải kiểm tra đủ trước khi bắt đầu).*
-
-1. **OpenAPI/Schema Model:** [Link]
+1. **Figma/Swagger Specs:** (Đã dẫn link ở trên)
 2. **Seed Data / Mock Data:** [Link]
 3. **Môi trường Sandbox (Docker):** [Link]
 4. **Secrets/Env Example:** [Link]

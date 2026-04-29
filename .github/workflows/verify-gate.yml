@@ -1,0 +1,90 @@
+name: Link Strategy Verification Gate
+
+on:
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  verification-gate:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Global Tools
+        shell: pwsh
+        run: |
+          if (Test-Path "package.json") { npm install -g pnpm; npm install }
+          if (Test-Path "requirements.txt") { pip install -r requirements.txt }
+          if (Test-Path "pytest.ini") { pip install pytest }
+
+      - name: Setup PowerShell
+        shell: pwsh
+        run: |
+          Write-Host "--- LINK STRATEGY REMOTE VERIFICATION GATE ---" -ForegroundColor Cyan
+
+      - name: Enforce Agent-Led Review & Integrity
+        shell: pwsh
+        run: |
+          # 1. Check sự tồn tại của báo cáo
+          if (-not (Test-Path "AGENT_REVIEW_REPORT.md")) {
+            Write-Host "ERROR: AGENT_REVIEW_REPORT.md missing. Manual push detected and REJECTED." -ForegroundColor Red
+            exit 1
+          }
+
+          # 2. Đọc Hash từ báo cáo
+          $ReportContent = Get-Content "AGENT_REVIEW_REPORT.md" -Raw
+          if ($ReportContent -match "Integrity-Hash:\s*([A-F0-9]+)") {
+            $StoredHash = $Matches[1]
+          } else {
+            Write-Host "ERROR: Integrity-Hash not found in report. Corrupted report detected." -ForegroundColor Red
+            exit 1
+          }
+
+          # 3. Tính toán lại Hash hiện tại
+          $FilesToHash = Get-ChildItem -Path "." -Recurse -File | Where-Object { $_.FullName -notmatch "\\.git\\|\\node_modules\\|\\dist\\|\\build\\|AGENT_REVIEW_REPORT.md|GATE_REPORT.md" }
+          $CurrentHash = ($FilesToHash | Get-FileHash -Algorithm MD5 | Select-Object -ExpandProperty Hash | Out-String).Trim()
+
+          # 4. Đối soát
+          if ($StoredHash -ne $CurrentHash) {
+            Write-Host "CRITICAL ERROR: Code changed after Agent Review! Manual push detected and REJECTED." -ForegroundColor Red
+            Write-Host "Stored: $StoredHash"
+            Write-Host "Actual: $CurrentHash"
+            exit 1
+          }
+
+          Write-Host "Integrity Verified: Code matches Agent Review Report." -ForegroundColor Green
+
+      - name: Execute Technical Verify Gate
+        shell: pwsh
+        run: |
+          $ScriptPath = "./.agents/skills/ls-skill-engine-ops/scripts/verify-gate.ps1"
+          if (-not (Test-Path $ScriptPath)) {
+            Write-Host "ERROR: verify-gate.ps1 missing." -ForegroundColor Red
+            exit 1
+          }
+          & $ScriptPath
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "TECHNICAL GATE REJECTED: Code failed internal quality checks." -ForegroundColor Red
+            exit 1
+          }
+          Write-Host "TECHNICAL GATE PASSED." -ForegroundColor Green
+
+      - name: Upload Gate Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gate-report
+          path: GATE_REPORT.md

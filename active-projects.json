@@ -1,0 +1,11 @@
+{
+  "projects": [
+    {
+      "id": "DEMO-BASE-PLATFORM",
+      "path": "projects/DEMO-BASE-PLATFORM",
+      "remote_url": "",
+      "status": "active",
+      "description": "Reference implementation for the Link Strategy Production Engine."
+    }
+  ]
+}

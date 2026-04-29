@@ -29,12 +29,7 @@ Chào Agent, đây là Quy tắc Vận hành Master áp dụng cho toàn bộ wo
 ## 3. VERIFICATION-FIRST (KIỂM CHỨNG TRƯỚC BÁO CÁO)
 
 - Không tin vào báo cáo miệng. Chỉ tin vào kết quả có thể kiểm chứng (Tests, Logs, Screenshots, Videos).
-- **Gate Scorecard:** Giải ngân/Nghiệm thu dựa trên bảng điểm 100đ:
-    - Unit Test (30đ) - Pass 100%, Coverage > 80%.
-    - Clean Code (20đ) - Không lỗi Lint/Logic.
-    - Documentation (20đ) - README, Video Demo.
-    - Hardening Ready (10đ) - Khả năng tái sử dụng.
-    - Security & AI Audit (20đ) - Không lỗ hổng.
+- **Gate Scorecard:** Việc nghiệm thu phải tuân thủ nghiêm ngặt **`ls-rule-gate-acceptance`** với điểm số >= 80/100.
 
 ## 4. HARDENING (HÓA THẠCH TRI THỨC)
 
@@ -52,10 +47,20 @@ Chào Agent, đây là Quy tắc Vận hành Master áp dụng cho toàn bộ wo
 
 Mỗi khi bắt đầu phiên làm việc mới, Agent phải thực hiện:
 1. Đọc `GEMINI.md`.
-2. Đọc Hiến pháp & Cấu hình tại `.LinkStrategy/`.
-3. Quét `ASSET_INDEX.md` để nạp các Skills/Rules hiện có.
+2. Đọc các Rule Master tại `.agents/rules/` (Governance, Gate, Handover, Commits, Secrets).
+3. Quét `ASSET_INDEX.md` để nạp các Skills/Workflows hiện có.
 4. Đọc `Task Spec` hiện hành.
 5. Kiểm tra `LOGS.md` gần nhất để nắm bắt context.
+
+## 7. NO-MANUAL-PUSH POLICY (CẤM PUSH THỦ CÔNG)
+
+- **Nguyên tắc:** Hands không được phép sử dụng `git push` thủ công để đẩy code trực tiếp lên nhánh chính hoặc tạo PR mà không thông qua sự kiểm soát của Agent.
+- **Agent-Led Review:** Mọi đợt nộp bài (Delivery) phải được thực hiện thông qua script `ls-gitpush.ps1`. Agent sẽ thực hiện một "Internal Review" cực kỳ khắt khe:
+    *   **Anti-pattern Detection:** Kiểm tra các lỗi thiết kế, mã nguồn lặp lại hoặc vi phạm Clean Code.
+    *   **Strict Testing:** Đảm bảo toàn bộ Unit Test và Integration Test mô tả trong Spec đã được thực thi và Pass.
+    *   **Security & Rules:** MD5 Hash check cho luật pháp và rà quét Secret.
+    *   **Documentation:** Cập nhật nhật ký bàn giao khẩn cấp trong `LOGS.md`.
+- **Enforcement:** Mọi PR không chứa bằng chứng (Artifact) từ Agent-Led Review sẽ bị Brain REJECT ngay lập tức mà không cần xem xét code.
 
 ---
 **Status:** ACTIVE MASTER RULE

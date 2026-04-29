@@ -17,7 +17,7 @@ Tài liệu này xác lập các giao thức kỹ thuật để duy trì sự nh
 1.  **Trigger:** Brain commit thay đổi vào `.agents/rules/` trên Monorepo.
 2.  **Action:** GitHub Action duyệt danh sách Satellite Repos (quản lý trong `active-projects.json`).
 3.  **Command:** `git push satellite-remote main` (chỉ ghi đè thư mục `.agents/rules/`).
-4.  **Enforcement:** File `.cursorrules` tại Satellite luôn trỏ về các Rule này.
+4.  **Enforcement:** Hệ thống quy tắc tại Satellite được dẫn hướng bởi `GEMINI.md`.
 
 ## 3. GIAO THỨC ĐỒNG BỘ CODE (PULL PROTOCOL)
 *Mục tiêu: Thu hoạch tài sản sau khi đã qua Verification Gate.*

@@ -7,6 +7,7 @@ export const satellitePackageScripts = {
 
 export const brainOnlyPackageScripts = new Set([
   "new-project",
+  "new-hands",
   "new-module",
   "push-rules",
   "pull-code",
@@ -33,13 +34,6 @@ export const requiredSatellitePaths = [
   "package.json",
   "src",
   "tests"
-];
-
-export const requiredBranchProtectionContexts = [
-  "verification-gate (ubuntu-latest)",
-  "verification-gate (windows-latest)",
-  "verification-gate (macos-latest)",
-  "block-illegal-changes"
 ];
 
 export const requiredSpecMarkers = [

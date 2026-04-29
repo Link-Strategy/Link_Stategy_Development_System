@@ -1,12 +1,12 @@
 import path from "node:path";
 import { copyDir, copyFile, copyIfExists, ensureDir, exists, readJson, toPosix, writeText } from "./fs-utils.mjs";
-import { mergePackageContract } from "./package-contract.mjs";
+import { mergeBrainPackageContract } from "./package-contract.mjs";
 
-export function newProject(runtime) {
+export async function newProject(runtime) {
   const clientId = runtime.requireArg("client-id");
   const projectName = runtime.requireArg("project-name");
   const projectType = runtime.requireArg("project-type");
-  const basePath = runtime.args["base-path"] || "projects";
+  const basePath = runtime.args["base-path"] || "..";
   const projectDirName = `${clientId.toUpperCase()}-${projectName}`;
   const projectPath = runtime.resolvePath(basePath, projectDirName);
   const templateDir = runtime.resolvePath(".agents/templates");
@@ -19,39 +19,52 @@ export function newProject(runtime) {
   ensureDir(path.join(projectPath, "src"));
   ensureDir(path.join(projectPath, "tests"));
   ensureDir(path.join(projectPath, "assets"));
+  ensureDir(path.join(projectPath, "hands"));
   ensureDir(path.join(projectPath, ".agents/rules"));
   ensureDir(path.join(projectPath, ".agents/workflows"));
-  ensureDir(path.join(projectPath, ".agents/tools"));
+  ensureDir(path.join(projectPath, ".agents/templates"));
+  ensureDir(path.join(projectPath, ".agents/tools/ls-engine"));
+  ensureDir(path.join(projectPath, ".github"));
+  ensureDir(path.join(projectPath, "components/ui"));
 
   copyDir(runtime.resolvePath(".agents/rules"), path.join(projectPath, ".agents/rules"));
   copyDir(runtime.resolvePath(".agents/workflows"), path.join(projectPath, ".agents/workflows"));
+  copyDir(runtime.resolvePath(".agents/templates"), path.join(projectPath, ".agents/templates"));
   copyDir(runtime.resolvePath(".agents/tools/ls-engine"), path.join(projectPath, ".agents/tools/ls-engine"));
-  mergePackageContract(path.join(projectPath, "package.json"), { name: projectDirName.toLowerCase() });
-  copyFile(path.join(templateDir, "GEMINI_SATELLITE_TEMPLATE.md"), path.join(projectPath, "GEMINI.md"));
+  copyDir(runtime.resolvePath(".agents/skills"), path.join(projectPath, ".agents/skills"));
+  copyDir(runtime.resolvePath(".github"), path.join(projectPath, ".github"));
+  copyDir(runtime.resolvePath("components/ui"), path.join(projectPath, "components/ui"));
+  
+  mergeBrainPackageContract(path.join(projectPath, "package.json"), { name: projectDirName.toLowerCase() });
+
+  copyFile(path.join(templateDir, "GEMINI_BRAIN_TEMPLATE.md"), path.join(projectPath, "GEMINI.md"));
   copyIfExists(path.join(templateDir, "01_TASK_SPEC_TEMPLATE.md"), path.join(projectPath, "01_TASK_SPEC.md"));
   copyIfExists(path.join(templateDir, "02_DECISION_LOGS_TEMPLATE.md"), path.join(projectPath, "02_DECISION_LOGS.md"));
   copyIfExists(path.join(templateDir, "03_LOGS_TEMPLATE.md"), path.join(projectPath, "03_LOGS.md"));
   copyIfExists(path.join(templateDir, "ENV_EXAMPLE_TEMPLATE"), path.join(projectPath, ".env.example"));
 
-  writeText(path.join(projectPath, "README.md"), `# PROJECT: ${projectDirName} (${projectType})
+  writeText(path.join(projectPath, "active-hands.json"), JSON.stringify({ hands: [] }, null, 2) + "\n");
+
+  writeText(path.join(projectPath, "README.md"), `# BRAIN PROJECT: ${projectDirName} (${projectType})
 
 - Client: ${clientId}
 - Created: ${new Date().toISOString().slice(0, 10)}
 
-## Governance Front-end
+## Brain Command Center
 
-1. [01_TASK_SPEC.md](01_TASK_SPEC.md)
-2. [02_DECISION_LOGS.md](02_DECISION_LOGS.md)
-3. [03_LOGS.md](03_LOGS.md)
+1. [GEMINI.md](GEMINI.md) - Project Constitution
+2. [03_LOGS.md](03_LOGS.md) - Main Progress Log
+3. [active-hands.json](active-hands.json) - Hands/Satellite Registry
 
-## Operational Tools
+## Project Operations
 
-4. Verify Gate: \`npm run verify-gate -- --project-path .\`
-5. Safe Delivery: \`npm run ls-gitpush -- --title "feat: delivery"\`
+- Create Hands: \`npm run new-hands -- --project-path ./hands/[NAME] --repo-name [REPO]\`
+- Harvest Code: \`npm run pull-code -- --project-path ./hands/[NAME]\`
+- Sync Rules: \`npm run push-rules -- --project-path ./hands/[NAME]\`
 `);
 
-  updateRegistry(runtime, projectDirName, toPosix(path.relative(runtime.root, projectPath)), `Automatically generated project for ${clientId}.`);
-  console.log(`Success: Project created at ${projectPath}`);
+  updateRegistry(runtime, projectDirName, toPosix(path.relative(runtime.root, projectPath)), `Automatically generated Brain Project for ${clientId}.`);
+  console.log(`Success: Brain Project Workspace created at ${projectPath}`);
 }
 
 export function newModule(runtime) {

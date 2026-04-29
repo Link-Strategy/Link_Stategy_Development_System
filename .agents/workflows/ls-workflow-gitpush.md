@@ -5,7 +5,7 @@ description: "Phase 1 secure delivery workflow for AI Hands Agent"
 
 # LS-WORKFLOW-GITPUSH
 
-Quy trình này là đường nộp bài bắt buộc của **AI Hands Agent** trong Satellite. Mục tiêu là tạo PR đã qua Phase 1 Technical Gate, không phải tự nghiệm thu nghiệp vụ thay Brain.
+Quy trình này là đường nộp bài bắt buộc của **AI Hands Agent** trong Satellite. Mục tiêu là push delivery lên `origin/main` sau khi Phase 1 Technical Gate pass local. Satellite `main` không phải nguồn sạch; Brain chỉ harvest commit đã pass GitHub Actions.
 
 ## 1. Preflight Context
 
@@ -27,7 +27,9 @@ Trước khi nộp, Agent tự kiểm:
 - Implementation nằm trong `src/`.
 - Test thật nằm trong `tests/`.
 - `03_LOGS.md` có bằng chứng test.
+- `03_LOGS.md` có Progress Snapshot mới trước lần push này.
 - `02_DECISION_LOGS.md` có quyết định/giả định vượt Spec.
+- `01_TASK_SPEC.md` vẫn giữ Task List Tổng làm baseline, không bị tick/sửa chỉ để báo tiến độ.
 - Không sửa `.agents/`, `.github/`, `GEMINI.md`.
 - `package.json` giữ `verify-gate`, `ls-gitpush` và không expose Brain-only scripts.
 - Không có secret hoặc file `.env` thật.
@@ -54,7 +56,19 @@ npm run verify-gate -- --project-path .
 
 Chỉ khi command này PASS mới được nộp.
 
-## 5. Secure Delivery
+## 5. Progress Snapshot
+
+Trước khi nộp, Agent phải append một block mới vào `03_LOGS.md`:
+
+- `Overall Progress: [0-100]%`
+- `Task Status`: copy toàn bộ Task List Tổng từ `01_TASK_SPEC.md` và tick trạng thái hiện tại.
+- `Changed Since Last Push`: liệt kê thay đổi chính của lần nộp này.
+- `Test Evidence`: ghi kết quả `npm test` và `npm run verify-gate -- --project-path .`.
+- `Blockers`: ghi `None` hoặc blocker cụ thể.
+
+Không cập nhật `01_TASK_SPEC.md` để ghi tiến độ. Nếu Task List Tổng cần đổi scope, ghi đề xuất vào `02_DECISION_LOGS.md`.
+
+## 6. Secure Delivery
 
 Chạy:
 
@@ -68,10 +82,16 @@ Tool sẽ:
 - tạo `GATE_REPORT.md`,
 - tạo `AGENT_REVIEW_REPORT.md`,
 - stage allowlist delivery files,
-- push branch,
-- tạo PR bằng GitHub CLI.
+- commit thay đổi,
+- push trực tiếp lên `origin/main`.
 
-## 6. Failure Handling
+`GATE_REPORT.md` và `AGENT_REVIEW_REPORT.md` không được stage. GitHub Actions sẽ tạo artifact mới cho commit trên `main`.
+
+## 7. Brain Harvest Rule
+
+Brain chỉ được chạy `npm run pull-code` để sync về monorepo khi latest commit trên Satellite `main` có GitHub Actions `verification-gate` success. Nếu CI đang pending/fail/missing, `pull-code` phải block.
+
+## 8. Failure Handling
 
 - Governance/package fail: khôi phục contract, không sửa gate.
 - Test fail: sửa code hoặc test thật.

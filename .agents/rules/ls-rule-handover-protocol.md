@@ -8,14 +8,14 @@ Trong Phase 1, một Satellite delivery chỉ cần đủ các bằng chứng k�
 
 - `01_TASK_SPEC.md` đủ 5 phần: Strategic Context, Logic Visualization, Data Schema, Technical Contract, Definition of Done.
 - `02_DECISION_LOGS.md` ghi mọi quyết định/giả định vượt quá Spec.
-- `03_LOGS.md` ghi Done/Block/Next và bằng chứng test.
+- `03_LOGS.md` ghi Done/Block/Next, bằng chứng test và Progress Snapshot mới nhất.
 - `src/` chứa implementation.
 - `tests/` chứa test thật.
 - `package.json` có `test`, `verify-gate`, `ls-gitpush`.
 - `npm test` PASS.
 - `npm run verify-gate -- --project-path .` PASS.
 
-Đây là điều kiện đủ để Hands Agent nộp PR Phase 1.
+Đây là điều kiện đủ để Hands Agent push Phase 1 delivery bằng `npm run ls-gitpush`. Brain chỉ harvest về monorepo sau khi GitHub Actions trên Satellite `main` PASS.
 
 ## 2. Phase 2 / Full Module Handover
 
@@ -36,7 +36,15 @@ Nếu Spec Phase 1 không yêu cầu đủ 8 phần này, Hands Agent không đ�
 
 Hands Agent phải bám theo DoD trong `01_TASK_SPEC.md`. Nếu DoD yêu cầu coverage, integration test, sandbox hoặc observability thì phải làm. Nếu DoD chưa yêu cầu, các mục đó là đề xuất cải thiện hoặc Phase 2, không phải điều kiện gate Phase 1.
 
-## 4. Quy Trình Khi Thiếu Context
+## 4. Task List Và Progress Snapshot
+
+- `01_TASK_SPEC.md` chứa Task List Tổng làm baseline do Brain giao.
+- Hands Agent không dùng `01_TASK_SPEC.md` làm progress log và không tick/sửa Task List Tổng chỉ để báo tiến độ.
+- Trước mỗi lần `ls-gitpush`, Hands Agent phải copy Task List Tổng vào Progress Snapshot trong `03_LOGS.md` và cập nhật trạng thái thực tế.
+- Progress Snapshot phải có Overall Progress, Task Status, Changed Since Last Push, Test Evidence và Blockers.
+- Nếu Task List Tổng cần thêm/bớt/đổi scope, Hands Agent ghi đề xuất vào `02_DECISION_LOGS.md`; Brain mới cập nhật `01_TASK_SPEC.md` khi chấp thuận.
+
+## 5. Quy Trình Khi Thiếu Context
 
 - Thiếu chi tiết nhỏ nhưng không đổi contract: tự quyết và ghi vào `03_LOGS.md`.
 - Thiếu chi tiết ảnh hưởng contract: ghi vào `02_DECISION_LOGS.md`.

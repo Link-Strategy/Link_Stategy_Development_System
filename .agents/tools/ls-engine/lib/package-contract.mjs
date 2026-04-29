@@ -1,6 +1,25 @@
 import path from "node:path";
-import { brainOnlyPackageScripts, satellitePackageScripts } from "./constants.mjs";
+import { brainOnlyPackageScripts, brainPackageScripts, satellitePackageScripts } from "./constants.mjs";
 import { exists, readJson, writeText } from "./fs-utils.mjs";
+
+export function mergeBrainPackageContract(packagePath, defaults = {}) {
+  const current = exists(packagePath) ? readJson(packagePath) : {};
+  const next = {
+    ...current,
+    ...defaults,
+    private: current.private ?? true,
+    type: "module",
+    engines: {
+      ...(current.engines || {}),
+      node: current.engines?.node || ">=20"
+    },
+    scripts: {
+      ...(current.scripts || {}),
+      ...brainPackageScripts
+    }
+  };
+  writeText(packagePath, `${JSON.stringify(next, null, 2)}\n`);
+}
 
 export function validatePackageContract(projectPath, pass, fail) {
   const packageJson = path.join(projectPath, "package.json");

@@ -30,6 +30,7 @@ async function main() {
       return pushRules(runtime);
     case "pull-code-from-satellite":
       return pullCode(runtime);
+    case "new-hands":
     case "init-satellite":
       return initSatellite(runtime);
     case "self-test":
@@ -66,9 +67,10 @@ Commands:
   new-project --client-id ID --project-name NAME --project-type TYPE [--base-path projects]
   new-module --project-path PATH --module-name NAME
   verify-gate --project-path PATH
-  ls-gitpush --title TITLE [--body BODY] [--commit-message MSG] [--project-path PATH] [--draft]
+  ls-gitpush --title TITLE [--body BODY] [--commit-message MSG] [--project-path PATH]
   push-rules-to-satellite --project-path PATH [--commit-message MSG] [--git-push] [--dry-run]
-  pull-code-from-satellite --project-path PATH [--remote-url URL] [--remote-branch main] [--dry-run]
+  pull-code-from-satellite --project-path PATH [--remote-url URL] [--remote-branch main] [--dry-run] [--skip-ci-check]
+  new-hands --project-path PATH --repo-name NAME [--public] [--organization linkstrategy]
   init-satellite --project-path PATH --repo-name NAME [--public] [--organization linkstrategy]
   self-test
   stress-test [--iterations 10]

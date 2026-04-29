@@ -6,12 +6,12 @@ Tài liệu này chuyển hóa các yêu cầu từ bộ Blueprint hiện hành 
 
 Xây dựng một hệ thống có thể:
 
-- Sinh dự án và module mới nhất quán theo chuẩn Spec-First.
-- Cấp phát gói bàn giao (Handover Package) đầy đủ cho freelancer.
-- Nghiệm thu dựa trên kết quả thực tế qua các chốt chặn kỹ thuật (Verification Gate).
-- Tích lũy tài sản tri thức (Hardening) sau mỗi vòng triển khai.
-- Duy trì nhật ký vận hành (Logs) và tính liên tục của tri thức.
-- Bảo vệ chủ quyền của Brain đối với kiến trúc và thư viện tài sản.
+- Sinh dự án và module mới nhất quán theo chuẩn Master-Brain.
+- Cấp phát gói thi công đầy đủ cho Hands từ trạm điều hành Brain.
+- Nghiệm thu dựa trên kết quả thực tế qua các chốt chặn kỹ thuật CI-Gated.
+- Tích lũy tài sản tri thức (Hardening) từ Brain quay ngược về Master.
+- Duy trì tính liên tục của tri thức thông qua registries và logs 3 tầng.
+- Bảo vệ chủ quyền của Master đối với kiến trúc và tri thức nền tảng.
 
 ## Nguyên Tắc Ưu Tiên
 
@@ -48,64 +48,48 @@ Hệ thống Link Strategy phát triển theo 3 giai đoạn hội tụ để ch
 > [!SCOPE]
 > **Phạm vi Phase 1:** chỉ harden cơ chế thiết lập, đồng bộ và verify gate: project factory, satellite contract, rule sync, `.agents/tools/ls-engine`, GitHub Actions gate, `ls-gitpush`, integrity hash và branch-protection checklist. Phase 1 không chịu trách nhiệm hoàn thiện thủ tục nghiệm thu Brain, giải ngân, clean-code checklist, security automation đầy đủ, evidence archive dài hạn hoặc công cụ hỗ trợ vận hành hàng loạt cho Hands.
 
-### Sơ đồ Vòng đời Sản xuất (Production Life Cycle)
+### Sơ đồ Vòng đời Sản xuất 3 Tầng (3-Tier Production Life Cycle)
 
 ```mermaid
 graph TD
-    A[1. Brain + Agent: Chiến lược & Khởi tạo] --> C[2. Brain + Agent: Chuẩn hóa Đặc tả Spec]
-    C --> D[3. Hands: Thi công & Nhật ký]
-    D -->|src - tests - 03_LOGS.md| E{4. Verification Gate}
-    E -->|npm run verify-gate| F[FAIL: Sửa lỗi]
-    F --> D
+    M[1. Master: Hạ tầng & Rule] -->|new-project| B[2. Brain: Chiến lược & Spec]
+    B -->|new-hands| H[3. Hands: Thi công & Log]
+    H -->|src - tests - logs| E{4. Verification Gate}
+    E -->|FAIL| F[Sửa lỗi]
+    F --> H
     E -->|PASS| G[5. Secure Delivery]
-    G -->|npm run ls-gitpush| H[GitHub PR & Integrity Hash]
-    H --> I[6. Brain: Duyệt & Nghiệm thu]
-    I --> J[7. Hardening: Hóa thạch tài sản]
-    J -->|ASSET_INDEX.md| K[Nâng cấp Cỗ máy Tri thức]
-    K --> A
+    G -->|ls-gitpush| GH[GitHub CI Status]
+    GH -->|SUCCESS| I[6. Brain: Harvest & Registry]
+    I --> J[7. Hardening: Pattern về Master]
+    J -->|ASSET_INDEX.md| M
 ```
 
-> [!IMPORTANT]
-> **Nguyên tắc "Cưỡng chế":** Trong phạm vi Phase 1, hệ thống tự động khóa tại Verification Gate và Secure Delivery nếu thiếu cấu trúc bắt buộc, lệch luật, thiếu test runnable, thiếu report hoặc hash không khớp. Các quyết định nghiệm thu/giải ngân của Brain được chuẩn hóa ở Phase 2+.
+Dựa trên hệ thống "Bộ khung thép" 3 tầng, vòng đời sản xuất của Link Strategy được vận hành như sau:
 
-Dựa trên hệ thống "Bộ khung thép" chúng ta vừa hoàn thiện, vòng đời sản xuất (Production Life Cycle) của Link Strategy được tóm tắt qua 6 giai đoạn khép kín, đảm bảo code đi ra từ "Cỗ máy" luôn đạt chuẩn:
+### 1. Master: Thiết lập nền tảng (Infrastructure)
+*   **Người thực hiện:** Master Agent.
+*   **Hành động:** Thiết kế bộ khung, engine và bộ quy tắc chuẩn.
+*   **Kết quả:** Sẵn sàng các "phôi" dự án đạt chuẩn.
 
-### 1. Khởi tạo (Initialization) - "Xây xưởng"
-*   **Người thực hiện:** Brain + Agent.
-*   **Hành động:** Brain định hướng chiến lược, Agent chạy script `npm run new-project` để thực thi.
-*   **Kết quả:** Một **Satellite Repo** (Kho chứa vệ tinh) được sinh ra với đầy đủ cấu trúc chuẩn và các bộ luật (Rules) được "nhúng" sẵn. Brain bàn giao kho này cho Freelancer (Hands).
+### 2. Brain: Khởi tạo & Đặc tả (Strategy & Spec)
+*   **Người thực hiện:** Brain Agent.
+*   **Hành động:** Chạy `npm run new-project` để tạo trạm điều phối dự án. Viết `01_TASK_SPEC.md` bám sát yêu cầu khách hàng.
+*   **Kết quả:** Một dự án độc lập có hiến pháp riêng và kế hoạch thi công rõ ràng.
 
-### 2. Đặc tả (Spec-First) - "Lập bản vẽ"
-*   **Người thực hiện:** Brain + Agent (Hands hỗ trợ thi công bản thảo).
-*   **Hành động:** Brain chốt yêu cầu, Agent rà soát và phê duyệt file `01_TASK_SPEC.md` theo chuẩn 5 Pillars.
-*   **Luật:** Tuyệt đối không được viết code khi bản vẽ chưa được Brain + Agent phê duyệt. Đây là chốt chặn quan trọng nhất để chống "Rule Drift".
+### 3. Hands: Thi công & Bằng chứng (Execution & Evidence)
+*   **Người thực hiện:** Hands Agent (Freelancer).
+*   **Hành động:** Kế thừa Skills/UI Kit từ Brain để viết code và test. Ghi nhật ký thực thi liên tục vào `03_LOGS.md`.
+*   **Kết quả:** Module hoàn thiện kèm theo đầy đủ bằng chứng thực tế.
 
-### 3. Thi công & Nhật ký (Dev & Log) - "Sản xuất"
-*   **Người thực hiện:** Hands.
-*   **Hành động:** 
-    *   Viết code tại `src/`, viết test tại `tests/`.
-    *   Cập nhật `03_LOGS.md` hàng ngày (Done/Block/Next).
-    *   Trao đổi logic phức tạp qua `02_DECISION_LOGS.md`.
-*   **Mục tiêu:** Tạo ra bằng chứng thực thi liên tục, không để tri thức bị thất lạc trong các đoạn chat rời rạc.
+### 4. Kiểm định & Nộp bài (Gate & Delivery)
+*   **Người thực hiện:** Hệ thống tự động.
+*   **Hành động:** `verify-gate` chấm điểm tại local; `ls-gitpush` nộp bài lên GitHub; GitHub Actions kiểm định lại lần cuối.
+*   **Kết quả:** Code đạt chuẩn "nguyên đai nguyên kiện" trên GitHub.
 
-### 4. Kiểm định (Verification Gate) - "KCS"
-*   **Người thực hiện:** Hệ thống tự động (Script `npm run verify-gate`).
-*   **Hành động:** Quét toàn bộ dự án về: Tính toàn vẹn của luật, Cấu trúc file, Chất lượng Spec, Kết quả Test (phải Pass 100%) và Bảo mật.
-*   **Kết quả:** Chỉ khi đạt trạng thái **PASS**, Hands mới có quyền đi tiếp.
-
-### 5. Bàn giao an toàn (Secure Delivery) - "Xuất xưởng"
-*   **Người thực hiện:** Hands + Script `npm run ls-gitpush`.
-*   **Hành động:** 
-    *   Hệ thống niêm phong mã nguồn bằng mã **Integrity Hash** (Dấu vân tay).
-    *   Tự động đóng gói mọi báo cáo kiểm định thành một Pull Request (PR) trên GitHub.
-*   **Ý nghĩa:** Brain nhận được một gói hàng "nguyên đai nguyên kiện" kèm theo đầy đủ bằng chứng chất lượng.
-
-### 6. Nghiệm thu & Hóa thạch (Acceptance & Hardening) - "Lưu kho"
-*   **Người thực hiện:** Brain + Agent.
-*   **Hành động:** 
-    *   Brain duyệt PR dựa trên báo cáo tóm tắt của Agent.
-    *   **Hardening:** Agent bóc tách những phần code tốt, có tính tái sử dụng để đưa vào thư viện `.agents/skills/` hoặc `components/ui/`.
-*   **Kết quả:** Dự án kết thúc nhưng tri thức được "Hóa thạch" để làm giàu cho cỗ máy, giúp các dự án sau chạy nhanh hơn.
+### 5. Thu hoạch & Hóa thạch (Harvest & Hardening)
+*   **Người thực hiện:** Brain + Master Agents.
+*   **Hành động:** Brain chạy `pull-code` để thu hoạch bài nộp sau khi CI PASS. Lọc các pattern tốt đề xuất nộp về Master.
+*   **Kết quả:** Dự án về đích, tri thức mới được cập nhật vào kho tàng Master.
 
 ---
 
@@ -137,15 +121,16 @@ Dựa trên hệ thống "Bộ khung thép" chúng ta vừa hoàn thiện, vòng
 - [x] Hành động: Thiết lập Luật quản trị Master (`ls-rule-master-governance.md`) và Quy trình bàn giao Master (`ls-workflow-delivery-loop.md`).
 - **Tiêu chuẩn đạt chuẩn:** Bộ khung quản trị sẵn sàng, đảm bảo tính nhất quán giữa Chiến lược - Tài sản - Quy trình.
 
-### 1.3.1 - Tạo script sinh project mới
+### 1.3.1 - Tạo script sinh Brain Project Workspace (Mới)
 
 - [x] Hành động: Tạo `npm run new-project`.
-- [x] Hành động: Input gồm `client_id`, `project_name`, `project_type`.
-- [x] Hành động: Output tạo thư mục `projects/[CLIENT_ID]-[PROJECT_NAME]/`.
-- [x] Hành động: Copy templates vào Root dự án.
-- [x] Hành động: Tạo `src/`, `tests/`, `01_TASK_SPEC.md`, `02_DECISION_LOGS.md`, `03_LOGS.md`, `README.md`.
-- Đầu ra: Project mới được sinh nhất quán.
-- DoD: Chạy một lệnh có thể tạo project skeleton đầy đủ.
+- [x] Hành động: Input gồm `client_id`, `project_name`, `project_type`, `base-path`.
+- [x] Hành động: Output tạo Brain Project Workspace nằm ngoài Master (ví dụ: `../[CLIENT_ID]-[PROJECT_NAME]/`).
+- [x] Hành động: Copy templates, engine, rules, workflows, skills và UI components.
+- [x] Hành động: Cấu hình `GEMINI.md` dành riêng cho Brain Project.
+- [x] Hành động: Khởi tạo registry `active-hands.json`.
+- Đầu ra: Một trạm điều hành Brain độc lập sẵn sàng quản lý dự án.
+- DoD: Chạy một lệnh tạo được Brain Project skeleton đầy đủ và tự chủ.
 - Ưu tiên: P0.
 
 ### 1.3.2 - Tạo script sinh module mới trong project
@@ -176,13 +161,13 @@ Dựa trên hệ thống "Bộ khung thép" chúng ta vừa hoàn thiện, vòng
 
 ### 1.4.1 - Tạo `npm run verify-gate`
 
-- [x] Hành động: Tạo script chấm gate bán tự động.
+- [x] Hành động: Tạo script chấm gate kỹ thuật PASS/FAIL.
 - [x] Hành động: Kiểm tra tồn tại 01_TASK_SPEC.md, 02_DECISION_LOGS.md, 03_LOGS.md, README.md, tests folder.
-- [x] Hành động: Kiểm tra tồn tại blueprint alignment đối với module có tác động chiến lược.
-- [x] Hành động: Nếu project có package/test command, chạy test tương ứng (Cơ bản).
-- [x] Hành động: Xuất báo cáo Markdown hoặc JSON (Output terminal).
-- Đầu ra: Gate đầu tiên chạy được trong local.
-- DoD: Một module có thể được chấm pass/fail tối thiểu.
+- [x] Hành động: Kiểm tra tính nguyên vẹn của Rules và Engine (Integrity Check).
+- [x] Hành động: Chặn nộp bài nếu phát hiện Brain-only scripts trong Satellite.
+- [x] Hành động: Xuất báo cáo `GATE_REPORT.md` kèm SHA256 Integrity Hash.
+- Đầu ra: Chốt chặn KCS tự động cho mọi Satellite.
+- DoD: Module chỉ có thể nộp nếu vượt qua kiểm định local và CI.
 - Ưu tiên: P0.
 
 ### 1.4.2 - Nghiệm thu dựa trên Bằng chứng thực thi (Evidence-based)
@@ -213,14 +198,16 @@ Dựa trên hệ thống "Bộ khung thép" chúng ta vừa hoàn thiện, vòng
 - DoD: Main branch có checklist bảo vệ merge và review trước khi Hands code thật.
 - Ưu tiên: P0.
 
-### 1.5.1 - Thiết lập Permission Matrix (Action vs Inquiry) (URGENT)
+### 1.5.1 - Thiết lập Permission Matrix (Action vs Inquiry)
+
 - [x] Hành động: Tạo `.agents/rules/ls-rule-master-governance.md` (Enforced No-Manual-Push).
-- [x] Hành động: Tạo script `npm run ls-gitpush` làm cổng kiểm soát duy nhất (Action Lane Gate).
-- [x] Hành động: Thiết lập cơ chế **Integrity Hash** (Dấu vân tay code) chống sửa code lén.
-- [x] Hành động: Cưỡng chế chốt chặn PR tại GitHub Action (Chặn push thủ công).
-- Đầu ra: Cơ chế bảo vệ hệ thống tuyệt đối khỏi các hành động tự ý của Hands.
-- DoD: Không có PR nào được merge nếu thiếu báo cáo Agent Review và mã Hash không khớp.
-- Ưu tiên: P0 (Hardened & Enforced).
+- [x] Hành động: Tạo script `npm run ls-gitpush` làm cổng kiểm soát duy nhất cho Hands.
+- [x] Hành động: Thiết lập cơ chế **Integrity Hash** chống sửa code lén.
+- [x] Hành động: Thực thi mô hình **CI-Gated Harvest**: Brain chỉ kéo code khi CI PASS.
+- [x] Hành động: Tích hợp registry-based tracking cho mọi lần pull code.
+- Đầu ra: Cơ chế bảo vệ hệ thống tuyệt đối, Brain giữ quyền sở hữu tri thức.
+- DoD: Code thi công chỉ vào Brain Project khi đã sạch và được đăng ký SHA.
+- Ưu tiên: P0.
 
 
 
@@ -241,14 +228,16 @@ Dựa trên hệ thống "Bộ khung thép" chúng ta vừa hoàn thiện, vòng
 - DoD: Brain biết dữ liệu đi chiều nào, lúc nào, ai duyệt.
 - Ưu tiên: P0 (Hardened).
 
-### 1.7.3 - Tạo `GEMINI.md` và Cơ chế đồng bộ Satellite
-- [x] Hành động: Tạo `GEMINI.md` template và tích hợp vào Project Factory.
-- [x] Hành động: Nội dung ép đọc 01_TASK_SPEC.md, 02_DECISION_LOGS.md, 03_LOGS.md, asset index và rules.
-- [x] Hành động: Tạo script đồng bộ tự động `npm run push-rules` (Đồng bộ Rules, Workflows và cấu trúc `.github/`).
-- [x] Hành động: Triển khai cơ chế auto-registry vào `active-projects.json`.
-- Đầu ra: Context injection và registry tự động, kích hoạt gác cổng tự động tại Vệ tinh.
-- DoD: Satellite mới có rule bootstrapping nhất quán và có cơ chế đồng bộ tự động bao gồm cả CI/CD.
-- Ưu tiên: P0 (Hardened).
+### 1.7.3 - Tạo `GEMINI.md` và Cơ chế đồng bộ 3 tầng (Master-Brain-Hands)
+
+- [x] Hành động: Tạo `GEMINI_BRAIN_TEMPLATE.md` và `GEMINI_SATELLITE_TEMPLATE.md`.
+- [x] Hành động: Triển khai `npm run new-hands` chạy từ Brain Project để onboarding Hands.
+- [x] Hành động: Tạo script đồng bộ tự động `npm run push-rules` (Sync Rules, Engine, Skills, UI Kit).
+- [x] Hành động: Triển khai cơ chế auto-registry vào `active-projects.json` (Master) và `active-hands.json` (Brain).
+- [x] Hành động: Chốt chặn thu hoạch bằng `npm run pull-code` tích hợp kiểm tra CI Status.
+- Đầu ra: Quy trình đồng bộ và thu hoạch khép kín, an toàn và tự động.
+- DoD: Satellite được khởi tạo, đăng ký và thu hoạch dựa trên bằng chứng CI.
+- Ưu tiên: P0.
 
 
 
@@ -455,21 +444,6 @@ Dựa trên hệ thống "Bộ khung thép" chúng ta vừa hoàn thiện, vòng
 - DoD: Cuối ngày biết phải harvest gì và lưu ở đâu.
 - Ưu tiên: P2.
 
-### 2.8.2 - Tạo offboarding checklist
-
-- [ ] Hành động: Tạo `.agents/templates/OFFBOARDING_CHECKLIST_TEMPLATE.md`.
-- [ ] Hành động: Bao gồm freeze access, revoke key, export evidence, final audit, payment decision.
-- Đầu ra: Quy trình revoke 15 phút có checklist.
-- DoD: Khi thay Hands, Brain không bỏ sót bước bảo mật.
-- Ưu tiên: P1.
-
-### 2.8.3 - Tạo onboarding checklist
-
-- [ ] Hành động: Tạo `.agents/templates/ONBOARDING_CHECKLIST_TEMPLATE.md`.
-- [ ] Hành động: Bao gồm spec reload, log sync, git history review, asset index review, sandbox run.
-- Đầu ra: Quy trình onboard 24h có checklist.
-- DoD: Người mới bắt đầu được mà không cần họp dài.
-- Ưu tiên: P1.
 
 ### 2.8.5 - Tạo data privacy and anonymization checklist
 
@@ -489,6 +463,38 @@ Dựa trên hệ thống "Bộ khung thép" chúng ta vừa hoàn thiện, vòng
 - Đầu ra: Hệ thống đào tạo Auditor sẵn sàng thực thi.
 - DoD: Có đầy đủ curriculum và templates cho từng module đào tạo.
 - Ưu tiên: P0.
+
+### 2.10.0 - Advanced Production Automation (NEW)
+*Tự động hóa nâng cao để quản trị quy mô lớn và tối ưu hóa dòng chảy tri thức.*
+
+#### 2.10.1 - Công cụ Tổng quát hóa Tri thức (Knowledge Generalizer)
+- [ ] Hành động: Tạo script `npm run generalize-asset`.
+- [ ] Hành động: Hỗ trợ Brain tự động tìm và thay thế thông tin nhạy cảm (PII) hoặc logic đặc thù khách hàng bằng các placeholders/config.
+- Đầu ra: Tri thức dự án được "làm sạch" sẵn sàng đưa về Master.
+- DoD: Asset sau khi generalize không còn chứa dữ liệu khách hàng.
+- Ưu tiên: P1.
+
+#### 2.10.2 - Bảng điều khiển Trạng thái Dự án (Project Health Dashboard)
+- [ ] Hành động: Tạo lệnh `npm run ls-status`.
+- [ ] Hành động: Hiển thị trạng thái tổng hợp từ `active-projects.json` và `active-hands.json` (SHA, CI status, Harvest lag).
+- Đầu ra: Tầm nhìn 360 độ về toàn bộ hệ thống vệ tinh.
+- DoD: Brain có thể biết dự án nào đang gặp rủi ro (CI Fail) chỉ bằng 1 lệnh.
+- Ưu tiên: P1.
+
+#### 2.10.3 - Giao thức Đóng dự án (Satellite Decommissioning)
+- [ ] Hành động: Tạo lệnh `npm run close-satellite`.
+- [ ] Hành động: Tự động hóa việc đóng Satellite repo, thu hồi quyền truy cập và lưu trữ bản backup cuối cùng.
+- Đầu ra: Quy trình kết thúc dự án sạch sẽ và an toàn.
+- DoD: Repo vệ tinh được lưu trữ và mọi quyền truy cập được revoke sau khi dự án hoàn thành.
+- Ưu tiên: P2.
+
+#### 2.10.4 - Cầu nối Tri thức Vector (Vector KB Bridge)
+- [ ] Hành động: Phát triển công cụ `ls-tool-kb-bridge`.
+- [ ] Hành động: Tự động nạp các `Knowledge Piece` từ Master vào Vector Database (Pinecone/Chroma).
+- Đầu ra: Bộ não của Agent có khả năng tra cứu tri thức thực chiến bằng ngôn ngữ tự nhiên.
+- DoD: Agent có thể trả lời câu hỏi dựa trên các tri thức đã được harvest.
+- Ưu tiên: P2.
+
 
 ### 2.9.1 - Chạy pilot trên project mẫu
 

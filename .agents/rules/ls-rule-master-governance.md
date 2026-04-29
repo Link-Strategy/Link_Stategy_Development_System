@@ -16,7 +16,6 @@ Quy tắc này bảo vệ chủ quyền của Brain, đồng thời cho phép **
   - acceptance standard,
   - governance files,
   - Verification Gate,
-  - branch protection,
   - package scripts bắt buộc.
 
 ## 2. Spec-First
@@ -62,13 +61,23 @@ Phase 1 dùng gate kỹ thuật pass/fail:
 
 Scorecard 100 điểm, giải ngân, hardening đầy đủ và nghiệm thu nghiệp vụ cuối thuộc Brain acceptance hoặc Phase 2+.
 
-## 5. Audit & Logging
+## 5. Source Of Truth
 
-- `03_LOGS.md` phải ghi Done/Block/Next và bằng chứng test.
+- Brain monorepo là nguồn sạch duy nhất.
+- Satellite `main` là execution lane của Hands, không phải trusted source tự thân.
+- Hands được push delivery lên Satellite `main` chỉ thông qua `npm run ls-gitpush`.
+- Brain chỉ được harvest từ latest Satellite `main` commit khi GitHub Actions `verification-gate` của commit đó PASS.
+
+## 6. Audit & Logging
+
+- `01_TASK_SPEC.md` là baseline contract và Task List Tổng; không dùng làm progress log.
+- `03_LOGS.md` phải ghi Done/Block/Next, bằng chứng test và Progress Snapshot trước mỗi lần `ls-gitpush`.
+- Progress Snapshot phải copy Task List Tổng từ `01_TASK_SPEC.md` và cập nhật trạng thái thực tế.
 - `02_DECISION_LOGS.md` phải ghi quyết định hoặc giả định ảnh hưởng contract.
+- Nếu Task List Tổng cần đổi scope, ghi đề xuất vào `02_DECISION_LOGS.md`; Brain mới cập nhật `01_TASK_SPEC.md` khi chấp thuận.
 - Commit phải theo Conventional Commits.
 
-## 6. Bootstrap Order
+## 7. Bootstrap Order
 
 Mỗi phiên làm việc:
 
@@ -79,10 +88,10 @@ Mỗi phiên làm việc:
 5. Đọc `03_LOGS.md`.
 6. Kiểm tra `package.json` và scripts Satellite.
 
-## 7. No Manual Push
+## 8. Tool-Only Push
 
-- Không push trực tiếp lên protected branch.
-- Không tạo PR thủ công để né gate.
+- Không push thủ công bằng Git/VS Code để né gate.
+- Không tạo PR thủ công để giả lập evidence.
 - Delivery phải qua `npm run ls-gitpush -- --title "feat: delivery"`.
 
 ---

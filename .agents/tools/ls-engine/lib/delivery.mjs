@@ -1,12 +1,11 @@
 import path from "node:path";
-import { exists, readText, writeText } from "./fs-utils.mjs";
-import { run, runOut } from "./process-utils.mjs";
+import { readText, writeText } from "./fs-utils.mjs";
+import { run } from "./process-utils.mjs";
 import { gitChangedFiles } from "./git-utils.mjs";
 import { verifyGate } from "./gate.mjs";
 
 export function lsGitPush(runtime) {
   const title = runtime.requireArg("title");
-  const body = runtime.args.body || "Agentic Delivery via ls-gitpush. Verification Gate and Agent Review passed.";
   const commitMessage = runtime.args["commit-message"] || title;
   const projectPath = path.resolve(runtime.args["project-path"] || ".");
   if (!verifyGate(runtime, { projectPath })) throw new Error("Verification gate failed.");
@@ -29,36 +28,25 @@ This is a delivery summary generated from the technical gate result, not a deep 
 
   const changed = gitChangedFiles(projectPath);
   const allowed = changed.filter(isDeliveryAllowed);
-  const blocked = changed.filter((file) => !isDeliveryAllowed(file));
+  const ignoredGenerated = changed.filter(isGeneratedReport);
+  const blocked = changed.filter((file) => !isDeliveryAllowed(file) && !isGeneratedReport(file));
   if (blocked.length) throw new Error(`Refusing to stage files outside delivery allowlist:\n${blocked.join("\n")}`);
   if (!allowed.length) throw new Error("No allowed delivery files found to stage.");
+  if (ignoredGenerated.length) {
+    console.log("Leaving generated reports unstaged; GitHub Actions will regenerate gate artifacts:");
+    console.log(ignoredGenerated.map((file) => ` - ${file}`).join("\n"));
+  }
   console.log("Staging files:\n" + allowed.map((file) => ` - ${file}`).join("\n"));
   run("git", ["add", "--", ...allowed], { cwd: projectPath });
   run("git", ["commit", "-m", commitMessage], { cwd: projectPath });
-  const branch = runOut("git", ["branch", "--show-current"], projectPath);
-  if (!branch) throw new Error("Cannot determine current git branch.");
-  run("git", ["push", "-u", "origin", branch], { cwd: projectPath });
-
-  const finalBody = `## LINK STRATEGY: AGENT-LED DELIVERY REPORT
-
-${body}
-
-### Verification Evidence
-${review}
-
-### Gate Scorecard
-${report}
-`;
-  const ghArgs = ["pr", "create", "--title", title, "--body", finalBody];
-  if (runtime.args.draft) ghArgs.push("--draft");
-  run("gh", ghArgs, { cwd: projectPath });
+  run("git", ["branch", "-M", "main"], { cwd: projectPath });
+  run("git", ["push", "-u", "origin", "main"], { cwd: projectPath });
+  console.log("Delivery pushed to origin/main. Brain harvest must wait for GitHub Actions verification-gate success.");
 }
 
 function isDeliveryAllowed(file) {
   const normalized = file.replaceAll("\\", "/");
-  return normalized === "GATE_REPORT.md" ||
-    normalized === "AGENT_REVIEW_REPORT.md" ||
-    normalized === "README.md" ||
+  return normalized === "README.md" ||
     normalized === "01_TASK_SPEC.md" ||
     normalized === "02_DECISION_LOGS.md" ||
     normalized === "03_LOGS.md" ||
@@ -70,4 +58,9 @@ function isDeliveryAllowed(file) {
     normalized.startsWith("src/") ||
     normalized.startsWith("tests/") ||
     normalized.startsWith("docs/");
+}
+
+function isGeneratedReport(file) {
+  const normalized = file.replaceAll("\\", "/");
+  return normalized === "GATE_REPORT.md" || normalized === "AGENT_REVIEW_REPORT.md";
 }

@@ -5,8 +5,17 @@ export const satellitePackageScripts = {
   "ls-gitpush": "node .agents/tools/ls-engine/cli.mjs ls-gitpush"
 };
 
+export const brainPackageScripts = {
+  "new-hands": "node .agents/tools/ls-engine/cli.mjs new-hands",
+  "push-rules": "node .agents/tools/ls-engine/cli.mjs push-rules-to-satellite",
+  "pull-code": "node .agents/tools/ls-engine/cli.mjs pull-code-from-satellite",
+  "verify-gate": "node .agents/tools/ls-engine/cli.mjs verify-gate",
+  "self-test": "node .agents/tools/ls-engine/cli.mjs self-test"
+};
+
 export const brainOnlyPackageScripts = new Set([
   "new-project",
+  "new-hands",
   "new-module",
   "push-rules",
   "pull-code",
@@ -33,13 +42,6 @@ export const requiredSatellitePaths = [
   "package.json",
   "src",
   "tests"
-];
-
-export const requiredBranchProtectionContexts = [
-  "verification-gate (ubuntu-latest)",
-  "verification-gate (windows-latest)",
-  "verification-gate (macos-latest)",
-  "block-illegal-changes"
 ];
 
 export const requiredSpecMarkers = [

@@ -1,9 +1,8 @@
-import { spawnSync } from "node:child_process";
 import path from "node:path";
-import { brainOnlyPackageScripts, requiredBranchProtectionContexts, requiredSatellitePaths } from "./constants.mjs";
+import { brainOnlyPackageScripts, requiredSatellitePaths } from "./constants.mjs";
 import { exists, readJson, readText, writeText } from "./fs-utils.mjs";
 import { gitChangedFiles } from "./git-utils.mjs";
-import { run, runOut, resolveCommand } from "./process-utils.mjs";
+import { run, runOut } from "./process-utils.mjs";
 import { pushRules } from "./sync.mjs";
 
 export function initSatellite(runtime) {
@@ -25,7 +24,7 @@ export function initSatellite(runtime) {
   const visibility = runtime.args.public ? "--public" : "--private";
   ensureOriginRemote(projectPath, organization, repoName, visibility);
   run("git", ["push", "-u", "origin", "main", "--force-with-lease"], { cwd: projectPath });
-  applyBranchProtection(runtime.root, organization, repoName);
+  console.log("Direct-main delivery enabled; Brain harvest is CI-gated.");
   console.log(`SATELLITE READY: ${organization}/${repoName}`);
 }
 
@@ -89,53 +88,5 @@ function ensureOriginRemote(projectPath, organization, repoName, visibility) {
   if (result.status !== 0) {
     const detail = (result.stderr || result.stdout || "").trim();
     throw new Error(`Failed to create GitHub repo or configure origin. Install/authenticate gh or add origin manually.\n${detail}`);
-  }
-}
-
-function applyBranchProtection(root, owner, repoName) {
-  const payload = {
-    required_status_checks: {
-      strict: true,
-      contexts: requiredBranchProtectionContexts
-    },
-    enforce_admins: true,
-    required_pull_request_reviews: {
-      dismissal_restrictions: {},
-      dismiss_stale_reviews: true,
-      require_code_owner_reviews: true,
-      required_approving_review_count: 1,
-      require_last_push_approval: false
-    },
-    restrictions: null,
-    required_linear_history: false,
-    allow_force_pushes: false,
-    allow_deletions: false,
-    block_creations: false,
-    required_conversation_resolution: true,
-    lock_branch: false,
-    allow_fork_syncing: true
-  };
-  const resolvedGh = resolveCommand("gh");
-  const result = spawnSync(resolvedGh.command, [
-    "api",
-    "--method",
-    "PUT",
-    "-H",
-    "Accept: application/vnd.github+json",
-    `/repos/${owner}/${repoName}/branches/main/protection`,
-    "--input",
-    "-"
-  ], {
-    cwd: root,
-    input: JSON.stringify(payload),
-    encoding: "utf8",
-    stdio: ["pipe", "pipe", "pipe"],
-    shell: resolvedGh.shell
-  });
-  if (result.status !== 0) {
-    console.warn(`Branch protection was not applied automatically: ${(result.stderr || result.stdout || "").trim()}`);
-    console.warn("Repository was initialized, but branch protection still needs manual configuration.");
-  } else {
-    console.log("Branch protection applied successfully.");
   }
 }

@@ -54,12 +54,12 @@ The repository follows the Link Strategy hardened loop:
 1. Spec-First: every task starts from a written blueprint.
 2. Isolation: implementation work is scoped by project/module.
 3. Execution Visibility: progress is tracked through commits and logs.
-4. Verification Gate: delivery must pass objective checks and scorecard review.
+4. Verification Gate: delivery must pass objective checks; Brain harvests only CI-passed Satellite commits into the monorepo.
 5. Hardening: reusable logic, patterns, and workflows are extracted into assets.
 
 ## Quickstart
 
-Base Platform automation is available through the Node.js engine commands `npm run new-project`, `npm run new-module`, `npm run verify-gate`, `npm run push-rules`, `npm run pull-code`, `npm run init-satellite`, and `npm run ls-gitpush`.
+Base Platform automation is available through the Node.js engine commands `npm run new-project`, `npm run new-hands`, `npm run new-module`, `npm run verify-gate`, `npm run push-rules`, `npm run pull-code`, and `npm run ls-gitpush`.
 
 ### Create A Project Workspace
 

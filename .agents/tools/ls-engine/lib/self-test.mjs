@@ -10,6 +10,7 @@ export function selfTest(runtime) {
   const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "ls-engine-selftest-"));
   const fixtureBase = path.join(tempRoot, "brain");
   const satelliteRepo = path.join(tempRoot, "satellite-repo");
+  const deliveryRemote = path.join(tempRoot, "delivery-remote.git");
   const harvestTarget = path.join(tempRoot, "harvest-target");
   const cliPath = path.join(fixtureBase, ".agents/tools/ls-engine/cli.mjs");
 
@@ -28,14 +29,29 @@ export function selfTest(runtime) {
     ensureSatelliteGitignore(projectPath);
     validateSatelliteLayout(projectPath);
     run("git", ["init"], { cwd: projectPath });
+    run("git", ["config", "user.email", "selftest@example.local"], { cwd: projectPath });
+    run("git", ["config", "user.name", "LS Engine Self Test"], { cwd: projectPath });
     stageInitialSatelliteFiles(projectPath);
+    run("git", ["commit", "-m", "chore(init): initialize satellite fixture"], { cwd: projectPath });
     run("node", [cliPath, "verify-gate", "--project-path", projectPath], { cwd: fixtureBase });
     run("node", [cliPath, "push-rules-to-satellite", "--project-path", projectPath, "--dry-run"], { cwd: fixtureBase });
 
+    run("git", ["init", "--bare", deliveryRemote], { cwd: tempRoot });
+    run("git", ["remote", "add", "origin", deliveryRemote], { cwd: projectPath });
+    writeText(path.join(projectPath, "src", "index.js"), "export const delivered = true;\n");
+    writeText(path.join(projectPath, "03_LOGS.md"), "# Logs\n\n- Self-test direct-main delivery.\n");
+    run("node", [cliPath, "ls-gitpush", "--project-path", projectPath, "--title", "feat: self-test delivery"], { cwd: fixtureBase });
+
     seedSatelliteRepo(satelliteRepo);
     ensureDir(harvestTarget);
-    run("node", [cliPath, "pull-code-from-satellite", "--project-path", harvestTarget, "--remote-url", satelliteRepo, "--dry-run"], { cwd: fixtureBase });
-    run("node", [cliPath, "pull-code-from-satellite", "--project-path", harvestTarget, "--remote-url", satelliteRepo], { cwd: fixtureBase });
+    const blockedHarvest = run("node", [cliPath, "pull-code-from-satellite", "--project-path", harvestTarget, "--remote-url", satelliteRepo, "--dry-run"], {
+      cwd: fixtureBase,
+      capture: true,
+      allowFailure: true
+    });
+    if (blockedHarvest.status === 0) throw new Error("Self-test expected pull-code to block when CI check is not skipped.");
+    run("node", [cliPath, "pull-code-from-satellite", "--project-path", harvestTarget, "--remote-url", satelliteRepo, "--dry-run", "--skip-ci-check"], { cwd: fixtureBase });
+    run("node", [cliPath, "pull-code-from-satellite", "--project-path", harvestTarget, "--remote-url", satelliteRepo, "--skip-ci-check"], { cwd: fixtureBase });
     if (!exists(path.join(harvestTarget, "src", "index.js"))) throw new Error("Self-test harvest did not copy src/index.js.");
 
     console.log("[SELF-TEST] PASS");

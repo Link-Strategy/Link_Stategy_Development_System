@@ -9,11 +9,11 @@ Không tin báo cáo miệng. Chỉ tin bằng chứng có thể kiểm chứng:
 - `npm run verify-gate -- --project-path .`
 - `GATE_REPORT.md`
 - `03_LOGS.md`
-- PR evidence do `npm run ls-gitpush` tạo
+- GitHub Actions `verification-gate` trên latest Satellite `main` commit
 
 ## 2. Điều Kiện PASS Phase 1
 
-Delivery chỉ được nộp khi tất cả điều kiện sau đạt:
+Delivery chỉ được push bằng `ls-gitpush` khi tất cả điều kiện local sau đạt:
 
 - Governance integrity PASS: `.agents/`, `.github/`, `GEMINI.md`, engine `.agents/tools/ls-engine/**/*.mjs` khớp Master.
 - `package.json` PASS contract: có `verify-gate`, `ls-gitpush`; không expose Brain-only scripts.
@@ -25,6 +25,8 @@ Delivery chỉ được nộp khi tất cả điều kiện sau đạt:
 - `GATE_REPORT.md` có `Integrity-Hash` SHA256.
 
 Nếu một điều kiện FAIL, Agent phải sửa trong phạm vi được phép hoặc ghi blocker vào `03_LOGS.md`.
+
+Brain chỉ được harvest delivery về monorepo khi GitHub Actions `verification-gate` của latest Satellite `main` commit PASS. Satellite `main` có thể tạm fail CI, nhưng commit fail không được coi là nguồn sạch.
 
 ## 3. Điều Không Thuộc Phase 1 Gate
 
@@ -46,7 +48,7 @@ Các mục này thuộc Brain acceptance hoặc Phase 2+.
 2. Tự rà lại implementation so với Technical Contract và DoD.
 3. Chạy `npm test`.
 4. Chạy `npm run verify-gate -- --project-path .`.
-5. Nếu PASS, nộp bằng `npm run ls-gitpush -- --title "feat: delivery"`.
+5. Nếu PASS, push delivery bằng `npm run ls-gitpush -- --title "feat: delivery"`.
 6. Nếu FAIL, sửa lỗi trong phạm vi được phép; nếu lỗi do thiếu thông tin từ Spec, ghi blocker vào `03_LOGS.md` và quyết định/giả định vào `02_DECISION_LOGS.md`.
 
 ## 5. Scorecard Phase 2

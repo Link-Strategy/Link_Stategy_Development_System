@@ -4,7 +4,7 @@ Chào Agent, đây là bộ quy tắc nghiệm thu và chấm điểm (Gate Scor
 
 ## 1. NGUYÊN TẮC "THỬ LỬA" (VERIFICATION-FIRST)
 
-Tuyệt đối không tin vào lời nói. Chỉ tin vào bằng chứng có thể kiểm chứng được trong mã nguồn và `LOGS.md`.
+Tuyệt đối không tin vào lời nói. Chỉ tin vào bằng chứng có thể kiểm chứng được trong mã nguồn và `03_LOGS.md`.
 
 ## 2. BẢNG ĐIỂM NGHIỆM THU (100-POINT SCORECARD)
 
@@ -21,7 +21,7 @@ Mọi task hoàn thiện phải được chấm điểm dựa trên thang 100đ.
 
 ### B. Bằng chứng & Tài liệu (30đ)
 - **Log-First Documentation (20đ):** 
-    - `LOGS.md` phải có đầy đủ bằng chứng thực thi (Evidence).
+    - `03_LOGS.md` phải có đầy đủ bằng chứng thực thi (Evidence).
     - Có kết quả chạy UAT cho từng kịch bản trong Spec.
 - **README & Comments (10đ):** 
     - Cập nhật hướng dẫn vận hành module rõ ràng.
@@ -35,10 +35,11 @@ Mọi task hoàn thiện phải được chấm điểm dựa trên thang 100đ.
 
 ## 3. QUY TRÌNH KIỂM SOÁT CỦA AGENT (INTERNAL REVIEW)
 
-Trước khi trình PR cho Brain, Agent phải chạy script `verify-gate.ps1` và tự chấm điểm:
+Trước khi trình PR cho Brain, Agent phải chạy script `npm run verify-gate` và tự chấm điểm:
 - **Score < 80:** Reject ngay lập tức, yêu cầu Hands sửa lại kèm theo danh sách lỗi.
 - **Score >= 80:** Tạo PR, đính kèm báo cáo Scorecard và Evidence vào phần mô tả PR.
 
 ---
 **Status:** ACTIVE OPERATIONAL RULE
 **Priority:** LEVEL 1 (CRITICAL)
+

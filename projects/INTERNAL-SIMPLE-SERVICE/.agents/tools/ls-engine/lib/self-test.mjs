@@ -1,0 +1,106 @@
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import { copyDir, copyFile, ensureDir, exists, readJson, writeText } from "./fs-utils.mjs";
+import { ensureSatelliteGitignore, stageInitialSatelliteFiles, validateSatelliteLayout } from "./init-satellite.mjs";
+import { run } from "./process-utils.mjs";
+import { pushRules } from "./sync.mjs";
+
+export function selfTest(runtime) {
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "ls-engine-selftest-"));
+  const fixtureBase = path.join(tempRoot, "brain");
+  const satelliteRepo = path.join(tempRoot, "satellite-repo");
+  const harvestTarget = path.join(tempRoot, "harvest-target");
+  const cliPath = path.join(fixtureBase, ".agents/tools/ls-engine/cli.mjs");
+
+  try {
+    seedSelfTestBrain(runtime, fixtureBase);
+    console.log(`[SELF-TEST] fixture root: ${fixtureBase}`);
+    run("node", [cliPath, "new-project", "--client-id", "TEST", "--project-name", "CROSS", "--project-type", "fixture", "--base-path", "projects"], { cwd: fixtureBase });
+    const projectPath = path.join(fixtureBase, "projects", "TEST-CROSS");
+    run("node", [cliPath, "new-module", "--project-path", projectPath, "--module-name", "alpha"], { cwd: fixtureBase });
+
+    const failGate = run("node", [cliPath, "verify-gate", "--project-path", projectPath], { cwd: fixtureBase, capture: true, allowFailure: true });
+    if (failGate.status === 0) throw new Error("Self-test expected placeholder gate to fail, but it passed.");
+
+    hardenSelfTestProject(projectPath);
+    pushRules({ ...runtime, root: fixtureBase, args: { "project-path": projectPath }, resolvePath: (...parts) => path.resolve(fixtureBase, ...parts), requireArg: () => projectPath });
+    ensureSatelliteGitignore(projectPath);
+    validateSatelliteLayout(projectPath);
+    run("git", ["init"], { cwd: projectPath });
+    stageInitialSatelliteFiles(projectPath);
+    run("node", [cliPath, "verify-gate", "--project-path", projectPath], { cwd: fixtureBase });
+    run("node", [cliPath, "push-rules-to-satellite", "--project-path", projectPath, "--dry-run"], { cwd: fixtureBase });
+
+    seedSatelliteRepo(satelliteRepo);
+    ensureDir(harvestTarget);
+    run("node", [cliPath, "pull-code-from-satellite", "--project-path", harvestTarget, "--remote-url", satelliteRepo, "--dry-run"], { cwd: fixtureBase });
+    run("node", [cliPath, "pull-code-from-satellite", "--project-path", harvestTarget, "--remote-url", satelliteRepo], { cwd: fixtureBase });
+    if (!exists(path.join(harvestTarget, "src", "index.js"))) throw new Error("Self-test harvest did not copy src/index.js.");
+
+    console.log("[SELF-TEST] PASS");
+  } finally {
+    fs.rmSync(tempRoot, { recursive: true, force: true });
+  }
+}
+
+export function stressTest(runtime) {
+  const iterations = Number(runtime.args.iterations || 10);
+  if (!Number.isInteger(iterations) || iterations < 1) throw new Error("--iterations must be a positive integer.");
+  for (let i = 1; i <= iterations; i += 1) {
+    console.log(`[STRESS-TEST] ${i}/${iterations}`);
+    selfTest(runtime);
+  }
+  console.log(`[STRESS-TEST] PASS (${iterations}/${iterations})`);
+}
+
+function seedSelfTestBrain(runtime, targetRoot) {
+  ensureDir(targetRoot);
+  copyDir(runtime.resolvePath(".agents/rules"), path.join(targetRoot, ".agents/rules"));
+  copyDir(runtime.resolvePath(".agents/workflows"), path.join(targetRoot, ".agents/workflows"));
+  copyDir(runtime.resolvePath(".agents/templates"), path.join(targetRoot, ".agents/templates"));
+  copyDir(runtime.resolvePath(".agents/tools/ls-engine"), path.join(targetRoot, ".agents/tools/ls-engine"));
+  copyDir(runtime.resolvePath(".github"), path.join(targetRoot, ".github"));
+  copyFile(runtime.resolvePath("package.json"), path.join(targetRoot, "package.json"));
+  writeText(path.join(targetRoot, "active-projects.json"), `${JSON.stringify({ projects: [] }, null, 2)}\n`);
+}
+
+function hardenSelfTestProject(projectPath) {
+  writeText(path.join(projectPath, "01_TASK_SPEC.md"), `# Self Test Task
+
+## Strategic Context
+Validate cross-platform Phase 1 setup, sync, and gate execution.
+
+## Logic Visualization
+Input -> gate -> report.
+
+## Data Schema
+- status: string
+
+## Technical Contract
+- npm test must pass.
+
+## Definition of Done
+- Gate report is generated with SHA256 integrity hash.
+`);
+  writeText(path.join(projectPath, "tests", "smoke.test.js"), `import assert from "node:assert/strict";
+
+assert.equal(1 + 1, 2);
+`);
+  const pkg = readJson(path.join(projectPath, "package.json"));
+  pkg.scripts ||= {};
+  pkg.scripts.test = "node tests/smoke.test.js";
+  writeText(path.join(projectPath, "package.json"), `${JSON.stringify(pkg, null, 2)}\n`);
+}
+
+function seedSatelliteRepo(repoPath) {
+  ensureDir(path.join(repoPath, "src"));
+  ensureDir(path.join(repoPath, "tests"));
+  writeText(path.join(repoPath, "src", "index.js"), "export const value = 42;\n");
+  writeText(path.join(repoPath, "tests", "index.test.js"), "console.log('ok');\n");
+  run("git", ["init", "-b", "main"], { cwd: repoPath });
+  run("git", ["config", "user.email", "selftest@example.local"], { cwd: repoPath });
+  run("git", ["config", "user.name", "LS Engine Self Test"], { cwd: repoPath });
+  run("git", ["add", "."], { cwd: repoPath });
+  run("git", ["commit", "-m", "seed satellite"], { cwd: repoPath });
+}

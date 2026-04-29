@@ -9,7 +9,8 @@ Chào Agent, bạn đang làm việc trong một **Satellite Repo** (Dự án v�
 1.  **Spec-First:** Tuyệt đối không viết code khi `01_TASK_SPEC.md` chưa được Brain + Agent phê duyệt.
 2.  **Evidence-Based:** Mọi quyết định thay đổi logic, kiến trúc hoặc giải quyết các điểm chưa rõ trong Spec phải được ghi lại tại `02_DECISION_LOGS.md` như một sổ cái bằng chứng (Decision Ledger). Mọi tiến độ thực thi phải nằm trong `03_LOGS.md`.
 3.  **Governance Integrity:** Các file trong `.agents/rules/` và các script tại `.agents/tools/ls-engine/` là bất biến. Mọi sự thay đổi tại đây sẽ bị phát hiện bởi cơ chế SHA256 Integrity và khiến bạn không thể nộp bài (Gate Fail).
-4.  **Action via Tools:** Chỉ nộp bài thông qua công cụ `npm run ls-gitpush`.
+4.  **Package Contract:** `package.json` được phép thay đổi để thêm dependency, metadata và test script của dự án, nhưng không được xóa hoặc đổi các npm script vận hành của Satellite (`verify-gate`, `ls-gitpush`). Không expose các script Brain-only như `new-project`, `new-module`, `push-rules`, `pull-code`, `init-satellite`, `self-test`, `stress-test` trong Satellite.
+5.  **Action via Tools:** Chỉ nộp bài thông qua công cụ `npm run ls-gitpush`.
 
 ---
 

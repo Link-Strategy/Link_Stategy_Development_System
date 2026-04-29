@@ -21,14 +21,14 @@ Một module chỉ được coi là hoàn thiện (Active) khi đạt 5 điều 
 - **Unit Test Coverage:** > 80%.
 - **Integration Test:** Phải pass khi gọi mock-server.
 - **Observability:** Đã implement `trace_id` trong logs.
-- **Log-First Evidence:** Mọi kết quả UAT phải có dấu vết trong `LOGS.md`.
+- **Log-First Evidence:** Mọi kết quả UAT phải có dấu vết trong `03_LOGS.md`.
 - **Hardening Proposal:** Có đề xuất bóc tách tài sản tái sử dụng.
 
 ## 3. QUY TRÌNH KIỂM TRA CỦA AGENT
 
 Khi Hands báo cáo hoàn thành, Agent phải:
 1. Đối soát danh mục tệp tin trong `docs/blueprints/` xem có đủ 8 phần không.
-2. Kiểm tra `LOGS.md` để xác nhận bằng chứng thực thi (Evidence) cho từng kịch bản UAT.
+2. Kiểm tra `03_LOGS.md` để xác nhận bằng chứng thực thi (Evidence) cho từng kịch bản UAT.
 3. Nếu thiếu, yêu cầu bổ sung trước khi tiến hành chấm điểm Gate Scorecard.
 
 ---

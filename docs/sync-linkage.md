@@ -1,40 +1,68 @@
-# SYNC LINKAGE CONTRACT - CƠ CHẾ ĐỒNG BỘ MASTER-SATELLITE
+# SYNC LINKAGE CONTRACT - MASTER/SATELLITE
 
-Tài liệu này xác lập các giao thức kỹ thuật để duy trì sự nhất quán giữa **Master Monorepo (The Brain)** và các **Satellite Repos (The Hands)**.
+This document defines the Phase 1 technical sync contract between the Master
+Monorepo (Brain) and Satellite repos (Hands).
 
-## 1. PHÂN LỚP DỮ LIỆU ĐỒNG BỘ (DATA LAYERS)
+## 1. Data Layers
 
-| Lớp dữ liệu | Hướng đồng bộ | Tần suất | Chế độ tại Satellite |
-| :--- | :--- | :--- | :--- |
-| **Governance (.agents/rules)** | Master ➔ Satellite | Real-time (CI/CD) | **Read-Only** |
-| **Blueprints (.LinkStrategy)** | Master ➔ Satellite | Per Milestone | **Read-Only** |
-| **Source Code (src/tests)** | Satellite ➔ Master | Sau khi PR Approved | **Read-Write** (Hands) |
-| **Logs (LOGS.md)** | Satellite ➔ Master | Daily | **Read-Write** (Hands) |
+| Layer | Direction | Mode at Satellite |
+| :--- | :--- | :--- |
+| Governance rules (`.agents/rules`) | Master -> Satellite | Read-only |
+| Workflows/templates (`.agents/workflows`, `.agents/templates`) | Master -> Satellite | Read-only |
+| Engine tools (`.agents/tools/ls-engine`) | Master -> Satellite | Read-only |
+| GitHub gate (`.github/workflows`) | Master -> Satellite | Read-only |
+| Source/test/docs (`src`, `tests`, `docs`) | Satellite -> Master | Read-write by Hands |
+| Audit logs (`03_LOGS.md`) | Satellite -> Master | Read-write by Hands |
 
-## 2. GIAO THỨC ĐỒNG BỘ RULE (PUSH PROTOCOL)
-*Mục tiêu: Đảm bảo Hands luôn bị áp đặt bởi Rules mới nhất từ Brain.*
+## 2. Rule Push Protocol
 
-1.  **Trigger:** Brain commit thay đổi vào `.agents/rules/` trên Monorepo.
-2.  **Action:** GitHub Action duyệt danh sách Satellite Repos (quản lý trong `active-projects.json`).
-3.  **Command:** `git push satellite-remote main` (chỉ ghi đè thư mục `.agents/rules/`).
-4.  **Enforcement:** Hệ thống quy tắc tại Satellite được dẫn hướng bởi `GEMINI.md`.
+Goal: keep every Satellite repo on the same Phase 1 governance engine as Master.
 
-## 3. GIAO THỨC ĐỒNG BỘ CODE (PULL PROTOCOL)
-*Mục tiêu: Thu hoạch tài sản sau khi đã qua Verification Gate.*
+1. Brain updates governance assets in Master.
+2. Brain previews sync with:
+   `npm run push-rules -- --project-path projects/CLIENT-PROJECT --dry-run`
+3. Brain applies sync with:
+   `npm run push-rules -- --project-path projects/CLIENT-PROJECT`
+4. If pushing directly to the Satellite remote is required:
+   `npm run push-rules -- --project-path projects/CLIENT-PROJECT --git-push`
 
-1.  **Trigger:** PR trên Satellite đạt điểm Gate >= 80/100 và Brain bấm `Approve`.
-2.  **Action:** Script `sync-satellite-code.ps1` thực hiện:
-    *   `git remote add satellite [URL]`
-    *   `git fetch satellite`
-    *   `git checkout satellite/main -- projects/[ID]/src`
-    *   `git commit -m "harden(sync): tích hợp code từ satellite [ID]"`
-3.  **Audit:** Ghi vết phiên đồng bộ vào Master Audit Log.
+The sync includes `.agents/rules`, `.agents/workflows`, `.agents/templates`,
+`.agents/tools/ls-engine`, `.github`, and `GEMINI.md`. For Satellite
+`package.json`, sync merges only the required Satellite npm scripts
+(`verify-gate`, `ls-gitpush`) and Node engine contract; project dependencies,
+metadata, and project-specific test scripts remain owned by Hands. Brain-only
+scripts (`new-project`, `new-module`, `push-rules`, `pull-code`,
+`init-satellite`, `self-test`, `stress-test`) must stay out of Satellite
+`package.json`.
 
-## 4. QUY TẮC GIẢI QUYẾT XUNG ĐỘT (CONFLICT RESOLUTION)
-*   **Quy tắc tối thượng:** Master luôn thắng (Master is Superior).
-*   Nếu Hands tự ý sửa Rules tại Satellite ➔ CI/CD của Master sẽ ghi đè (Overwrite) mà không báo trước.
-*   Nếu có xung đột tại Source Code ➔ Hands phải tự resolve trên Satellite trước khi Brain thực hiện Pull.
+## 3. Code Pull Protocol
+
+Goal: harvest implementation assets after the Satellite has passed the gate.
+
+1. Satellite PR must pass GitHub Verification Gate.
+2. Brain previews harvest with:
+   `npm run pull-code -- --project-path projects/CLIENT-PROJECT --remote-url <repo-url> --dry-run`
+3. Brain harvests with:
+   `npm run pull-code -- --project-path projects/CLIENT-PROJECT --remote-url <repo-url>`
+
+`pull-code` clones the Satellite into a temporary directory and copies only
+`src`, `tests`, and `docs`. It does not depend on shell pipes, archive tools,
+or OS-specific shell scripts.
+
+## 4. Gate Contract
+
+1. Local and CI gates run:
+   `npm run verify-gate -- --project-path .`
+2. `GATE_REPORT.md` is the source of truth.
+3. `Integrity-Hash` is SHA256 over a stable manifest of `relative path + file hash`.
+4. CI regenerates the gate report and recomputes integrity on
+   `ubuntu-latest`, `windows-latest`, and `macos-latest`.
+
+## 5. Conflict Rule
+
+Master owns governance files. Hands own implementation files. If a Satellite
+changes governance assets directly, the verification gate must fail until the
+Satellite is resynced from Master.
 
 ---
-**Status:** DRAFT CONTRACT (PHASE 7.2)
-**Priority:** P0 - Critical for Scaling
+Status: Phase 1 active contract

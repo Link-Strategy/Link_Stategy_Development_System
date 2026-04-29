@@ -14,7 +14,7 @@ Swagger không chỉ là tài liệu, nó là **Hợp đồng (Contract)**.
 - **Nguyên tắc "Contract-First":** Tuyệt đối không tự ý thay đổi tên trường (Field names), kiểu dữ liệu (Data types) hoặc mã lỗi (Error codes) so với Swagger Spec mà Brain đã cung cấp.
 - **Validation:** Bạn phải đảm bảo mã nguồn thực hiện đúng các quy tắc validation đã mô tả trong Swagger (ví dụ: `minLength`, `pattern`, `required`).
 - **Mocker:** Khuyến khích sử dụng Swagger file để tạo Mock Server trong giai đoạn phát triển local trước khi có kết nối thật.
-- **Sai lệch:** Nếu phát hiện Spec không khả thi hoặc thiếu sót, phải báo cáo ngay qua `02_QA_LOGS.md` để Brain cập nhật Spec, tuyệt đối không tự ý sửa code khác với Spec.
+- **Sai lệch:** Nếu phát hiện Spec không khả thi hoặc thiếu sót, phải báo cáo ngay qua `02_DECISION_LOGS.md` để Brain cập nhật Spec, tuyệt đối không tự ý sửa code khác với Spec.
 
 ## 2. FIGMA (Dành cho Frontend & Mobile)
 
@@ -32,7 +32,7 @@ Figma là **Nguồn sự thật duy nhất (Source of Truth)** về giao diện.
 Khi nhận Task Spec, bạn có 24h để:
 1. Đọc kỹ Spec và các tài liệu Swagger/Figma đính kèm.
 2. Chạy thử môi trường Sandbox/Docker được cấp.
-3. Đặt câu hỏi tại `02_QA_LOGS.md` nếu có bất kỳ điểm nào mơ hồ.
+3. Đặt câu hỏi tại `02_DECISION_LOGS.md` nếu có bất kỳ điểm nào mơ hồ.
 4. Sau 24h, nếu không có câu hỏi, hệ thống coi như bạn đã hiểu rõ và cam kết thực hiện đúng 100% Contract.
 
 ---

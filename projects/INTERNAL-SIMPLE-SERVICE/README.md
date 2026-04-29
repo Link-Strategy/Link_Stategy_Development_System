@@ -11,5 +11,5 @@
 
 ## Operational Tools
 
-4. [Verify Gate](.agents/scripts/verify-gate.ps1)
-5. [Safe Delivery](.agents/scripts/ls-gitpush.ps1)
+4. Verify Gate: `npm run verify-gate -- --project-path .`
+5. Safe Delivery: `npm run ls-gitpush -- --project-path . --title "feat: delivery"`

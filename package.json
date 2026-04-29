@@ -13,6 +13,8 @@
     "ls-gitpush": "node .agents/tools/ls-engine/cli.mjs ls-gitpush",
     "push-rules": "node .agents/tools/ls-engine/cli.mjs push-rules-to-satellite",
     "pull-code": "node .agents/tools/ls-engine/cli.mjs pull-code-from-satellite",
-    "init-satellite": "node .agents/tools/ls-engine/cli.mjs init-satellite"
+    "init-satellite": "node .agents/tools/ls-engine/cli.mjs init-satellite",
+    "self-test": "node .agents/tools/ls-engine/cli.mjs self-test",
+    "stress-test": "node .agents/tools/ls-engine/cli.mjs stress-test"
   }
 }

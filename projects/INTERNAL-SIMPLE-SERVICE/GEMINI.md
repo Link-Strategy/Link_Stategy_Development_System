@@ -1,4 +1,4 @@
-# LINK STRATEGY - SATELLITE CONSTITUTION (GEMINI.md)
+﻿# LINK STRATEGY - SATELLITE CONSTITUTION (GEMINI.md)
 
 Chào Agent, bạn đang làm việc trong một **Satellite Repo** (Dự án vệ tinh). Nhiệm vụ của bạn là thi công module này dưới sự giám sát chặt chẽ của Brain thông qua các chốt chặn tự động.
 
@@ -8,8 +8,9 @@ Chào Agent, bạn đang làm việc trong một **Satellite Repo** (Dự án v�
 
 1.  **Spec-First:** Tuyệt đối không viết code khi `01_TASK_SPEC.md` chưa được Brain + Agent phê duyệt.
 2.  **Evidence-Based:** Mọi quyết định thay đổi logic, kiến trúc hoặc giải quyết các điểm chưa rõ trong Spec phải được ghi lại tại `02_DECISION_LOGS.md` như một sổ cái bằng chứng (Decision Ledger). Mọi tiến độ thực thi phải nằm trong `03_LOGS.md`.
-3.  **Governance Integrity:** Các file trong `.agents/rules/` và các script tại `.agents/scripts/` là bất biến. Mọi sự thay đổi tại đây sẽ bị phát hiện bởi cơ chế MD5 Integrity và khiến bạn không thể nộp bài (Gate Fail).
-4.  **Action via Tools:** Chỉ nộp bài thông qua công cụ `.agents/scripts/ls-gitpush.ps1`.
+3.  **Governance Integrity:** Các file trong `.agents/rules/` và các script tại `.agents/tools/ls-engine/` là bất biến. Mọi sự thay đổi tại đây sẽ bị phát hiện bởi cơ chế SHA256 Integrity và khiến bạn không thể nộp bài (Gate Fail).
+4.  **Package Contract:** `package.json` được phép thay đổi để thêm dependency, metadata và test script của dự án, nhưng không được xóa hoặc đổi các npm script vận hành của Satellite (`verify-gate`, `ls-gitpush`). Không expose các script Brain-only như `new-project`, `new-module`, `push-rules`, `pull-code`, `init-satellite`, `self-test`, `stress-test` trong Satellite.
+5.  **Action via Tools:** Chỉ nộp bài thông qua công cụ `npm run ls-gitpush`.
 
 ---
 
@@ -28,7 +29,7 @@ Chào Agent, bạn đang làm việc trong một **Satellite Repo** (Dự án v�
 ## III. TIÊU CHUẨN THI CÔNG (TECHNICAL STANDARDS)
 
 *   **Code & Test:** Code nằm ở `src/`, Test nằm ở `tests/`. Unit Test phải đạt coverage cao.
-*   **Verification:** Trước khi nộp bài, phải chạy `.agents/scripts/verify-gate.ps1`. Bạn phải sửa toàn bộ lỗi (Failures) mới có thể nộp bài.
+*   **Verification:** Trước khi nộp bài, phải chạy `npm run verify-gate -- --project-path .`. Bạn phải sửa toàn bộ lỗi (Failures) mới có thể nộp bài.
 *   **Conventional Commits:** Tuân thủ đúng chuẩn commit để Brain có thể theo dõi lịch sử 24h.
 *   **No Secrets:** Tuyệt đối không commit file `.env` hay API Key. Sử dụng `.env.example` làm mẫu.
 
@@ -36,8 +37,8 @@ Chào Agent, bạn đang làm việc trong một **Satellite Repo** (Dự án v�
 
 ## IV. QUY TRÌNH BÀN GIAO (DELIVERY PROTOCOL)
 
-1.  **Tự kiểm định:** Chạy `.agents/scripts/verify-gate.ps1`.
-2.  **Nộp bài:** Chạy `.agents/scripts/ls-gitpush.ps1`. 
+1.  **Tự kiểm định:** Chạy `npm run verify-gate -- --project-path .`.
+2.  **Nộp bài:** Chạy `npm run ls-gitpush -- --title "feat: delivery"`. 
 3.  **Bằng chứng:** Công cụ sẽ tự động tạo PR kèm theo **Integrity Hash** và **Gate Report**. 
 4.  **Đợi duyệt:** Brain sẽ review PR dựa trên các bằng chứng này.
 
@@ -56,3 +57,4 @@ Trong trường hợp bạn nhận được thông báo **GATE FAIL** do vi ph�
 ---
 **Status:** ACTIVE SATELLITE RULES
 **Priority:** LEVEL 1 (Sovereign within this Project)
+

@@ -6,7 +6,7 @@ import { validatePackageContract } from "./package-contract.mjs";
 
 export function isIntegrityExcluded(rel) {
   const normalized = rel.replaceAll("\\", "/");
-  if (["GATE_REPORT.md", "AGENT_REVIEW_REPORT.md"].includes(normalized)) return true;
+  if (normalized === "GATE_REPORT.md") return true;
   return normalized.split("/").some((part) => [".git", "node_modules", "dist", "build"].includes(part));
 }
 

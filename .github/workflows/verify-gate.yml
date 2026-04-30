@@ -42,7 +42,7 @@ jobs:
             process.exit(1);
           }
 
-          const excludedFiles = new Set(["GATE_REPORT.md", "AGENT_REVIEW_REPORT.md"]);
+          const excludedFiles = new Set(["GATE_REPORT.md"]);
           const excludedDirs = new Set([".git", "node_modules", "dist", "build"]);
           const files = [];
 
@@ -78,7 +78,5 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: gate-report
-          path: |
-            GATE_REPORT.md
-            AGENT_REVIEW_REPORT.md
+          name: gate-report-${{ matrix.os }}
+          path: GATE_REPORT.md

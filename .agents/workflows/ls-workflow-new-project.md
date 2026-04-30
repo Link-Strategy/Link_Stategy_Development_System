@@ -23,14 +23,12 @@ Không tạo project mới bên trong Master/System Workspace trừ khi Brain y�
 
 Agent xác định thông tin project từ yêu cầu của Brain:
 
-- `client-id`
 - `project-name`
-- `project-type`
 
 Theo lifecycle mới, Project Workspace nên nằm cạnh Master/System Workspace bằng cách dùng `--base-path ..`.
 
 ```text
-../<CLIENT_ID>-<PROJECT_NAME>
+../<PROJECT_NAME>
 ```
 
 Nếu Brain chỉ định folder cha khác, truyền folder đó vào `--base-path`.
@@ -40,27 +38,33 @@ Nếu Brain chỉ định folder cha khác, truyền folder đó vào `--base-pa
 Chạy CLI hiện tại với đầy đủ tham số:
 
 ```bash
-npm run new-project -- --client-id "<client-id>" --project-name "<project-name>" --project-type "<project-type>" --base-path ".."
+npm run new-project -- --project-name "<project-name>"
 ```
+
+Mặc định command sẽ cố tạo GitHub repo bằng `gh repo create`, push initial commit và ghi `remote_url` vào `active-projects.json`.
+
+Các biến thể hợp lệ:
+
+- Dùng `--no-github` nếu chỉ muốn tạo local workspace.
+- Dùng `--remote-url "<url>"` nếu GitHub repo đã tồn tại và chỉ cần ghi URL vào registry.
+- Dùng `--repo-name "<name>"`, `--organization "<org>"`, `--public` để điều khiển repo GitHub được tạo.
 
 Workflow kỳ vọng Project Workspace có:
 
-- spec/log/docs để Brain quản lý project;
+- `docs/` rỗng để Brain tự tổ chức tài liệu dự án;
 - rules/workflows/templates/tooling cần cho lifecycle;
 - package scripts Brain-side;
 - registry để theo dõi Hands Workspace.
-
-Nếu Brain yêu cầu Project Workspace có GitHub repo riêng ngay ở bước này, Agent tạo repo sau khi skeleton đã được tạo và cập nhật `active-projects.json` bằng remote URL.
 
 ## 4. Verify Project Workspace
 
 Sau khi tạo, Agent kiểm tra:
 
 - folder project tồn tại;
-- `01_TASK_SPEC.md`, `02_DECISION_LOGS.md`, `03_LOGS.md` tồn tại;
+- `docs/` tồn tại và không bị ép theo template mặc định;
 - package scripts cần cho Brain workflow tồn tại;
 - project được ghi vào `active-projects.json` của Master nếu registry tồn tại;
-- remote GitHub đã được cấu hình nếu workflow đã tạo repo ở bước này.
+- `remote_url` được ghi nếu GitHub repo được tạo hoặc `--remote-url` được truyền.
 
 ## 5. Next Step
 

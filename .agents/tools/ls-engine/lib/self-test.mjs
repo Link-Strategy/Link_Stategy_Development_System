@@ -17,8 +17,8 @@ export function selfTest(runtime) {
   try {
     seedSelfTestBrain(runtime, fixtureBase);
     console.log(`[SELF-TEST] fixture root: ${fixtureBase}`);
-    run("node", [cliPath, "new-project", "--client-id", "TEST", "--project-name", "CROSS", "--project-type", "fixture", "--base-path", "projects"], { cwd: fixtureBase });
-    const projectPath = path.join(fixtureBase, "projects", "TEST-CROSS");
+    run("node", [cliPath, "new-project", "--project-name", "CROSS", "--base-path", "projects", "--no-github"], { cwd: fixtureBase });
+    const projectPath = path.join(fixtureBase, "projects", "CROSS");
     run("node", [cliPath, "new-module", "--project-path", projectPath, "--module-name", "alpha"], { cwd: fixtureBase });
 
     const failGate = run("node", [cliPath, "verify-gate", "--project-path", projectPath], { cwd: fixtureBase, capture: true, allowFailure: true });
@@ -31,6 +31,7 @@ export function selfTest(runtime) {
     run("git", ["init"], { cwd: projectPath });
     run("git", ["config", "user.email", "selftest@example.local"], { cwd: projectPath });
     run("git", ["config", "user.name", "LS Engine Self Test"], { cwd: projectPath });
+    fs.rmSync(path.join(projectPath, "active-hands.json"), { force: true });
     stageInitialSatelliteFiles(projectPath);
     run("git", ["commit", "-m", "chore(init): initialize satellite fixture"], { cwd: projectPath });
     run("node", [cliPath, "verify-gate", "--project-path", projectPath], { cwd: fixtureBase });
@@ -53,6 +54,8 @@ export function selfTest(runtime) {
     run("node", [cliPath, "pull-code-from-satellite", "--project-path", harvestTarget, "--remote-url", satelliteRepo, "--dry-run", "--skip-ci-check"], { cwd: fixtureBase });
     run("node", [cliPath, "pull-code-from-satellite", "--project-path", harvestTarget, "--remote-url", satelliteRepo, "--skip-ci-check"], { cwd: fixtureBase });
     if (!exists(path.join(harvestTarget, "src", "index.js"))) throw new Error("Self-test harvest did not copy src/index.js.");
+    if (!exists(path.join(harvestTarget, "03_LOGS.md"))) throw new Error("Self-test harvest did not copy 03_LOGS.md.");
+    if (exists(path.join(harvestTarget, ".git"))) throw new Error("Self-test harvest should not copy .git.");
 
     console.log("[SELF-TEST] PASS");
   } finally {
@@ -82,6 +85,7 @@ function seedSelfTestBrain(runtime, targetRoot) {
 }
 
 function hardenSelfTestProject(projectPath) {
+  ensureDir(path.join(projectPath, "tests"));
   writeText(path.join(projectPath, "01_TASK_SPEC.md"), `# Self Test Task
 
 ## Strategic Context
@@ -99,6 +103,8 @@ Input -> gate -> report.
 ## Definition of Done
 - Gate report is generated with SHA256 integrity hash.
 `);
+  writeText(path.join(projectPath, "02_DECISION_LOGS.md"), "# Decision Logs\n\n- Self-test fixture decisions.\n");
+  writeText(path.join(projectPath, "03_LOGS.md"), "# Logs\n\n- Self-test fixture setup.\n");
   writeText(path.join(projectPath, "tests", "smoke.test.js"), `import assert from "node:assert/strict";
 
 assert.equal(1 + 1, 2);
@@ -110,8 +116,17 @@ assert.equal(1 + 1, 2);
 }
 
 function seedSatelliteRepo(repoPath) {
+  ensureDir(path.join(repoPath, "docs"));
   ensureDir(path.join(repoPath, "src"));
   ensureDir(path.join(repoPath, "tests"));
+  writeText(path.join(repoPath, "01_TASK_SPEC.md"), "# Spec\n\n## Strategic Context\nSeed.\n\n## Logic Visualization\nSeed.\n\n## Data Schema\nSeed.\n\n## Technical Contract\nSeed.\n\n## Definition of Done\nSeed.\n");
+  writeText(path.join(repoPath, "02_DECISION_LOGS.md"), "# Decisions\n\n- Seed decision.\n");
+  writeText(path.join(repoPath, "03_LOGS.md"), "# Logs\n\n- Seed log.\n");
+  writeText(path.join(repoPath, "README.md"), "# Satellite Seed\n");
+  writeText(path.join(repoPath, "package.json"), `${JSON.stringify({ type: "module", scripts: { test: "node tests/index.test.js" } }, null, 2)}\n`);
+  writeText(path.join(repoPath, ".env.example"), "EXAMPLE_VALUE=\n");
+  writeText(path.join(repoPath, ".gitignore"), ".env\nnode_modules/\n");
+  writeText(path.join(repoPath, "docs", "note.md"), "# Note\n");
   writeText(path.join(repoPath, "src", "index.js"), "export const value = 42;\n");
   writeText(path.join(repoPath, "tests", "index.test.js"), "console.log('ok');\n");
   run("git", ["init", "-b", "main"], { cwd: repoPath });

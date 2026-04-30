@@ -73,7 +73,7 @@ Dựa trên hệ thống "Bộ khung thép" 3 tầng, vòng đời sản xuất 
 
 ### 2. Brain: Khởi tạo & Đặc tả (Strategy & Spec)
 *   **Người thực hiện:** Brain Agent.
-*   **Hành động:** Chạy `npm run new-project` để tạo trạm điều phối dự án. Viết `01_TASK_SPEC.md` bám sát yêu cầu khách hàng.
+*   **Hành động:** Chạy `npm run new-project -- --project-name <NAME>` để tạo trạm điều phối dự án. Brain tự tổ chức tài liệu chiến lược/spec/roadmap trong `docs/`.
 *   **Kết quả:** Một dự án độc lập có hiến pháp riêng và kế hoạch thi công rõ ràng.
 
 ### 3. Hands: Thi công & Bằng chứng (Execution & Evidence)
@@ -124,10 +124,12 @@ Dựa trên hệ thống "Bộ khung thép" 3 tầng, vòng đời sản xuất 
 ### 1.3.1 - Tạo script sinh Brain Project Workspace (Mới)
 
 - [x] Hành động: Tạo `npm run new-project`.
-- [x] Hành động: Input gồm `client_id`, `project_name`, `project_type`, `base-path`.
-- [x] Hành động: Output tạo Brain Project Workspace nằm ngoài Master (ví dụ: `../[CLIENT_ID]-[PROJECT_NAME]/`).
+- [x] Hành động: Input vận hành chính chỉ cần `project_name`.
+- [x] Hành động: Output tạo Brain Project Workspace nằm ngoài Master (ví dụ: `../[PROJECT_NAME]/`).
+- [x] Hành động: Tạo GitHub repo, push initial commit và ghi `path`/`remote_url` vào `active-projects.json` khi không dùng chế độ local.
 - [x] Hành động: Copy templates, engine, rules, workflows, skills và UI components.
 - [x] Hành động: Cấu hình `GEMINI.md` dành riêng cho Brain Project.
+- [x] Hành động: Tạo `docs/` rỗng để Brain tự do tổ chức tài liệu dự án, không sinh `01_TASK_SPEC.md`, `02_DECISION_LOGS.md`, `03_LOGS.md` ở root Brain Project.
 - [x] Hành động: Khởi tạo registry `active-hands.json`.
 - Đầu ra: Một trạm điều hành Brain độc lập sẵn sàng quản lý dự án.
 - DoD: Chạy một lệnh tạo được Brain Project skeleton đầy đủ và tự chủ.
@@ -136,8 +138,8 @@ Dựa trên hệ thống "Bộ khung thép" 3 tầng, vòng đời sản xuất 
 ### 1.3.2 - Tạo script sinh module mới trong project
 
 - [x] Hành động: Tạo `npm run new-module`.
-- [x] Hành động: Input gồm `project_path`, `module_name`, `module_type`.
-- [x] Hành động: Output tạo module folder với `src/`, `tests/`, `docs/blueprints/`, README và local logs.
+- [x] Hành động: Input gồm `project_path`, `module_name`.
+- [x] Hành động: Output tạo `src/[module]/README.md` và `docs/blueprints/[module]/01_TASK_SPEC.md`.
 - Đầu ra: Module-based tasking rõ ràng.
 - DoD: Có thể giao module độc lập cho Hands mà không lẫn với module khác.
 - Ưu tiên: P0.
@@ -231,13 +233,14 @@ Dựa trên hệ thống "Bộ khung thép" 3 tầng, vòng đời sản xuất 
 ### 1.7.3 - Tạo `GEMINI.md` và Cơ chế đồng bộ 3 tầng (Master-Brain-Hands)
 
 - [x] Hành động: Tạo `GEMINI_BRAIN_TEMPLATE.md` và `GEMINI_SATELLITE_TEMPLATE.md`.
-- [x] Hành động: Triển khai `npm run new-hands` chạy từ Brain Project để onboarding Hands.
+- [x] Hành động: Triển khai `npm run new-hands -- --project-path <ARCHITECTURE_PATH> --repo-name <REPO>` chạy từ Brain Project để onboarding Hands, tự tạo folder path nếu chưa có.
 - [x] Hành động: Tạo script đồng bộ tự động `npm run push-rules` (Sync Rules, Engine, Skills, UI Kit).
+- [x] Hành động: Nâng cấp `push-rules` hỗ trợ `--all` (Batch update) từ `active-hands.json`, đồng bộ cả Assets và Spec/Logs.
 - [x] Hành động: Triển khai cơ chế auto-registry vào `active-projects.json` (Master) và `active-hands.json` (Brain).
 - [x] Hành động: Chốt chặn thu hoạch bằng `npm run pull-code` tích hợp kiểm tra CI Status.
 - Đầu ra: Quy trình đồng bộ và thu hoạch khép kín, an toàn và tự động.
 - DoD: Satellite được khởi tạo, đăng ký và thu hoạch dựa trên bằng chứng CI.
-- Ưu tiên: P0.
+- Ưu tiên: P0. (HOÀN THÀNH VỚI BATCH MODE).
 
 
 
@@ -303,14 +306,14 @@ Dựa trên hệ thống "Bộ khung thép" 3 tầng, vòng đời sản xuất 
 - Đầu ra: Review kỹ thuật có checklist thống nhất.
 
 #### 2.1.4 - Thiết lập delivery evidence archive
-- [ ] Hành động: Tạo cấu trúc `docs/audit/gate-reports/`.
+- [x] Hành động: Tạo cấu trúc `docs/audit/gate-reports/` khi Brain harvest và tải `GATE_REPORT.md` artifact từ GitHub Actions.
 - [ ] Hành động: Tạo cấu trúc `docs/audit/review-reports/`.
 - [ ] Hành động: Tạo cấu trúc `docs/audit/security-reports/`.
 - [ ] Hành động: Quy định naming for evidence theo project/module/date.
 
 #### 2.1.5 - Quy trình Phê duyệt và Giải ngân dựa trên Log
-- [ ] Hành động: Thiết lập cơ chế ghi nhận quyết định phê duyệt trực tiếp vào `03_LOGS.md` dự án.
-- [ ] Hành động: Sử dụng bằng chứng trong `03_LOGS.md` để làm căn cứ giải ngân thay vì các biểu mẫu rời rạc.
+- [ ] Hành động: Thiết lập cơ chế ghi nhận quyết định phê duyệt trong tài liệu dự án tại `docs/`, có liên kết đến `03_LOGS.md` của Hands/Satellite.
+- [ ] Hành động: Sử dụng bằng chứng trong `03_LOGS.md` của Hands/Satellite để làm căn cứ giải ngân thay vì các biểu mẫu rời rạc.
 - [ ] Hành động: Ghi nhận mã Hash phê duyệt cuối cùng để đảm bảo tính đối soát.
 
 ### 2.1.6 - Skill Activation & Integration (NEW)
@@ -371,7 +374,7 @@ Dựa trên hệ thống "Bộ khung thép" 3 tầng, vòng đời sản xuất 
 ### 2.5.3 - Hoàn thiện `scripts/README.md`
 
 - [x] Hành động: Hoàn thiện `scripts/README.md`.
-- [x] Hành động: Liệt kê các script: new-project, new-module, verify-gate, hardening-register. (Đóng gói trong Skill Engine Ops).
+- [x] Hành động: Liệt kê các script: new-project, new-hands, new-module, verify-gate, push-rules, pull-code, ls-gitpush. (Đóng gói trong Skill Engine Ops).
 - Đầu ra: Scripts folder có catalog.
 - DoD: Người mới biết chạy script nào cho việc gì.
 - Ưu tiên: P0.
@@ -439,7 +442,7 @@ Dựa trên hệ thống "Bộ khung thép" 3 tầng, vòng đời sản xuất 
 ### 2.6.5 - Tạo daily harvesting workflow
 
 - [ ] Hành động: Tạo `.agents/workflows/ls-workflow-daily-harvesting.md`.
-- [ ] Hành động: Mô tả cách Brain đọc 03_LOGS.md, commit, 02_DECISION_LOGS.md để rút asset, risk và knowledge piece.
+- [ ] Hành động: Mô tả cách Brain đọc tài liệu trong `docs/`, commit, `03_LOGS.md` và `02_DECISION_LOGS.md` của Hands/Satellite để rút asset, risk và knowledge piece.
 - Đầu ra: Knowledge governance thành workflow cụ thể.
 - DoD: Cuối ngày biết phải harvest gì và lưu ở đâu.
 - Ưu tiên: P2.
@@ -500,7 +503,7 @@ Dựa trên hệ thống "Bộ khung thép" 3 tầng, vòng đời sản xuất 
 
 - [x] Hành động: Tạo project mẫu bằng `npm run new-project`.
 - [x] Hành động: Tạo module mẫu bằng `npm run new-module`.
-- [x] Hành động: Điền 01_TASK_SPEC.md, 02_DECISION_LOGS.md, 03_LOGS.md, README.md (đã test with placeholder detection).
+- [x] Hành động: Điền tài liệu project trong `docs/` và kiểm tra luồng Satellite với `01_TASK_SPEC.md`, `02_DECISION_LOGS.md`, `03_LOGS.md`, README.md.
 - [x] Hành động: Chạy `npm run verify-gate`.
 - Đầu ra: Một vòng delivery giả lập đầy đủ.
 - DoD: Base platform chứng minh được luồng từ Spec đến Gate.

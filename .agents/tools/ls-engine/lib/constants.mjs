@@ -1,4 +1,4 @@
-export const harvestDirs = ["src", "tests", "docs"];
+export const harvestProtectedPaths = [".git"];
 
 export const satellitePackageScripts = {
   "verify-gate": "node .agents/tools/ls-engine/cli.mjs verify-gate",

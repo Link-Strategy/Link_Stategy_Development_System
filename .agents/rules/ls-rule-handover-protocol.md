@@ -15,7 +15,7 @@ Trong Phase 1, một Satellite delivery chỉ cần đủ các bằng chứng k�
 - `npm test` PASS.
 - `npm run verify-gate -- --project-path .` PASS.
 
-Đây là điều kiện đủ để Hands Agent push Phase 1 delivery bằng `npm run ls-gitpush`. Brain chỉ harvest về monorepo sau khi GitHub Actions trên Satellite `main` PASS.
+Đây là điều kiện đủ để Hands Agent push Phase 1 delivery bằng `npm run ls-gitpush`. Brain chỉ harvest về Brain Project sau khi GitHub Actions trên Satellite `main` PASS.
 
 ## 2. Phase 2 / Full Module Handover
 

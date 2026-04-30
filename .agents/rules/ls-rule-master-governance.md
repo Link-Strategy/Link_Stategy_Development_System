@@ -5,12 +5,18 @@ description: Master rule for Brain sovereignty, Spec-First execution, Phase 1 te
 
 # LS-RULE-MASTER-GOVERNANCE
 
-Quy tắc này bảo vệ chủ quyền của Brain, đồng thời cho phép **AI Hands Agent** tự triển khai trong phạm vi Spec mà không cần Brain can thiệp từng bước.
+Quy tắc này bảo vệ chủ quyền của Master/Brain trong hệ sinh thái 3 tầng (Master-Brain-Hands), đồng thời cho phép **AI Hands Agent** tự triển khai trong phạm vi Spec mà không cần Brain can thiệp từng bước.
+
+## 0. Phân cấp Chủ quyền (Sovereignty Hierarchy)
+
+1. **MASTER (The Root):** Nắm giữ DNA, Engine và Governance Rules chuẩn. Có quyền tối cao.
+2. **BRAIN (Orchestrator):** Trạm điều phối dự án. Nhận DNA từ Master, quản lý Satellite (Hands) qua `active-hands.json` và `push-rules`.
+3. **HANDS (Executor):** Đơn vị thi công. Nhận DNA và Spec từ Brain, thực thi bài làm và nộp qua Verification Gate.
 
 ## 1. Brain Sovereignty
 
-- **Brain:** USER quyết định kiến trúc, tiêu chuẩn nghiệm thu cuối và quyền sở hữu tài sản.
-- **Hands Agent:** đơn vị thực thi trong Satellite, được tự xử lý implementation nếu không vượt khỏi Spec.
+- **Brain:** USER quyết định kiến trúc, tiêu chuẩn nghiệm thu cuối và quyền sở hữu tài sản. Brain là thực thể duy nhất có quyền sửa `01_TASK_SPEC.md`.
+- **Hands Agent:** đơn vị thực thi trong Satellite, được tự xử lý implementation nếu không vượt khỏi Spec. Hands KHÔNG ĐƯỢC sửa `01_TASK_SPEC.md`.
 - Hands Agent không được tự đổi:
   - logic/kiến trúc lõi đã được Brain chốt,
   - acceptance standard,
@@ -63,10 +69,10 @@ Scorecard 100 điểm, giải ngân, hardening đầy đủ và nghiệm thu ngh
 
 ## 5. Source Of Truth
 
-- Brain monorepo là nguồn sạch duy nhất.
+- Brain Project là nguồn sạch sau harvest.
 - Satellite `main` là execution lane của Hands, không phải trusted source tự thân.
 - Hands được push delivery lên Satellite `main` chỉ thông qua `npm run ls-gitpush`.
-- Brain chỉ được harvest từ latest Satellite `main` commit khi GitHub Actions `verification-gate` của commit đó PASS.
+- Brain chỉ được harvest tracked snapshot từ latest Satellite `main` commit khi GitHub Actions `verification-gate` của commit đó PASS; không harvest `.git/` hoặc file local/untracked.
 
 ## 6. Audit & Logging
 
@@ -82,11 +88,12 @@ Scorecard 100 điểm, giải ngân, hardening đầy đủ và nghiệm thu ngh
 Mỗi phiên làm việc:
 
 1. Đọc `GEMINI.md`.
-2. Đọc `.agents/rules/*.md`.
-3. Đọc `01_TASK_SPEC.md`.
-4. Đọc `02_DECISION_LOGS.md`.
-5. Đọc `03_LOGS.md`.
-6. Kiểm tra `package.json` và scripts Satellite.
+2. Đọc `ASSET_INDEX.md`.
+3. Đọc `.agents/rules/*.md`.
+4. Đọc `01_TASK_SPEC.md`.
+5. Đọc `02_DECISION_LOGS.md`.
+6. Đọc `03_LOGS.md`.
+7. Kiểm tra `package.json` và scripts Satellite.
 
 ## 8. Tool-Only Push
 

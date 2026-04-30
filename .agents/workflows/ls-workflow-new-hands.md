@@ -12,13 +12,11 @@ Quy trình này dùng cho **Brain Agent** khi giao một phần việc cho Hands
 Agent phải đọc:
 
 - Project Workspace context;
-- `01_TASK_SPEC.md`;
-- `02_DECISION_LOGS.md`;
-- `03_LOGS.md`;
+- tài liệu giao việc liên quan trong `docs/` của Brain Project;
 - `.agents/rules/*.md`;
 - `docs/sync-linkage.md`;
 
-Hands Workspace phải nằm trong Project Workspace và phải có path rõ ràng do Brain/workflow chỉ định.
+Hands Workspace phải nằm trong Project Workspace và phải có path rõ ràng do Brain/workflow chỉ định. `new-hands` sẽ tự tạo folder path đó nếu chưa tồn tại.
 
 ## 2. Prepare Hands Workspace Path
 
@@ -36,13 +34,13 @@ Không tự ép taxonomy folder. Path phải phản ánh cách Brain muốn tổ
 
 ## 3. Initialize Hands/Satellite Repository
 
-Chạy `new-hands` trên folder Hands Workspace:
+Chạy `new-hands` trên path Hands Workspace:
 
 ```bash
 npm run new-hands -- --project-path "<hands-workspace-path>" --repo-name "<repo-name>"
 ```
 
-`new-hands` sẽ bootstrap folder đó thành Satellite repo:
+`new-hands` sẽ tạo folder nếu cần và bootstrap folder đó thành Satellite repo:
 
 - thêm `.gitignore` chuẩn;
 - sync governance/runtime;
@@ -74,7 +72,7 @@ Hands nhận repo đã init và làm theo:
 LS-WORKFLOW-GITPUSH
 ```
 
-Sau khi Hands push và GitHub Actions pass, Brain harvest bằng `pull-code` về đúng Hands Workspace path trong Project Workspace.
+Sau khi Hands push và GitHub Actions pass, Brain harvest theo `LS-WORKFLOW-HARVEST-CODE` về đúng Hands Workspace path trong Project Workspace.
 
 ---
 **Status:** ACTIVE WORKFLOW  

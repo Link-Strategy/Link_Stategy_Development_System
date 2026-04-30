@@ -80,16 +80,15 @@ Tool sẽ:
 
 - chạy lại gate,
 - tạo `GATE_REPORT.md`,
-- tạo `AGENT_REVIEW_REPORT.md`,
 - stage allowlist delivery files,
 - commit thay đổi,
 - push trực tiếp lên `origin/main`.
 
-`GATE_REPORT.md` và `AGENT_REVIEW_REPORT.md` không được stage. GitHub Actions sẽ tạo artifact mới cho commit trên `main`.
+`GATE_REPORT.md` không được stage. GitHub Actions sẽ tạo gate report artifact mới cho commit trên `main`.
 
 ## 7. Brain Harvest Rule
 
-Brain chỉ được chạy `npm run pull-code` để sync về monorepo khi latest commit trên Satellite `main` có GitHub Actions `verification-gate` success. Nếu CI đang pending/fail/missing, `pull-code` phải block.
+Brain chỉ được chạy `npm run pull-code` để harvest tracked snapshot về Brain Project khi latest commit trên Satellite `main` có GitHub Actions `verification-gate` success. Nếu CI đang pending/fail/missing, `pull-code` phải block.
 
 ## 8. Failure Handling
 

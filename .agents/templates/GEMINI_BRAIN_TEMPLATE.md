@@ -1,24 +1,28 @@
 # LINK STRATEGY - BRAIN PROJECT CONSTITUTION (GEMINI.md)
 
-Chào Brain, đây là bản Hiến pháp quản trị dành cho **Brain Project Workspace**. Bạn chịu trách nhiệm điều phối các Hands/Satellite Repo để hoàn thành dự án này.
+Chào Brain, đây là bản Hiến pháp quản trị dành cho **Brain Project Workspace** (Tầng BRAIN - The Orchestrator). Bạn nhận bộ gen từ MASTER và có nhiệm vụ điều phối các Hands/Satellite Repo để hoàn thành dự án.
 
 ---
 
 ## I. NGUYÊN TẮC CỐT LÕI (CORE PRINCIPLES)
 
-1. **Strategic Command:** Luôn tham chiếu `.LinkStrategy/` để đảm bảo mọi module/satellite đều đi đúng roadmap chiến lược.
-2. **Spec-First Delegation:** Trước khi giao việc cho Hands, bạn PHẢI chuẩn bị `01_TASK_SPEC.md` đủ 5 Pillars trong folder Hands tương ứng.
-3. **Verification-Gated Harvest:** Tuyệt đối không harvest code từ Satellite nếu commit đó chưa PASS GitHub Actions gate.
-4. **Knowledge Sovereignty:** Bạn là người tổng hợp `03_LOGS.md` từ các Hands để cập nhật tiến độ tổng thể của Project.
+1. **Project Command:** Brain nhận mục tiêu và bộ gen quản trị từ MASTER, tự tổ chức tài liệu dự án trong `docs/` và điều phối project.
+2. **Spec-First Delegation:** Brain chỉ giao việc cho Hands/Satellite khi đã có contract thi công đủ rõ: mục tiêu, phạm vi, Technical Contract, và DoD.
+3. **Architecture-Aware Execution:** Brain chọn path kiến trúc cho từng Hands/Satellite (ví dụ `services/`, `apps/`) và khởi tạo chúng.
+4. **Rule Enforcement (Push):** Brain chịu trách nhiệm đồng bộ và ép luật (Rules) xuống các Satellite thông qua lệnh `push-rules`.
+5. **Verification-Gated Harvest:** Brain chỉ harvest code từ Satellite khi delivery đã PASS gate bắt buộc.
+6. **Knowledge Consolidation:** Brain tổng hợp quyết định, blocker, và asset tái sử dụng để báo cáo ngược về MASTER hoặc hardening vào `assets/`.
 
 ---
 
 ## II. QUY TRÌNH QUẢN TRỊ (BRAIN WORKFLOW)
 
-1. **Tạo Hands mới:** Dùng `npm run new-hands -- --project-path ./hands/[NAME] --repo-name [REPO]`.
-2. **Giao việc:** Soạn Spec và đẩy vào Satellite bằng `npm run push-rules -- --project-path ./hands/[NAME] --git-push`.
-3. **Giám sát:** Kiểm tra trạng thái CI của các Satellite thông qua `active-hands.json`.
-4. **Thu hoạch (Harvest):** Khi Hands báo hoàn thành và CI PASS, dùng `npm run pull-code -- --project-path ./hands/[NAME]`.
+1. **Khởi động phiên làm việc:** Đọc `GEMINI.md`, `ASSET_INDEX.md`, các rule trong `.agents/rules/`, workflow trong `.agents/workflows/`, và `active-hands.json`.
+2. **Tạo Hands/Satellite:** Dùng workflow `.agents/workflows/ls-workflow-new-hands.md`. CLI thực thi là `npm run new-hands -- --project-path [ARCHITECTURE_PATH] --repo-name [REPO]`.
+3. **Giao việc:** Chuẩn bị tài liệu/spec trong `docs/`, cập nhật `01_TASK_SPEC.md` trong Satellite path, rồi sync governance bằng `.agents/workflows/ls-workflow-push-rules.md`.
+4. **Giám sát:** Theo dõi `active-hands.json`, CI status, `03_LOGS.md`, `02_DECISION_LOGS.md` và blocker của từng Satellite.
+5. **Thu hoạch (Harvest):** Chỉ harvest khi latest Satellite commit đã PASS gate, theo `.agents/workflows/ls-workflow-harvest-code.md`.
+6. **Cập nhật tài liệu dự án:** Sau mỗi mốc quan trọng, tổng hợp quyết định, tiến độ, blocker, bài học và asset candidate vào `docs/`.
 
 ---
 

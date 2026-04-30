@@ -15,16 +15,16 @@ This document defines the Phase 1 technical sync contract between the Master Wor
 Brain dùng Master Workspace để khởi tạo một **Brain Project Workspace** độc lập.
 
 1. **Create Brain Project:**
-   `npm run new-project -- --client-id <ID> --project-name <NAME> --project-type <TYPE> --base-path ..`
-2. **Result:** Một repo mới nằm ở `../<ID>-<NAME>` chứa toàn bộ engine, rules, workflows và templates từ Master, cùng `GEMINI.md` dành cho Brain.
+   `npm run new-project -- --project-name <NAME>`
+2. **Result:** Một repo mới nằm ở `../<NAME>` theo mặc định, chứa toàn bộ engine, rules, workflows và templates từ Master, cùng `GEMINI.md` dành cho Brain.
 
 ## 3. Layer 2: Brain Project -> Hands Workspace
 
 Brain dùng Brain Project Workspace để khởi tạo các **Hands/Satellite Repos** cho dự án.
 
 1. **Create Hands Workspace:**
-   `npm run new-hands -- --project-path ./hands/<NAME> --repo-name <REPO>`
-2. **Result:** Một folder `hands/<NAME>` được khởi tạo thành git repo, kết nối GitHub remote, chứa rules/engine và `GEMINI.md` dành cho Satellite. Thông tin được ghi vào `active-hands.json`.
+   `npm run new-hands -- --project-path <ARCHITECTURE_PATH> --repo-name <REPO>`
+2. **Result:** Folder `<ARCHITECTURE_PATH>` được tạo nếu chưa có, bootstrap thành git repo, kết nối GitHub remote, chứa rules/engine và `GEMINI.md` dành cho Satellite. Thông tin được ghi vào `active-hands.json`.
 
 ## 4. Layer 3: Hands -> Brain Harvest
 
@@ -35,19 +35,19 @@ Goal: Thu hoạch sản phẩm từ Hands về Brain Project Workspace sau khi C
 2. **CI Validation:**
    GitHub Actions `verification-gate` phải PASS cho latest commit trên `main` của Hands.
 3. **Brain Harvest:**
-   Brain chạy từ Brain Project Workspace:
-   `npm run pull-code -- --project-path ./hands/<NAME>`
-4. **Result:** `src`, `tests`, `docs` được copy về Brain Project; `active-hands.json` cập nhật SHA và trạng thái CI.
+Brain chạy từ Brain Project Workspace theo `LS-WORKFLOW-HARVEST-CODE`:
+   `npm run pull-code -- --project-path <ARCHITECTURE_PATH>`
+4. **Result:** toàn bộ tracked snapshot của Satellite commit đã PASS được copy về đúng path trong Brain Project, không copy `.git/`; `GATE_REPORT.md` artifact được lưu vào `docs/audit/gate-reports/`; `active-hands.json` cập nhật SHA và trạng thái CI.
 
 ## 5. Sync Governance
 
-Brain có thể cập nhật rules cho Satellite bất cứ lúc nào từ Brain Project Workspace:
-`npm run push-rules -- --project-path ./hands/<NAME> --git-push`
+Brain có thể cập nhật rules cho Satellite từ Brain Project Workspace theo `LS-WORKFLOW-PUSH-RULES`:
+`npm run push-rules -- --project-path <ARCHITECTURE_PATH> --git-push`
 
 ## 6. Conflict Rule
 
 - **Master owns templates/engine:** Mọi thay đổi core phải thực hiện ở Master rồi sync ra các Brain Projects.
-- **Brain Project owns Spec/Strategy:** `01_TASK_SPEC.md` và roadmap nằm tại Brain Project.
+- **Brain Project owns Spec/Strategy:** tài liệu chiến lược/spec/roadmap nằm trong `docs/` và do Brain tự tổ chức.
 - **Hands owns Implementation:** Code thi công nằm tại Hands Repo và chỉ được harvest khi sạch (CI PASS).
 
 ---

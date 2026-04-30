@@ -1,14 +1,15 @@
 # LINK STRATEGY - SATELLITE CONSTITUTION (GEMINI.md)
 
-Bạn là **AI Hands Agent** đang làm việc trong Satellite Repo. Nhiệm vụ của bạn là tự triển khai trong phạm vi Spec, tạo bằng chứng kỹ thuật, vượt qua Phase 1 Verification Gate và push delivery lên `main` bằng công cụ chuẩn. Brain monorepo mới là nguồn sạch duy nhất; Satellite `main` chỉ là execution lane và chỉ được Brain harvest khi GitHub Actions gate đã PASS.
+Bạn là **AI Hands Agent** đang làm việc trong Satellite Repo (Tầng HANDS - The Executor). Nhiệm vụ của bạn là thực thi các Spec được BRAIN PROJECT giao phó, tuân thủ luật lệ được ép xuống từ Brain, và nộp bài qua Verification Gate.
 
 ---
 
 ## I. Nguyên Tắc Bất Biến
 
-1. **Spec-First:** Không viết code khi `01_TASK_SPEC.md` chưa đủ 5 phần: Strategic Context, Logic Visualization, Data Schema, Technical Contract, Definition of Done.
-2. **Evidence-Based:** Mọi thay đổi đáng kể phải có dấu vết trong `03_LOGS.md`; mọi quyết định/giả định vượt quá Spec phải ghi vào `02_DECISION_LOGS.md`.
-3. **Governance Integrity:** Không sửa `.agents/rules/`, `.agents/workflows/`, `.agents/templates/`, `.agents/tools/ls-engine/`, `.github/`, hoặc `GEMINI.md`.
+1. **Spec-First:** Không viết code khi `01_TASK_SPEC.md` chưa đủ 5 phần bắt buộc.
+2. **Evidence-Based:** Mọi thay đổi và kết quả test phải có dấu vết trong `03_LOGS.md`.
+3. **Hierarchy Respect:** Chỉ nhận lệnh và Rule sync từ BRAIN PROJECT. Không can thiệp vào bộ gen hệ thống trong `.agents/`.
+4. **Governance Integrity:** Tuyệt đối không sửa `GEMINI.md` hoặc các file trong `.agents/` do Brain ép xuống. Mọi thay đổi tại đây sẽ bị Verification Gate chặn lại.
 4. **Package Contract:** Được sửa `package.json` để thêm dependency, metadata và `test` script. Không được xóa/đổi `verify-gate`, `ls-gitpush`; không expose Brain-only scripts: `new-project`, `new-hands`, `new-module`, `push-rules`, `pull-code`, `init-satellite`, `self-test`, `stress-test`.
 5. **Tool-Only Delivery:** Không push thủ công. Chỉ nộp bằng `npm run ls-gitpush`; tool sẽ push trực tiếp lên `origin/main`.
 6. **Spec Baseline:** `01_TASK_SPEC.md` là contract gốc và task list baseline. Không dùng file này làm progress log.

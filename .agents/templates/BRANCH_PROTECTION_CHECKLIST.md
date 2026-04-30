@@ -4,7 +4,7 @@ Tài liệu này chỉ dùng khi Brain muốn nâng cấp Satellite repo lên m�
 
 Trong lifecycle mặc định hiện tại:
 
-- Brain monorepo là nguồn sạch duy nhất.
+- Brain Project chỉ nhận tracked snapshot từ Satellite commit đã PASS gate.
 - Satellite `main` là execution lane của Hands.
 - Hands nộp bài bằng `npm run ls-gitpush`, tool push trực tiếp lên `origin/main`.
 - GitHub Actions chạy trên push vào `main`.

@@ -1,14 +1,47 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { harvestDirs } from "./constants.mjs";
-import { copyDir, copyFile, exists, listFiles, readJson, removeContents, toPosix } from "./fs-utils.mjs";
+import { harvestProtectedPaths } from "./constants.mjs";
+import { copyDir, copyFile, ensureDir, exists, listFiles, readJson, removeContents, toPosix } from "./fs-utils.mjs";
 import { mergePackageContract } from "./package-contract.mjs";
 import { run, runOut } from "./process-utils.mjs";
 
 export function pushRules(runtime, overrides = {}) {
   const args = { ...runtime.args, ...overrides };
-  const projectPath = path.resolve(args["project-path"] || runtime.requireArg("project-path"));
+  const dryRun = Boolean(args["dry-run"]);
+  const all = Boolean(args["all"]);
+  const projectPathArg = args["project-path"];
+
+  if (all || !projectPathArg) {
+    const registryPath = runtime.resolvePath("active-hands.json");
+    if (!exists(registryPath)) {
+      if (!projectPathArg) throw new Error("No --project-path provided and active-hands.json not found.");
+      return pushRulesToPath(runtime, path.resolve(projectPathArg), args);
+    }
+    const registry = readJson(registryPath);
+    const hands = registry.hands || [];
+    if (hands.length === 0) {
+      if (!projectPathArg) throw new Error("No hands registered in active-hands.json and no --project-path provided.");
+      return pushRulesToPath(runtime, path.resolve(projectPathArg), args);
+    }
+
+    console.log(`Pushing rules to ${hands.length} hands...`);
+    for (const hand of hands) {
+      const targetPath = runtime.resolvePath(hand.path);
+      console.log(`[${hand.id}] Syncing: ${targetPath}`);
+      try {
+        pushRulesToPath(runtime, targetPath, args);
+      } catch (error) {
+        console.error(`[${hand.id}] Failed: ${error.message}`);
+      }
+    }
+    return;
+  }
+
+  return pushRulesToPath(runtime, path.resolve(projectPathArg), args);
+}
+
+function pushRulesToPath(runtime, projectPath, args) {
   const dryRun = Boolean(args["dry-run"]);
   const commitMessage = args["commit-message"] || "chore(sync): push updated rules from brain";
   if (!exists(projectPath)) throw new Error(`Project path not found: ${projectPath}`);
@@ -21,6 +54,7 @@ export function pushRules(runtime, overrides = {}) {
     [runtime.resolvePath(".agents/skills"), path.join(projectPath, ".agents/skills"), true],
     [runtime.resolvePath(".github"), path.join(projectPath, ".github"), false],
     [runtime.resolvePath("components/ui"), path.join(projectPath, "components/ui"), true],
+    [runtime.resolvePath("assets"), path.join(projectPath, "assets"), true],
     [runtime.resolvePath(".agents/templates/GEMINI_SATELLITE_TEMPLATE.md"), path.join(projectPath, "GEMINI.md"), false]
   ];
 
@@ -39,12 +73,17 @@ export function pushRules(runtime, overrides = {}) {
 
   if (args["git-push"] && dryRun) console.log("DRY RUN: skipping git commit and push.");
   else if (args["git-push"]) {
-    run("git", ["add", ".agents", ".github", "GEMINI.md", "package.json"], { cwd: projectPath });
-    const status = run("git", ["status", "--porcelain"], { cwd: projectPath, capture: true });
-    if ((status.stdout || "").trim()) {
-      run("git", ["pull", "origin", "main", "--rebase"], { cwd: projectPath });
-      run("git", ["commit", "-m", commitMessage], { cwd: projectPath });
-      run("git", ["push", "origin", "main", "--force-with-lease"], { cwd: projectPath });
+    const gitAddList = [".agents", ".github", "GEMINI.md", "package.json", "assets", "components/ui", "01_TASK_SPEC.md", "02_DECISION_LOGS.md", "03_LOGS.md"];
+    const existingToAdd = gitAddList.filter(f => exists(path.join(projectPath, f)));
+    
+    if (existingToAdd.length > 0) {
+      run("git", ["add", ...existingToAdd], { cwd: projectPath });
+      const status = run("git", ["status", "--porcelain"], { cwd: projectPath, capture: true });
+      if ((status.stdout || "").trim()) {
+        run("git", ["pull", "origin", "main", "--rebase"], { cwd: projectPath });
+        run("git", ["commit", "-m", commitMessage], { cwd: projectPath });
+        run("git", ["push", "origin", "main", "--force-with-lease"], { cwd: projectPath });
+      }
     }
   }
 }
@@ -58,11 +97,13 @@ export function pullCode(runtime) {
   if (!exists(projectPath)) throw new Error(`Project path not found: ${projectPath}`);
 
   let sha = "";
+  let gateRun = null;
   if (skipCiCheck) {
     console.warn("WARNING: --skip-ci-check bypasses GitHub Actions verification. Use only for explicit Brain override.");
     sha = resolveLatestSha(remoteUrl, remoteBranch);
   } else {
-    sha = assertRemoteCiPassed(remoteUrl, remoteBranch, runtime.args["ci-workflow-name"] || "Link Strategy Verification Gate");
+    gateRun = assertRemoteCiPassed(remoteUrl, remoteBranch, runtime.args["ci-workflow-name"] || "Link Strategy Verification Gate");
+    sha = gateRun.sha;
   }
 
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), "ls-harvest-"));
@@ -72,17 +113,11 @@ export function pullCode(runtime) {
     const harvested = harvestFiles(temp);
     if (dryRun) {
       console.log(`Would harvest to ${projectPath}:`);
-      console.log(harvested.length ? harvested.map((file) => ` - ${file}`).join("\n") : " - No src/tests/docs files found.");
+      console.log(harvested.length ? harvested.map((file) => ` - ${file}`).join("\n") : " - No tracked files found.");
       return;
     }
-    for (const dir of harvestDirs) {
-      const src = path.join(temp, dir);
-      const dest = path.join(projectPath, dir);
-      if (!exists(src)) continue;
-      removeContents(dest);
-      copyDir(src, dest);
-      console.log(`Harvested ${dir}: ${src} -> ${dest}`);
-    }
+    harvestTrackedSnapshot(temp, projectPath);
+    if (gateRun) downloadGateReports(runtime, projectPath, gateRun);
     updateHandsRegistryAfterHarvest(runtime, projectPath, sha, skipCiCheck ? "skipped" : "success");
   } finally {
     fs.rmSync(temp, { recursive: true, force: true });
@@ -90,9 +125,76 @@ export function pullCode(runtime) {
 }
 
 export function harvestFiles(sourceRoot) {
-  return harvestDirs
-    .flatMap((dir) => listFiles(path.join(sourceRoot, dir)).map((file) => toPosix(path.relative(sourceRoot, file))))
+  return listTrackedFiles(sourceRoot);
+}
+
+export function harvestTrackedSnapshot(sourceRoot, targetRoot) {
+  const sourceFiles = listTrackedFiles(sourceRoot);
+  removeStaleTrackedFiles(targetRoot, new Set(sourceFiles));
+  for (const rel of sourceFiles) {
+    const src = safeJoin(sourceRoot, rel);
+    const dest = safeJoin(targetRoot, rel);
+    copyFile(src, dest);
+  }
+  console.log(`Harvested tracked snapshot: ${sourceFiles.length} files -> ${targetRoot}`);
+}
+
+function removeStaleTrackedFiles(targetRoot, sourceSet) {
+  if (!exists(path.join(targetRoot, ".git"))) return;
+  const targetFiles = listTrackedFiles(targetRoot);
+  for (const rel of targetFiles) {
+    if (sourceSet.has(rel) || isProtectedHarvestPath(rel)) continue;
+    fs.rmSync(safeJoin(targetRoot, rel), { force: true });
+  }
+  pruneEmptyDirs(targetRoot);
+}
+
+function listTrackedFiles(repoRoot) {
+  if (!exists(path.join(repoRoot, ".git"))) return listFiles(repoRoot).map((file) => toPosix(path.relative(repoRoot, file))).filter((file) => !isProtectedHarvestPath(file)).sort();
+  const output = runOut("git", ["ls-files", "-z"], repoRoot);
+  return output
+    .split("\0")
+    .map((file) => toPosix(file))
+    .filter(Boolean)
+    .filter((file) => !isProtectedHarvestPath(file))
     .sort();
+}
+
+function safeJoin(root, rel) {
+  const normalized = toPosix(rel);
+  if (!normalized || normalized.startsWith("../") || normalized.includes("/../") || path.isAbsolute(normalized)) {
+    throw new Error(`Unsafe harvest path: ${rel}`);
+  }
+  const target = path.resolve(root, ...normalized.split("/"));
+  const resolvedRoot = path.resolve(root);
+  if (target !== resolvedRoot && !target.startsWith(`${resolvedRoot}${path.sep}`)) {
+    throw new Error(`Harvest path escapes target root: ${rel}`);
+  }
+  return target;
+}
+
+function isProtectedHarvestPath(rel) {
+  const normalized = toPosix(rel);
+  return harvestProtectedPaths.some((protectedPath) => normalized === protectedPath || normalized.startsWith(`${protectedPath}/`));
+}
+
+function pruneEmptyDirs(root) {
+  if (!exists(root)) return false;
+  let empty = true;
+  for (const entry of fs.readdirSync(root, { withFileTypes: true })) {
+    const full = path.join(root, entry.name);
+    if (entry.isDirectory()) {
+      if (entry.name === ".git") {
+        empty = false;
+        continue;
+      }
+      if (pruneEmptyDirs(full)) fs.rmdirSync(full);
+      else empty = false;
+    } else {
+      empty = false;
+    }
+  }
+  return empty;
 }
 
 export function findRemoteUrl(runtime, projectPath) {
@@ -152,7 +254,35 @@ export function assertRemoteCiPassed(remoteUrl, branch, workflowName) {
     throw new Error(`Brain harvest blocked: latest ${branch} commit has not passed GitHub Actions verification-gate.\nCommit: ${sha}\n${seen}`);
   }
   console.log(`GitHub Actions verified for ${repo.owner}/${repo.name}@${sha}: ${success.name} success.`);
-  return sha;
+  return { sha, repo, runId: String(success.id), workflowName: success.name };
+}
+
+export function downloadGateReports(runtime, projectPath, gateRun) {
+  const rel = toPosix(path.relative(runtime.root, projectPath));
+  const satelliteId = sanitizeAuditPath(rel || path.basename(projectPath));
+  const reportDir = path.join(runtime.root, "docs", "audit", "gate-reports", satelliteId, gateRun.sha);
+  ensureDir(reportDir);
+  const repoName = `${gateRun.repo.owner}/${gateRun.repo.name}`;
+  const result = run("gh", [
+    "run",
+    "download",
+    gateRun.runId,
+    "--repo",
+    repoName,
+    "--pattern",
+    "gate-report-*",
+    "--dir",
+    reportDir
+  ], { cwd: runtime.root, capture: true, allowFailure: true });
+  if (result.status !== 0) {
+    const detail = (result.stderr || result.stdout || "").trim();
+    throw new Error(`Cannot download gate report artifacts for ${repoName}@${gateRun.sha}.\n${detail}`);
+  }
+  console.log(`Downloaded gate report artifacts to: ${reportDir}`);
+}
+
+function sanitizeAuditPath(value) {
+  return String(value || "satellite").replace(/^[./\\]+/, "").replace(/[^A-Za-z0-9._-]+/g, "_") || "satellite";
 }
 
 function updateHandsRegistryAfterHarvest(runtime, projectPath, sha, ciStatus) {

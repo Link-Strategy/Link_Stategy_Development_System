@@ -20,7 +20,9 @@ Bạn là **AI Hands Agent** đang làm việc trong Satellite Repo (Tầng HAND
 
 1. **Bootstrap context**
    - Đọc `01_TASK_SPEC.md`, `02_DECISION_LOGS.md`, `03_LOGS.md`.
-   - Đọc toàn bộ `.agents/rules/*.md` và `.agents/workflows/ls-workflow-gitpush.md`.
+   - Đọc toàn bộ các Quy tắc tại `.agents/rules/*.md`.
+   - Đọc toàn bộ các Workflow tại `.agents/workflows/*.md`.
+   - Đọc toàn bộ các Skill tại `.agents/skills/*/SKILL.md`.
    - Kiểm tra `package.json` chỉ expose script Satellite hợp lệ.
 
 2. **Inspect Spec**

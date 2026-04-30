@@ -1,5 +1,5 @@
 import path from "node:path";
-import { copyDir, copyFile, copyIfExists, ensureDir, exists, readJson, readText, toPosix, writeText } from "./fs-utils.mjs";
+import { copyAndHardenAssetIndex, copyDir, copyDirWithRuleActivation, copyFile, copyIfExists, ensureDir, exists, readJson, readText, toPosix, writeText } from "./fs-utils.mjs";
 import { mergeBrainPackageContract } from "./package-contract.mjs";
 import { run, runOut } from "./process-utils.mjs";
 
@@ -25,7 +25,6 @@ export async function newProject(runtime) {
   ensureDir(path.join(projectPath, "docs"));
   ensureDir(path.join(projectPath, ".agents/rules"));
   ensureDir(path.join(projectPath, ".agents/workflows"));
-  ensureDir(path.join(projectPath, ".agents/templates"));
   ensureDir(path.join(projectPath, ".agents/tools/ls-engine"));
   ensureDir(path.join(projectPath, ".github"));
   ensureDir(path.join(projectPath, "components/ui"));
@@ -45,7 +44,6 @@ export async function newProject(runtime) {
   copyDir(runtime.resolvePath(".agents/skills/brain"), path.join(projectPath, ".agents/skills"));
   copyDir(runtime.resolvePath(".agents/skills/hands"), path.join(projectPath, ".agents/skills/hands"));
 
-  copyDir(runtime.resolvePath(".agents/templates"), path.join(projectPath, ".agents/templates"));
   copyDir(runtime.resolvePath(".agents/tools/ls-engine"), path.join(projectPath, ".agents/tools/ls-engine"));
   copyDir(runtime.resolvePath(".github"), path.join(projectPath, ".github"));
   copyDir(runtime.resolvePath("components/ui"), path.join(projectPath, "components/ui"));
@@ -53,7 +51,7 @@ export async function newProject(runtime) {
   mergeBrainPackageContract(path.join(projectPath, "package.json"), { name: projectDirName.toLowerCase() });
 
   copyFile(path.join(templateDir, "GEMINI_BRAIN_TEMPLATE.md"), path.join(projectPath, "GEMINI.md"));
-  copyFile(runtime.resolvePath("ASSET_INDEX.md"), path.join(projectPath, "ASSET_INDEX.md"));
+  copyAndHardenAssetIndex(runtime.resolvePath("ASSET_INDEX.md"), path.join(projectPath, "ASSET_INDEX.md"), "brain");
   copyIfExists(path.join(templateDir, "ENV_EXAMPLE_TEMPLATE"), path.join(projectPath, ".env.example"));
 
   writeText(path.join(projectPath, "active-hands.json"), JSON.stringify({ hands: [] }, null, 2) + "\n");

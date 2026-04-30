@@ -99,3 +99,34 @@ export function copyDirWithRuleActivation(src, dest, activate = true) {
     else if (entry.isFile()) copyFileWithRuleActivation(srcPath, destPath, activate);
   }
 }
+
+export function copyAndHardenAssetIndex(src, dest, targetTier) {
+  if (!exists(src)) return;
+  let content = readText(src);
+  const lines = content.split("\n");
+
+  // Phase 1: Filter rows belonging to higher tiers
+  const filteredLines = lines.filter(line => {
+    // Both Brain and Hands projects exclude Master assets
+    if (line.includes("/master/")) return false;
+    // Hands projects also exclude Brain assets
+    if (targetTier === "hands" && line.includes("/brain/")) return false;
+    return true;
+  });
+
+  let updated = filteredLines.join("\n");
+
+  // Phase 2: Remap paths to flattened structure
+  if (targetTier === "brain") {
+    updated = updated.replace(/\.agents\/rules\/brain\//g, ".agents/rules/");
+    updated = updated.replace(/\.agents\/workflows\/brain\//g, ".agents/workflows/");
+    updated = updated.replace(/\.agents\/skills\/brain\//g, ".agents/skills/");
+  } else if (targetTier === "hands") {
+    // Note: Hands targets .agents/rules/ root because of flattening
+    updated = updated.replace(/\.agents\/rules\/hands\//g, ".agents/rules/");
+    updated = updated.replace(/\.agents\/workflows\/hands\//g, ".agents/workflows/");
+    updated = updated.replace(/\.agents\/skills\/hands\//g, ".agents/skills/");
+  }
+
+  writeText(dest, updated);
+}

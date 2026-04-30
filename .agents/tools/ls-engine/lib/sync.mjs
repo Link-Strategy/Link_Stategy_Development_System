@@ -2,7 +2,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { harvestProtectedPaths } from "./constants.mjs";
-import { copyDir, copyDirWithRuleActivation, copyFile, copyFileWithRuleActivation, ensureDir, exists, listFiles, readJson, removeContents, toPosix } from "./fs-utils.mjs";
+import { copyAndHardenAssetIndex, copyDir, copyDirWithRuleActivation, copyFile, copyFileWithRuleActivation, ensureDir, exists, listFiles, readJson, removeContents, toPosix } from "./fs-utils.mjs";
 import { mergePackageContract } from "./package-contract.mjs";
 import { run, runOut } from "./process-utils.mjs";
 
@@ -111,6 +111,14 @@ function pushRulesToPath(runtime, projectPath, args) {
   }
   if (dryRun) console.log(`Would merge package contract: ${path.join(projectPath, "package.json")}`);
   else mergePackageContract(path.join(projectPath, "package.json"));
+  // ASSET_INDEX.md: Harden for target tier
+  const isMaster = exists(runtime.resolvePath(".agents/rules/ls-rule-master-governance.md"));
+  const targetTier = isMaster ? "brain" : "hands";
+  if (!dryRun) {
+    copyAndHardenAssetIndex(runtime.resolvePath("ASSET_INDEX.md"), path.join(projectPath, "ASSET_INDEX.md"), targetTier);
+  } else {
+    console.log(`Would harden ASSET_INDEX.md for tier: ${targetTier}`);
+  }
 
   if (args["git-push"] && dryRun) console.log("DRY RUN: skipping git commit and push.");
   else if (args["git-push"]) {

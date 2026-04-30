@@ -121,15 +121,15 @@ Dựa trên hệ thống "Bộ khung thép" 3 tầng, vòng đời sản xuất 
 - [x] Hành động: Thiết lập Luật quản trị Master (`ls-rule-master-governance.md`) và Quy trình bàn giao Master (`ls-workflow-delivery-loop.md`).
 - **Tiêu chuẩn đạt chuẩn:** Bộ khung quản trị sẵn sàng, đảm bảo tính nhất quán giữa Chiến lược - Tài sản - Quy trình.
 
-### 1.2.3 - Phân cấp quản trị và Hóa cứng Rule (Hardened)
+### 1.2.3 - Phân tầng tri thức toàn diện (Rules, Workflows, Skills - Industrial Hardened)
 
-- [x] Hành động: Phân tách Rules thành 3 thư mục: `master/`, `brain/`, `hands/`.
-- [x] Hành động: Chuyển toàn bộ trigger sang `always_on`.
-- [x] Hành động: Cập nhật `ls-engine` để tự động lọc luật theo đúng phân cấp (Master -> Brain -> Hands).
-- [x] Hành động: Tạo hiến pháp riêng cho Brain Project (`ls-rule-brain-governance.md`).
-- Đầu ra: Một hệ thống luật pháp phân tầng, cô lập và tự vận hành.
-- DoD: Hands Agent không nhìn thấy luật của Brain; Brain Agent tuân thủ luật điều phối dự án.
-- Ưu tiên: P0. [HOÀN THÀNH - BỌC THÉP]
+- [x] Hành động: Phân tách Rules, Workflows, và Skills thành 3 thư mục: `master/`, `brain/`, `hands/`.
+- [x] Hành động: Chuyển đổi linh hoạt `trigger: always_on` tại tầng thực thi (Active activation).
+- [x] Hành động: Cập nhật `ls-engine` để tự động lọc và phẳng hóa (Flattening) tri thức theo đúng phân tầng.
+- [x] Hành động: Phân lập tuyệt đối tri thức vận hành cấp cao khỏi tầng thực thi của Freelancer (Hands).
+- Đầu ra: Hệ thống tri thức phân tầng, cô lập hoàn toàn và tự vận hành theo bối cảnh.
+- DoD: Hands Agent chỉ thấy tài sản Hands; Brain chỉ thấy tài sản Brain/Hands; Master sở hữu toàn bộ.
+- Ưu tiên: P0. [HOÀN THÀNH - CẤP ĐỘ CÔNG NGHIỆP]
 
 ### 1.3.1 - Tạo script sinh Brain Project Workspace (Hardened)
 

@@ -64,8 +64,9 @@ Hệ thống Link Strategy đã hoàn thiện các cơ chế cốt lõi để v�
 - **Batch Push Rules:** Hỗ trợ đồng bộ hàng loạt DNA, Spec và Assets từ Brain xuống toàn bộ Satellite trong `active-hands.json` chỉ bằng một lệnh.
 - **Verification Gate:** Chốt chặn kỹ thuật tự động kiểm tra tính toàn vẹn của Rules và Engine tại local và CI.
 - **Spec-Driven Delivery:** Brain sở hữu và đẩy Spec xuống Hands; Hands thực thi và nộp bằng chứng qua Logs.
-- **Rule Hierarchy & Filtering:** Phân tầng luật pháp thành `master/`, `brain/` và `hands/`. Engine tự động lọc và chỉ đẩy các luật cần thiết xuống từng cấp độ để bảo mật và giảm nhiễu context.
-- **Always-on Trigger:** Mọi quy tắc quản trị luôn được kích hoạt mặc định để Agent tuân thủ vô điều kiện.
+- **Comprehensive Knowledge Tiering:** Toàn bộ Rules, Workflows và Skills được phân tầng thành `master/`, `brain/` và `hands/`. Engine tự động lọc và phẳng hóa tri thức để đảm bảo mỗi tầng chỉ nhận được đúng những gì cần thiết để thực thi nhiệm vụ.
+- **Always-on Trigger:** Mọi quy tắc quản trị luôn được kích hoạt mặc định ngay khi hạ cánh xuống tầng thực thi, đảm bảo Agent tuân thủ vô điều kiện.
+- **Zero-Noise Context:** Hands Agent hoàn toàn được cách ly khỏi tri thức vận hành cấp cao, giúp tối ưu hóa sự tập trung và giảm thiểu sai sót.
 
 ## Lệnh Vận Hành Nhanh
 

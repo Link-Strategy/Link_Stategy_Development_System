@@ -97,12 +97,12 @@ Every asset should be tracked with these fields:
 
 | Name | Type | Path | Owner | Status | Purpose | Input | Output | Mandatory Usage | Related Docs |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `ls-skill-engine-ops` | Skill | `.agents/skills/ls-skill-engine-ops/` | Brain | Active | Hardened capability for managing the Link Strategy Production Engine (Sync, Verification, Project/Module Gen). | Project/Satellite metadata. | Managed repository infrastructure. | Required for all platform operations (Sync, Gate, Init). | N/A |
-| `nodejs-backend-patterns` | Skill | `.agents/skills/nodejs-backend-patterns/` | Brain | Active | Production-ready Node.js backend patterns (Express/Fastify, middleware, auth). | Backend task requirements. | Hardened Node.js implementation. | Optional/Recommended for Node.js work. | N/A |
-| `prompt-engineering-patterns` | Skill | `.agents/skills/prompt-engineering-patterns/` | Brain | Active | Advanced prompt engineering techniques for production LLM performance. | Prompt design task. | Optimized prompts. | Required for AI Agent optimization. | N/A |
-| `python-design-patterns` | Skill | `.agents/skills/python-design-patterns/` | Brain | Active | Python design patterns (KISS, Separation of Concerns, etc.). | Python development task. | Clean Python code. | Optional/Recommended for Python work. | N/A |
-| `react-state-management` | Skill | `.agents/skills/react-state-management/` | Brain | Active | Modern React state management (Redux, Zustand, React Query). | Frontend state task. | Efficient state logic. | Optional/Recommended for React work. | N/A |
-| `tailwind-design-system` | Skill | `.agents/skills/tailwind-design-system/` | Brain | Active | Scalable design systems with Tailwind CSS v4. | UI/UX development task. | Standardized Tailwind styles. | Required for UI Kit work. | N/A |
+| `ls-skill-engine-ops` | Skill | `.agents/skills/brain/ls-skill-engine-ops/` | Brain | Active | Hardened capability for managing the Link Strategy Production Engine (Sync, Verification, Project/Module Gen). | Project/Satellite metadata. | Managed repository infrastructure. | Required for all platform operations (Sync, Gate, Init). | N/A |
+| `nodejs-backend-patterns` | Skill | `.agents/skills/hands/nodejs-backend-patterns/` | Brain | Active | Production-ready Node.js backend patterns (Express/Fastify, middleware, auth). | Backend task requirements. | Hardened Node.js implementation. | Optional/Recommended for Node.js work. | N/A |
+| `prompt-engineering-patterns` | Skill | `.agents/skills/hands/prompt-engineering-patterns/` | Brain | Active | Advanced prompt engineering techniques for production LLM performance. | Prompt design task. | Optimized prompts. | Required for AI Agent optimization. | N/A |
+| `python-design-patterns` | Skill | `.agents/skills/hands/python-design-patterns/` | Brain | Active | Python design patterns (KISS, Separation of Concerns, etc.). | Python development task. | Clean Python code. | Optional/Recommended for Python work. | N/A |
+| `react-state-management` | Skill | `.agents/skills/hands/react-state-management/` | Brain | Active | Modern React state management (Redux, Zustand, React Query). | Frontend state task. | Efficient state logic. | Optional/Recommended for React work. | N/A |
+| `tailwind-design-system` | Skill | `.agents/skills/hands/tailwind-design-system/` | Brain | Active | Scalable design systems with Tailwind CSS v4. | UI/UX development task. | Standardized Tailwind styles. | Required for UI Kit work. | N/A |
 
 
 ## Tool Registry

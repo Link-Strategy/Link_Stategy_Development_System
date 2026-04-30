@@ -18,8 +18,9 @@ Chào Agent, đây là bản Hiến pháp thực thi cao nhất tại Workspace 
 Để đảm bảo context luôn đầy đủ và không sai sót, Agent **PHẢI** thực hiện bootstrap theo thứ tự:
 
 1. Đọc file `ASSET_INDEX.md` để nắm danh mục tài sản hiện có.
-2. Đọc các Rule Master tại `.agents/rules/`, `.agents/rules/brain/` và `.agents/rules/hands/`.
-3. Đọc workflow master: `.agents/workflows/ls-workflow-gitpush.md`.
+2. Đọc các Rule Master tại `.agents/rules/` và các phôi tại `brain/`, `hands/`.
+3. Đọc các Workflow tại `.agents/workflows/master/`, `brain/`, `hands/`.
+4. Đọc các Skill tại `.agents/skills/brain/`, `hands/`.
 4. Kiểm tra tài liệu liên quan trong `docs/` và registry trước khi thay đổi cấu trúc hoặc workflow.
 5. Tuyệt đối không tự viết lại logic nếu đã có Asset tương ứng trong `ASSET_INDEX.md`.
 

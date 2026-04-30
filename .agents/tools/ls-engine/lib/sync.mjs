@@ -2,7 +2,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { harvestProtectedPaths } from "./constants.mjs";
-import { copyDir, copyFile, ensureDir, exists, listFiles, readJson, removeContents, toPosix } from "./fs-utils.mjs";
+import { copyDir, copyDirWithRuleActivation, copyFile, copyFileWithRuleActivation, ensureDir, exists, listFiles, readJson, removeContents, toPosix } from "./fs-utils.mjs";
 import { mergePackageContract } from "./package-contract.mjs";
 import { run, runOut } from "./process-utils.mjs";
 
@@ -47,26 +47,67 @@ function pushRulesToPath(runtime, projectPath, args) {
   if (!exists(projectPath)) throw new Error(`Project path not found: ${projectPath}`);
 
   const copies = [
-    [runtime.resolvePath(".agents/rules"), path.join(projectPath, ".agents/rules"), true],
-    [runtime.resolvePath(".agents/workflows"), path.join(projectPath, ".agents/workflows"), true],
-    [runtime.resolvePath(".agents/templates"), path.join(projectPath, ".agents/templates"), true],
-    [runtime.resolvePath(".agents/tools/ls-engine"), path.join(projectPath, ".agents/tools/ls-engine"), false],
-    [runtime.resolvePath(".agents/skills"), path.join(projectPath, ".agents/skills"), true],
-    [runtime.resolvePath(".github"), path.join(projectPath, ".github"), false],
-    [runtime.resolvePath("components/ui"), path.join(projectPath, "components/ui"), true],
-    [runtime.resolvePath("assets"), path.join(projectPath, "assets"), true],
-    [runtime.resolvePath(".agents/templates/GEMINI_SATELLITE_TEMPLATE.md"), path.join(projectPath, "GEMINI.md"), false]
+    // Rule Copy Logic: Context-aware mapping
+    ...(() => {
+      const isMaster = exists(runtime.resolvePath(".agents/rules/ls-rule-master-governance.md"));
+      if (isMaster) {
+        // Master pushing to Brain: Flatten and ACTIVATE brain rules, keep hands rules as TEMPLATES
+        return [
+          [runtime.resolvePath(".agents/rules/brain"), path.join(projectPath, ".agents/rules"), true, true],
+          [runtime.resolvePath(".agents/rules/hands"), path.join(projectPath, ".agents/rules/hands"), true, false]
+        ];
+      } else {
+        // Brain pushing to Hands: Flatten and ACTIVATE hands rules to satellite root
+        return [
+          [runtime.resolvePath(".agents/rules/hands"), path.join(projectPath, ".agents/rules"), true, true]
+        ];
+      }
+    })(),
+    // Workflow Copy Logic: Context-aware
+    ...(() => {
+      const isMaster = exists(runtime.resolvePath(".agents/rules/ls-rule-master-governance.md"));
+      if (isMaster) {
+        return [
+          [runtime.resolvePath(".agents/workflows/brain"), path.join(projectPath, ".agents/workflows"), true, false],
+          [runtime.resolvePath(".agents/workflows/hands"), path.join(projectPath, ".agents/workflows/hands"), true, false]
+        ];
+      } else {
+        return [
+          [runtime.resolvePath(".agents/workflows/hands"), path.join(projectPath, ".agents/workflows"), true, false]
+        ];
+      }
+    })(),
+    // Skill Copy Logic: Context-aware
+    ...(() => {
+      const isMaster = exists(runtime.resolvePath(".agents/rules/ls-rule-master-governance.md"));
+      if (isMaster) {
+        return [
+          [runtime.resolvePath(".agents/skills/brain"), path.join(projectPath, ".agents/skills"), true, false],
+          [runtime.resolvePath(".agents/skills/hands"), path.join(projectPath, ".agents/skills/hands"), true, false]
+        ];
+      } else {
+        return [
+          [runtime.resolvePath(".agents/skills/hands"), path.join(projectPath, ".agents/skills"), true, false]
+        ];
+      }
+    })(),
+    [runtime.resolvePath(".agents/templates"), path.join(projectPath, ".agents/templates"), true, false],
+    [runtime.resolvePath(".agents/tools/ls-engine"), path.join(projectPath, ".agents/tools/ls-engine"), false, false],
+    [runtime.resolvePath(".github"), path.join(projectPath, ".github"), false, false],
+    [runtime.resolvePath("components/ui"), path.join(projectPath, "components/ui"), true, false],
+    [runtime.resolvePath("assets"), path.join(projectPath, "assets"), true, false],
+    [runtime.resolvePath(".agents/templates/GEMINI_SATELLITE_TEMPLATE.md"), path.join(projectPath, "GEMINI.md"), false, false]
   ];
 
-  for (const [src, dest, replace] of copies) {
+  for (const [src, dest, replace, activate] of copies) {
     if (!exists(src)) continue;
     if (dryRun) {
-      console.log(`Would ${replace ? "replace" : "copy"}: ${src} -> ${dest}`);
+      console.log(`Would ${replace ? "replace" : "copy"}${activate ? " and activate" : ""}: ${src} -> ${dest}`);
       continue;
     }
     if (replace) removeContents(dest);
-    if (fs.statSync(src).isDirectory()) copyDir(src, dest);
-    else copyFile(src, dest);
+    if (fs.statSync(src).isDirectory()) copyDirWithRuleActivation(src, dest, activate);
+    else copyFileWithRuleActivation(src, dest, activate);
   }
   if (dryRun) console.log(`Would merge package contract: ${path.join(projectPath, "package.json")}`);
   else mergePackageContract(path.join(projectPath, "package.json"));

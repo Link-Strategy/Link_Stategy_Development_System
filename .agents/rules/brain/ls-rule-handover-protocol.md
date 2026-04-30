@@ -1,3 +1,8 @@
+---
+trigger: on_demand
+description: Protocol for Brain to accept and harvest work from Hands/Satellites.
+---
+
 # LS-RULE-HANDOVER-PROTOCOL
 
 Quy tắc này phân biệt rõ **Phase 1 technical delivery** và **Phase 2/full handover** để Hands Agent không bị nhầm phạm vi.

@@ -1,18 +1,19 @@
 {
-    "projects":  [
-                     {
-                         "id":  "DEMO-BASE-PLATFORM",
-                         "path":  "projects/DEMO-BASE-PLATFORM",
-                         "remote_url":  "",
-                         "status":  "active",
-                         "description":  "Reference implementation for the Link Strategy Production Engine."
-                     },
-                     {
-                         "status":  "active",
-                         "path":  "projects/INTERNAL-SIMPLE-SERVICE",
-                         "description":  "Automatically generated project for INTERNAL.",
-                         "remote_url":  "",
-                         "id":  "INTERNAL-SIMPLE-SERVICE"
-                     }
-                 ]
+  "projects": [
+    {
+      "id": "DEMO-BASE-PLATFORM",
+      "path": "projects/DEMO-BASE-PLATFORM",
+      "remote_url": "",
+      "status": "active",
+      "description": "Reference implementation for the Link Strategy Production Engine."
+    },
+    {
+      "status": "active",
+      "path": "projects/INTERNAL-SIMPLE-SERVICE",
+      "description": "Automatically generated project for INTERNAL.",
+      "remote_url": "",
+      "id": "INTERNAL-SIMPLE-SERVICE"
+    }
+
+  ]
 }

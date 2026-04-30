@@ -121,19 +121,26 @@ Dựa trên hệ thống "Bộ khung thép" 3 tầng, vòng đời sản xuất 
 - [x] Hành động: Thiết lập Luật quản trị Master (`ls-rule-master-governance.md`) và Quy trình bàn giao Master (`ls-workflow-delivery-loop.md`).
 - **Tiêu chuẩn đạt chuẩn:** Bộ khung quản trị sẵn sàng, đảm bảo tính nhất quán giữa Chiến lược - Tài sản - Quy trình.
 
-### 1.3.1 - Tạo script sinh Brain Project Workspace (Mới)
+### 1.2.3 - Phân cấp quản trị và Hóa cứng Rule (Hardened)
+
+- [x] Hành động: Phân tách Rules thành 3 thư mục: `master/`, `brain/`, `hands/`.
+- [x] Hành động: Chuyển toàn bộ trigger sang `always_on`.
+- [x] Hành động: Cập nhật `ls-engine` để tự động lọc luật theo đúng phân cấp (Master -> Brain -> Hands).
+- [x] Hành động: Tạo hiến pháp riêng cho Brain Project (`ls-rule-brain-governance.md`).
+- Đầu ra: Một hệ thống luật pháp phân tầng, cô lập và tự vận hành.
+- DoD: Hands Agent không nhìn thấy luật của Brain; Brain Agent tuân thủ luật điều phối dự án.
+- Ưu tiên: P0. [HOÀN THÀNH - BỌC THÉP]
+
+### 1.3.1 - Tạo script sinh Brain Project Workspace (Hardened)
 
 - [x] Hành động: Tạo `npm run new-project`.
-- [x] Hành động: Input vận hành chính chỉ cần `project_name`.
-- [x] Hành động: Output tạo Brain Project Workspace nằm ngoài Master (ví dụ: `../[PROJECT_NAME]/`).
-- [x] Hành động: Tạo GitHub repo, push initial commit và ghi `path`/`remote_url` vào `active-projects.json` khi không dùng chế độ local.
-- [x] Hành động: Copy templates, engine, rules, workflows, skills và UI components.
-- [x] Hành động: Cấu hình `GEMINI.md` dành riêng cho Brain Project.
-- [x] Hành động: Tạo `docs/` rỗng để Brain tự do tổ chức tài liệu dự án, không sinh `01_TASK_SPEC.md`, `02_DECISION_LOGS.md`, `03_LOGS.md` ở root Brain Project.
-- [x] Hành động: Khởi tạo registry `active-hands.json`.
+- [x] Hành động: Tự động hóa Preflight, Isolation Guard và DNA Transmission.
+- [x] Hành động: Tự động hóa GitHub Remote (Create/Link/Push) và Registry.
+- [x] Hành động: Triển khai Industrial Hardening (Backup Registry, Fail Cleanup).
+- [x] Hành động: Xuất Verification Report (DoD) tự động.
 - Đầu ra: Một trạm điều hành Brain độc lập sẵn sàng quản lý dự án.
-- DoD: Chạy một lệnh tạo được Brain Project skeleton đầy đủ và tự chủ.
-- Ưu tiên: P0.
+- DoD: Chạy một lệnh tạo được Brain Project "nguyên đai nguyên kiện" trên GitHub.
+- Ưu tiên: P0. [HOÀN THÀNH - BỌC THÉP]
 
 ### 1.3.2 - Tạo script sinh module mới trong project
 
@@ -144,13 +151,15 @@ Dựa trên hệ thống "Bộ khung thép" 3 tầng, vòng đời sản xuất 
 - DoD: Có thể giao module độc lập cho Hands mà không lẫn với module khác.
 - Ưu tiên: P0.
 
-### 1.3.3 - Tạo `.env.example` template
+### 1.3.3 - Thiết lập cấu hình môi trường Engine (.env)
 
+- [x] Hành động: Tích hợp `.env` loader vào `ls-engine` core.
+- [x] Hành động: Tách biệt cấu hình (Org, Visibility, Base Path) khỏi mã nguồn.
 - [x] Hành động: Tạo template `.agents/templates/ENV_EXAMPLE_TEMPLATE`.
 - [x] Hành động: Script project factory copy thành `.env.example`.
-- Đầu ra: Secret protocol rõ ràng.
-- DoD: Project mới có hướng dẫn biến môi trường nhưng không chứa secret.
-- Ưu tiên: P1.
+- Đầu ra: Hệ thống cấu hình linh hoạt không cần sửa code.
+- DoD: Engine tự động nạp cấu hình từ `.env` tại Master root.
+- Ưu tiên: P1. [HOÀN THÀNH]
 
 ### 1.3.4 - Tạo project mẫu
 

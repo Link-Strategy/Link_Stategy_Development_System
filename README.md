@@ -64,6 +64,8 @@ Hệ thống Link Strategy đã hoàn thiện các cơ chế cốt lõi để v�
 - **Batch Push Rules:** Hỗ trợ đồng bộ hàng loạt DNA, Spec và Assets từ Brain xuống toàn bộ Satellite trong `active-hands.json` chỉ bằng một lệnh.
 - **Verification Gate:** Chốt chặn kỹ thuật tự động kiểm tra tính toàn vẹn của Rules và Engine tại local và CI.
 - **Spec-Driven Delivery:** Brain sở hữu và đẩy Spec xuống Hands; Hands thực thi và nộp bằng chứng qua Logs.
+- **Rule Hierarchy & Filtering:** Phân tầng luật pháp thành `master/`, `brain/` và `hands/`. Engine tự động lọc và chỉ đẩy các luật cần thiết xuống từng cấp độ để bảo mật và giảm nhiễu context.
+- **Always-on Trigger:** Mọi quy tắc quản trị luôn được kích hoạt mặc định để Agent tuân thủ vô điều kiện.
 
 ## Lệnh Vận Hành Nhanh
 
@@ -81,13 +83,21 @@ npm run ls-gitpush    # Hands: Bàn giao bài làm cho Brain
 
 ## Tạo Brain Project Workspace
 
-Lệnh chuẩn:
+Lệnh chuẩn (Đã tối giản):
 
 ```bash
 npm run new-project -- --project-name "<PROJECT_NAME>"
 ```
 
-Mặc định `new-project` sẽ cố tạo GitHub repo bằng `gh repo create`, push initial commit và lưu `remote_url` vào `active-projects.json`. Nếu chỉ muốn tạo local workspace, thêm `--no-github`. Nếu repo đã có sẵn, truyền `--remote-url "<URL>"` để registry lưu URL đó.
+**Cơ chế vận hành:**
+- **Automated Preflight:** Tự động kiểm tra Master Assets và Dependencies (`git`, `gh`).
+- **System Snapshot:** Hiển thị bối cảnh Master hiện tại ngay khi khởi động.
+- **Isolation Enforcement:** Chặn đứng việc tạo dự án bên trong Master folder.
+- **GitHub Automation:** Tự động tạo repo Private, kết nối remote và push initial commit.
+- **Industrial Hardening:** Tự động sao lưu registry (`.bak`) và dọn dẹp thư mục lỗi nếu quy trình thất bại.
+- **Verification Report:** Xuất bảng DoD chi tiết về trạng thái dự án sau khi hoàn tất.
+
+*Lưu ý: Mọi tham số cấu hình (Organization, Base Path, Visibility) hiện đã được chuyển vào file `.env` tại Master để đảm bảo mã nguồn Engine luôn sạch và nhất quán.*
 
 Kết quả mặc định:
 

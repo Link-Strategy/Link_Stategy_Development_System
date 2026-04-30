@@ -1,6 +1,6 @@
 ---
-trigger: "on_demand"
-description: "Hướng dẫn tác nghiệp cho Hands về Swagger, Figma và quy trình In-boarding 24h."
+trigger: on_demand
+description: "Guidance for AI Hands Agent to ensure high-quality, traceable delivery."
 ---
 
 # LS-RULE-HANDOVER-GUIDE-FOR-HANDS

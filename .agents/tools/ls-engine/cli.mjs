@@ -64,14 +64,14 @@ function printUsage() {
   console.log(`Link Strategy Engine Ops
 
 Commands:
-  new-project --project-name NAME [--base-path projects] [--repo-name NAME] [--organization linkstrategy] [--public] [--no-github] [--remote-url URL]
+  new-project --project-name NAME
   new-module --project-path PATH --module-name NAME
   verify-gate --project-path PATH
   ls-gitpush --title TITLE [--body BODY] [--commit-message MSG] [--project-path PATH]
   push-rules-to-satellite [--project-path PATH] [--all] [--commit-message MSG] [--git-push] [--dry-run]
   pull-code-from-satellite --project-path PATH [--remote-url URL] [--remote-branch main] [--dry-run] [--skip-ci-check]
-  new-hands --project-path PATH --repo-name NAME [--public] [--organization linkstrategy]
-  init-satellite --project-path PATH --repo-name NAME [--public] [--organization linkstrategy]
+  new-hands --project-path PATH --repo-name NAME [--public] [--organization Link-Strategy]
+  init-satellite --project-path PATH --repo-name NAME [--public] [--organization Link-Strategy]
   self-test
   stress-test [--iterations 10]
 `);

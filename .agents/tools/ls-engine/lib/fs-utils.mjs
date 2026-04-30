@@ -76,3 +76,26 @@ export function fileSha256(file) {
 export function relative(rootPath, file) {
   return toPosix(path.relative(rootPath, file));
 }
+
+export function copyFileWithRuleActivation(src, dest, activate = true) {
+  ensureDir(path.dirname(dest));
+  if (activate && src.endsWith(".md")) {
+    let content = readText(src);
+    // Dynamic trigger rewrite
+    const updated = content.replace(/trigger:\s*["']?on_demand["']?/g, 'trigger: always_on');
+    writeText(dest, updated);
+  } else {
+    fs.copyFileSync(src, dest);
+  }
+}
+
+export function copyDirWithRuleActivation(src, dest, activate = true) {
+  if (!exists(src)) return;
+  ensureDir(dest);
+  for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
+    const srcPath = path.join(src, entry.name);
+    const destPath = path.join(dest, entry.name);
+    if (entry.isDirectory()) copyDirWithRuleActivation(srcPath, destPath, activate);
+    else if (entry.isFile()) copyFileWithRuleActivation(srcPath, destPath, activate);
+  }
+}

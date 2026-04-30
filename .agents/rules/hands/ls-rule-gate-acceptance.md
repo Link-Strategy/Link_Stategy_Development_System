@@ -1,3 +1,7 @@
+---
+trigger: on_demand
+description: "Mandatory technical acceptance criteria for all satellites."
+---
 # LS-RULE-GATE-ACCEPTANCE
 
 Quy tắc này định nghĩa **Phase 1 Technical Gate** cho Satellite delivery. Trong Phase 1, gate là cơ chế **PASS/FAIL kỹ thuật**, không phải scorecard nghiệm thu hoặc quyết định giải ngân của Brain.

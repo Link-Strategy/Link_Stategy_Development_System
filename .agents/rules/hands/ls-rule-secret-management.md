@@ -1,5 +1,5 @@
 ---
-trigger: always_on
+trigger: on_demand
 description: Secret and dependency safety policy for Link Strategy Satellite work.
 ---
 

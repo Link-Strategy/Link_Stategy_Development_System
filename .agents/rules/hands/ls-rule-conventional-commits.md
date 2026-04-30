@@ -1,5 +1,5 @@
 ---
-trigger: always_on
+trigger: on_demand
 description: "Quy tắc đặt tên commit nhằm đảm bảo lịch sử dự án minh bạch, phục vụ việc thay thế nhân sự trong 24h."
 ---
 

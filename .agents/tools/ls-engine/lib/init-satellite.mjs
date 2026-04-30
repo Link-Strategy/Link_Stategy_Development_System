@@ -8,7 +8,7 @@ import { pushRules } from "./sync.mjs";
 export function initSatellite(runtime) {
   const projectPath = path.resolve(runtime.requireArg("project-path"));
   const repoName = runtime.requireArg("repo-name");
-  const organization = runtime.args.organization || "linkstrategy";
+  const organization = runtime.args.organization || "Link-Strategy";
   ensureDir(projectPath);
 
   if (!exists(path.join(projectPath, ".git"))) run("git", ["init"], { cwd: projectPath });

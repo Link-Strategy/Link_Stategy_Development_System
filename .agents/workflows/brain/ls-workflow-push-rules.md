@@ -14,8 +14,7 @@ Agent phải đọc:
 - `GEMINI.md`;
 - `ASSET_INDEX.md`;
 - `.agents/rules/*.md`;
-- `.agents/workflows/ls-workflow-new-hands.md`;
-- `docs/sync-linkage.md`;
+- `.agents/workflows/brain/ls-workflow-new-hand-folder.md`;
 - `active-hands.json`;
 - `01_TASK_SPEC.md`, `02_DECISION_LOGS.md`, `03_LOGS.md` trong Satellite nếu thay đổi governance có thể ảnh hưởng việc thi công.
 
@@ -43,8 +42,8 @@ Khi dry-run đúng, chạy sync và push lên Satellite remote:
 
 ```bash
 npm run push-rules -- --project-path <ARCHITECTURE_PATH> --git-push
-# Hoặc cập nhật toàn bộ Hands trong registry:
-npm run push-rules -- --all --git-push
+# Hoặc cập nhật toàn bộ Hands trong registry (Yêu cầu thêm cờ --confirm):
+npm run push-rules -- --all --confirm --git-push
 ```
 
 Workflow này đồng bộ:

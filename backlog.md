@@ -28,7 +28,7 @@ Hệ thống Link Strategy phát triển theo 3 giai đoạn hội tụ để ch
 ### Giai đoạn 1: Hardening & Enforcement (0 - 6 tháng) - [TRẠNG THÁI: 100% HOÀN THÀNH]
 *   **Mục tiêu:** Xây dựng "Bộ khung thép" ở cấp cơ chế nền: khởi tạo repo/project, đồng bộ Master-Satellite, cưỡng chế luật và Verification Gate.
 *   **Trọng tâm:** Master-Satellite Sync, Governance Enforcement, GitHub Actions Automation, `ls-gitpush` Integrity, Asset Registry.
-*   **Key Milestone:** Hệ thống hạ tầng, đồng bộ luật và gate kỹ thuật đã được "Bọc thép" và tự động hóa qua GitHub Verification Gate.
+*   **Key Milestone:** Hệ thống hạ tầng, đồng bộ luật và gate kỹ thuật đã được "Bọc thép" hoàn toàn với cơ chế tự nhận diện danh tính (Identity Detection) và bộ CI Suite đa tầng.
 *   **Ngoài phạm vi Phase 1:** Nghiệm thu bởi Brain, giải ngân, review checklist chuyên sâu, onboarding/offboarding Hands, SAST/dependency scan đầy đủ và kho audit dài hạn thuộc Phase 2+.
 
 ### Giai đoạn 2: Scale & Production (6 - 18 tháng) - [TRẠNG THÁI: ĐANG TRIỂN KHAI]
@@ -55,14 +55,14 @@ graph TD
     M[1. Master: Hạ tầng & Rule] -->|new-project| B[2. Brain: Đóng gói - Packaging]
     B -->|init-satellite| P[3. Brain: Kích hoạt - Provisioning]
     P -->|Satellite Repo| H[4. Hands: Thi công & Log]
-    H -->|src - tests - logs| E{5. Verification Gate}
-    E -->|FAIL| F[Sửa lỗi]
+    H -->|ls-gitpush| E{5. Unified CI Suite}
+    E -->|FAIL| F[Sửa lỗi / Hard Reject]
     F --> H
-    E -->|PASS| G[6. Secure Delivery]
-    G -->|ls-gitpush| GH[GitHub CI Status]
-    GH -->|SUCCESS| I[7. Brain: Harvest & Registry]
-    I --> J[8. Hardening: Pattern về Master]
-    J -->|ASSET_INDEX.md| M
+    E -->|PASS| GH[GitHub CI SUCCESS]
+    GH --> I[6. Brain: Harvest & Registry]
+    I -->|pull-code| J[7. Brain-side Verify]
+    J --> K[8. Hardening: Pattern về Master]
+    K -->|ASSET_INDEX.md| M
 ```
 
 Dựa trên hệ thống "Bộ khung thép" 3 tầng, vòng đời sản xuất của Link Strategy được vận hành như sau:
@@ -187,7 +187,17 @@ Dựa trên hệ thống "Bộ khung thép" 3 tầng, vòng đời sản xuất 
 - [x] Hành động: Xuất báo cáo `GATE_REPORT.md` kèm SHA256 Integrity Hash.
 - Đầu ra: Chốt chặn KCS tự động cho mọi Satellite.
 - DoD: Module chỉ có thể nộp nếu vượt qua kiểm định local và CI.
-- Ưu tiên: P0.
+
+### 1.5.1 - Thiết lập Permission Matrix (Action vs Inquiry)
+- [x] Hành động: Tạo `.agents/rules/ls-rule-master-governance.md` (Enforced No-Manual-Push).
+- [x] Hành động: Tạo script `npm run ls-gitpush` làm cổng kiểm soát duy nhất cho Hands.
+- [x] Hành động: Thiết lập cơ chế **Integrity Hash** chống sửa code lén.
+- [x] Hành động: Thực thi mô hình **CI-Gated Harvest**: Brain chỉ kéo code khi CI PASS.
+- [x] Hành động: Triển khai bài kiểm định **Brain-side Verify** khi chạy `pull-code` để chống hack Engine local.
+- [x] Hành động: Tích hợp registry-based tracking cho mọi lần pull code.
+- Đầu ra: Cơ chế bảo vệ hệ thống tuyệt đối, Brain giữ quyền sở hữu tri thức.
+- DoD: Code thi công chỉ vào Brain Project khi đã sạch, CI Pass và vượt qua Brain-side verification.
+- Ưu tiên: P0. [HOÀN THÀNH - BỌC THÉP]
 
 ### 1.4.2 - Nghiệm thu dựa trên Bằng chứng thực thi (Evidence-based)
 
@@ -198,13 +208,15 @@ Dựa trên hệ thống "Bộ khung thép" 3 tầng, vòng đời sản xuất 
 
 
 
-### 1.4.4 - Triển khai CI/CD gate (GitHub Actions)
-- [x] Hành động: Thiết lập file workflow thực thi cho GitHub Actions (`.github/workflows/verify-gate.yml`).
-- [x] Hành động: Tích hợp cơ chế đối soát Integrity Hash tự động trên Cloud để chặn PR lỗi.
+### 1.4.4 - Triển khai Unified CI Suite (GitHub Actions)
+- [x] Hành động: Thiết lập file workflow thực thi cho GitHub Actions (`link-strategy-ci.yml`).
+- [x] Hành động: Tích hợp cơ chế tự nhận diện Tier (Master/Brain/Hands) để chạy test phù hợp.
+- [x] Hành động: Triển khai "Lớp vỏ thép" (Hard Reject) chặn mọi sửa đổi DNA trái phép ngay từ luồng Push.
+- [x] Hành động: Tích hợp cơ chế đối soát Integrity Hash tự động trên Cloud.
 - [x] Hành động: Chuẩn hóa output gate report: test result, coverage, lint, security scan.
-- Đầu ra: Hệ thống tự động chặn PR nếu không vượt qua kiểm định hoặc bị sửa đổi trái phép.
-- DoD: PR không thể merge nếu dấu X đỏ xuất hiện tại GitHub Verification Gate.
-- Ưu tiên: P0 (Hardened & Automated).
+- Đầu ra: Hệ thống tự động nhận diện vai trò và chặn mọi hành vi vi phạm DNA.
+- DoD: CI báo Xanh khi Master self-test Pass hoặc Satellite pass gate; báo Đỏ khi DNA bị xâm phạm.
+- Ưu tiên: P0 (Hardened & Automated). [HOÀN THÀNH]
 
 ### 1.4.5 - Tạo Git enforcement checklist
 

@@ -12,11 +12,11 @@ Quy trình này dùng cho **Brain Agent** khi thu hoạch code từ Hands/Satell
 Agent phải đọc:
 
 - `GEMINI.md`;
-- `.agents/rules/ls-rule-gate-acceptance.md`;
-- `.agents/workflows/ls-workflow-gitpush.md`;
-- `docs/sync-linkage.md`;
+- `ASSET_INDEX.md`;
+- `.agents/rules/*.md`;
+- `.agents/workflows/brain/ls-workflow-new-hand-folder.md`;
 - `active-hands.json`;
-- `03_LOGS.md` và `02_DECISION_LOGS.md` trong Satellite path liên quan.
+- `01_TASK_SPEC.md`, `02_DECISION_LOGS.md`, `03_LOGS.md` trong Satellite nếu thay đổi governance có thể ảnh hưởng việc thi công.
 
 Không harvest theo lời báo miệng. Chỉ harvest khi có bằng chứng gate của latest Satellite `main` commit.
 
@@ -35,10 +35,10 @@ Nếu không tìm thấy `remote_url`, dừng lại và cập nhật registry ho
 Điều kiện harvest chuẩn:
 
 - latest commit trên Satellite `main` đã chạy GitHub Actions;
-- workflow `verification-gate` PASS;
+- workflow `Link Strategy CI Suite` PASS;
 - commit đó là commit cần harvest.
 
-CLI `pull-code` tự kiểm tra điều kiện này qua GitHub Actions. Không dùng `--skip-ci-check` trừ khi USER/Brain override rõ ràng.
+CLI `pull-code` tự kiểm tra điều kiện này qua GitHub Actions. Đồng thời, Engine sẽ tự thực hiện một bài **Verify Gate (Brain-side)** ngay tại chỗ để đảm bảo Hands không hack Engine local. Không dùng `--skip-ci-check` trừ khi USER/Brain override rõ ràng.
 
 ## 4. Dry Run
 

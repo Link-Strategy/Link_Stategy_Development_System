@@ -47,8 +47,8 @@
         "description": "Bộ máy vận hành Link Strategy"
       },
       {
-        "source": ".github/workflows/verify-gate.yml",
-        "target": ".github/workflows/verify-gate.yml",
+        "source": ".github/workflows/link-strategy-ci.yml",
+        "target": ".github/workflows/link-strategy-ci.yml",
         "description": "Chốt chặn CI/CD tự động"
       },
       {

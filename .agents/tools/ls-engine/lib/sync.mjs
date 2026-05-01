@@ -160,7 +160,7 @@ export function pullCode(runtime) {
     console.warn("WARNING: --skip-ci-check bypasses GitHub Actions verification. Use only for explicit Brain override.");
     sha = resolveLatestSha(remoteUrl, remoteBranch);
   } else {
-    gateRun = assertRemoteCiPassed(remoteUrl, remoteBranch, runtime.args["ci-workflow-name"] || "Link Strategy Verification Gate");
+    gateRun = assertRemoteCiPassed(remoteUrl, remoteBranch, runtime.args["ci-workflow-name"] || "Link Strategy CI Suite");
     sha = gateRun.sha;
   }
 
@@ -368,7 +368,12 @@ export function assertRemoteCiPassed(remoteUrl, branch, workflowName) {
   }
 
   const runs = Array.isArray(payload.workflow_runs) ? payload.workflow_runs : [];
-  const matching = runs.filter((runItem) => runItem.name === workflowName || runItem.path?.endsWith("/verify-gate.yml"));
+  const matching = runs.filter((runItem) => 
+    runItem.name === workflowName || 
+    runItem.name === "Link Strategy Verification Gate" || 
+    runItem.path?.endsWith("/link-strategy-ci.yml") ||
+    runItem.path?.endsWith("/verify-gate.yml")
+  );
   const success = matching.find((runItem) => runItem.head_sha === sha && runItem.status === "completed" && runItem.conclusion === "success");
   if (!success) {
     const seen = matching.length

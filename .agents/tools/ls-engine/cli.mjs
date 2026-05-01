@@ -7,6 +7,8 @@ import { verifyGate } from "./lib/gate.mjs";
 import { initSatellite } from "./lib/init-satellite.mjs";
 import { createRuntime } from "./lib/runtime.mjs";
 import { selfTest, stressTest } from "./lib/self-test.mjs";
+import { detectIdentity } from "./lib/identity.mjs";
+import { verifyBrain } from "./lib/audit-brain.mjs";
 import { pullCode, pushRules } from "./lib/sync.mjs";
 
 const command = process.argv[2];
@@ -40,6 +42,12 @@ async function main() {
       return selfTest(runtime);
     case "stress-test":
       return stressTest(runtime);
+    case "ls-identity":
+      detectIdentity(runtime);
+      break;
+    case "verify-brain":
+      verifyBrain(runtime);
+      break;
     default:
       printUsage();
       process.exit(command ? 1 : 0);

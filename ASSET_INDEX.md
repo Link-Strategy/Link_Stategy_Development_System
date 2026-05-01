@@ -2,165 +2,92 @@
 
 This file is the bootstrap registry for Brain, AI Agents, and Hands. Read it at the start of every work session before creating new rules, templates, scripts, tools, components, or project assets.
 
-## Registry Contract
-
-Every asset should be tracked with these fields:
-
-| Field | Meaning |
-| --- | --- |
-| Name | Stable asset name using Link Strategy naming conventions. |
-| Type | Constitution, Rule, Workflow, Template, Skill, Tool, Component, Dataset, Script, or Project. |
-| Path | Location in this repository. |
-| Owner | Accountable owner. Default is `Brain`. |
-| Status | `Active`, `Draft`, `Placeholder`, `Planned`, or `Deprecated`. |
-| Purpose | Why this asset exists. |
-| Input | Required input/context to use the asset. |
-| Output | Expected result after using the asset. |
-| Mandatory Usage | When usage is required. |
-| Related Docs | Source or downstream documents connected to the asset. |
-
-## Status Legend
-
-| Status | Definition |
-| --- | --- |
-| Active | Exists and is usable as an operating asset. |
-| Draft | Exists with useful content, but still needs hardening. |
-| Placeholder | Exists, but is empty or not yet operational. |
-| Planned | Required by governance/backlog, but file or implementation does not exist yet. |
-| Deprecated | Should not be used for new work. |
-
-## Bootstrap Order
-
-1. Read `GEMINI.md`.
-2. Read the core constitution and system configuration documents.
-3. Read this `ASSET_INDEX.md`.
-4. Locate the relevant rules, workflows, templates, scripts, or components below.
-5. If an asset exists, use or extend it before creating a new one.
-6. If a new asset is created or hardened, update this index in the same change.
-
 ---
 
 ## Core Governance Registry
 
-| Name | Type | Path | Owner | Status | Purpose | Input | Output | Mandatory Usage | Related Docs |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `master-agent-governance` | Rule | `GEMINI.md` | Brain | Active | Defines current AI agent behavior and workspace-level execution discipline. | Any AI agent session. | Operating rules for agent behavior. | Required at the start of every AI-assisted session. | `ASSET_INDEX.md` |
-| `base-platform-backlog` | Project | `backlog.md` | Brain | Active | Tracks implementation work for Base Platform V1. | Current repo state and governance docs. | Prioritized checklist and status. | Required when choosing next platform task. | `README.md`, `ASSET_INDEX.md` |
-| `antigravity-technical-spec` | Constitution | `.agents/README.md` | Brain | Active | Official technical specification for Antigravity directory structure, rule formatting, and hierarchy. | Agent configuration or asset creation. | Technical compliance for the production engine. | Required when creating new rules, workflows, or skills. | `backlog.md`, https://antigravity.codes |
-| `ls-sync-protocol` | Constitution | `.LinkStrategy/04_SYNC_PROTOCOL.md` | Brain | Active | Master protocol for Profile-Driven Slicing, Mirror & Strip mechanism, and CI-Gated Harvesting. | Packaging or Provisioning task. | Architectural alignment for synchronization. | Mandatory for all sync operations. | `ls-rule-master-governance.md`, `01_SOP_LINK_STRATEGY.md` |
-
+| Name | Type | Path | Purpose |
+| --- | --- | --- | --- |
+| `master-agent-governance` | Rule | `GEMINI.md` | Operating rules for AI agent behavior and discipline. |
+| `base-platform-backlog` | Project | `backlog.md` | Tracks implementation work and roadmap. |
+| `antigravity-technical-spec` | Constitution | `.agents/README.md` | Technical spec for directory structure and rules. |
+| `ls-sync-protocol` | Constitution | `.LinkStrategy/04_SYNC_PROTOCOL.md` | Protocol for Slicing, Sync, and Harvesting. |
+| `ls-identity-detection` | Tool | `.agents/tools/ls-engine/lib/identity.mjs` | Automated tier-based identity detection. |
 
 ## Rules Registry
 
-| Name | Type | Path | Owner | Status | Purpose | Input | Output | Mandatory Usage | Related Docs |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `ls-rule-master-governance` | Rule | `.agents/rules/ls-rule-master-governance.md` | Brain | Active | Master rule for Brain sovereignty, Spec-First execution, verification gate, hardening, and audit. | Agent session or delivery task. | Operational constraints for execution. | Mandatory for all work. | `GEMINI.md` |
-| `ls-rule-brain-governance` | Rule | `.agents/rules/brain/ls-rule-brain-governance.md` | Brain | Active | Brain Project governance for project coordination, satellite management, and code harvesting. | Brain Project session. | Management constraints for Brain project coordination. | Mandatory for all Brain Projects. | `ls-rule-master-governance` |
-| `ls-rule-gate-acceptance` | Rule | `.agents/rules/hands/ls-rule-gate-acceptance.md` | Brain | Active | Phase 1 technical gate pass/fail rule for Satellite delivery. | Direct-main delivery request. | Gate-ready delivery decision based on tests, integrity, package contract, logs, and CI status before Brain harvest. | Required before all Phase 1 delivery. | `ls-workflow-gitpush` |
-| `ls-rule-handover-protocol` | Rule | `.agents/rules/brain/ls-rule-handover-protocol.md` | Brain | Active | Defines the 8-pillar handover package and DoD for Microservices/Modules. | New task or module setup. | Compliant handover package. | Required for all module tasking. | `ls-workflow-gitpush` |
-| `ls-rule-secret-management` | Rule | `.agents/rules/hands/ls-rule-secret-management.md` | Brain | Active | Secret handling policy for `.env`, credentials, production access, and key revocation. | Any project using environment variables or credentials. | Secure secret usage and revocation requirements. | Required before project/satellite handover. | `.gitignore` |
-| `ls-rule-conventional-commits` | Rule | `.agents/rules/hands/ls-rule-conventional-commits.md` | Brain | Active | Enforces readable and standardized Git history for 24h staffing replaceability. | Every code commit. | Standardized commit logs. | Mandatory for all developers (Hands). | `.github/pull_request_template.md` |
-| `ls-rule-ui-premium` | Rule | `.agents/rules/hands/ls-rule-ui-premium.md` | Brain | Planned | Targeted aesthetic enforcement for premium UI design (HSL, micro-animations, typography). | Frontend or UI component work. | Premium aesthetic compliance. | Mandatory for all files matching `components/ui/**/*`. | `components/ui/README.md` |
-| `ls-rule-handover-guide` | Rule | `.agents/rules/hands/ls-rule-handover-guide-for-hands.md` | Brain | Active | Defines how Hands should handle Swagger specs and Figma designs during implementation. | New task/module handover. | Compliance with technical and visual contracts. | Mandatory for all Hands during 24h onboarding. | `.agents/templates/01_TASK_SPEC_TEMPLATE.md` |
-
+| Name | Type | Path | Purpose |
+| --- | --- | --- | --- |
+| `ls-rule-master-governance` | Rule | `.agents/rules/ls-rule-master-governance.md` | Master rule for Brain sovereignty and CI enforcement. |
+| `ls-rule-brain-governance` | Rule | `.agents/rules/brain/ls-rule-brain-governance.md` | Governance for Brain project coordination. |
+| `ls-rule-gate-acceptance` | Rule | `.agents/rules/hands/ls-rule-gate-acceptance.md` | Technical gate criteria for Satellite delivery. |
+| `ls-rule-handover-protocol` | Rule | `.agents/rules/brain/ls-rule-handover-protocol.md` | Defines handover package and DoD for modules. |
+| `ls-rule-secret-management` | Rule | `.agents/rules/hands/ls-rule-secret-management.md` | Secret handling and key revocation policy. |
+| `ls-rule-conventional-commits` | Rule | `.agents/rules/hands/ls-rule-conventional-commits.md` | Standardized Git history for replaceability. |
+| `ls-rule-handover-guide` | Rule | `.agents/rules/hands/ls-rule-handover-guide-for-hands.md` | Guide for Hands handling Specs and Figma. |
 
 ## Workflow Registry
 
-| Name | Type | Path | Owner | Status | Purpose | Input | Output | Mandatory Usage | Related Docs |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `ls-workflow-gitpush` | Workflow | `.agents/workflows/hands/ls-workflow-gitpush.md` | Brain | Active | Quy trình bàn giao và nộp bài an toàn (Agent-led Secure Delivery). | Task/module delivery request. | Standard execution sequence. | Mandatory for all delivery work. | N/A |
-| `ls-workflow-new-project` | Workflow | `.agents/workflows/master/ls-workflow-new-project.md` | Brain | Active | Step-by-step workflow for creating a Brain Project Workspace. | New project request. | Initialized Brain Project Workspace. | Required for new project setup. | `npm run new-project` |
-| `ls-workflow-init-satellite` | Workflow | `.agents/workflows/brain/ls-workflow-init-satellite.md` | Brain | Active | Agent instructions for provisioning a Satellite repository from a local folder. | Local folder and metadata. | Provisioned remote repo. | Required for provisioning phase. | `ls-workflow-init-satellite.md` |
-| `ls-workflow-new-hand-folder` | Workflow | `.agents/workflows/brain/ls-workflow-new-hand-folder.md` | Brain | Active | Agent instructions for initializing and drafting a local task folder (Packaging). | Feature request. | Local folder with Spec/Profile. | Required for packaging phase. | `ls-workflow-new-hand-folder.md` |
-| `ls-workflow-push-rules` | Workflow | `.agents/workflows/brain/ls-workflow-push-rules.md` | Brain | Active | Syncs governance, workflows, templates, engine, GitHub config, and shared assets to a Satellite repo. | Satellite path. | Updated Satellite governance/runtime. | Required after governance/runtime updates. | `npm run push-rules`, `.LinkStrategy/04_SYNC_PROTOCOL.md` |
-| `ls-workflow-harvest-code` | Workflow | `.agents/workflows/brain/ls-workflow-harvest-code.md` | Brain | Active | Harvests the verified tracked snapshot and gate report artifact from a Satellite repo back into the Brain Project Workspace. | Satellite path with PASS remote gate. | Harvested Satellite snapshot, archived `GATE_REPORT.md`, and updated `active-hands.json`. | Required before accepting Satellite output into Brain. | `npm run pull-code`, `.LinkStrategy/04_SYNC_PROTOCOL.md` |
-| `ls-workflow-daily-harvesting` | Workflow | `.agents/workflows/ls-workflow-daily-harvesting.md` | Brain | Planned | End-of-day workflow for extracting knowledge, risks, and hardening candidates from project docs, Hands logs, and commits. | `docs/`, Hands/Satellite `03_LOGS.md`, commits, `02_DECISION_LOGS.md`. | Knowledge pieces and hardening candidates. | Required for Brain daily review once created. | N/A |
+| Name | Type | Path | Purpose |
+| --- | --- | --- | --- |
+| `ls-workflow-gitpush` | Workflow | `.agents/workflows/hands/ls-workflow-gitpush.md` | Secure delivery workflow for Hands. |
+| `ls-workflow-new-project` | Workflow | `.agents/workflows/master/ls-workflow-new-project.md` | Step-by-step for creating Brain Workspaces. |
+| `ls-workflow-init-satellite` | Workflow | `.agents/workflows/brain/ls-workflow-init-satellite.md` | Provisioning a Satellite repo from local. |
+| `ls-workflow-new-hand-folder` | Workflow | `.agents/workflows/brain/ls-workflow-new-hand-folder.md` | Initializing and drafting task folders. |
+| `ls-workflow-push-rules` | Workflow | `.agents/workflows/brain/ls-workflow-push-rules.md` | Syncing DNA/Shell assets to Satellites. |
+| `ls-workflow-harvest-code` | Workflow | `.agents/workflows/brain/ls-workflow-harvest-code.md` | CI-gated harvest of verified code to Brain. |
 
 ## Template Registry
 
-| Name | Type | Path | Owner | Status | Purpose | Input | Output | Mandatory Usage | Related Docs |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `task-spec-template` | Template | `.agents/templates/01_TASK_SPEC_TEMPLATE.md` | Brain | Active | Provides the base Spec-First structure for task/module handover. | Feature/module objective and context. | `01_TASK_SPEC.md`. | Required before implementation starts. | N/A |
-| `decision-logs-template` | Template | `.agents/templates/02_DECISION_LOGS_TEMPLATE.md` | Brain | Active | Decision ledger template for logic alignment and architectural consensus. | Questions and decisions during delivery. | `02_DECISION_LOGS.md`. | Required for all project/module work. | N/A |
-| `progress-logs-template` | Template | `.agents/templates/03_LOGS_TEMPLATE.md` | Brain | Active | Provides Done/Block/Next daily action format for Hands/Satellite execution. | Daily or session-end Satellite work state. | `03_LOGS.md`. | Required for all Hands/Satellite delivery work. | N/A |
-| `hardening-proposal-template` | Template | `.agents/templates/HARDENING_PROPOSAL_TEMPLATE.md` | Brain | Active | Captures reusable logic candidates and abstraction plan after PR/milestone. | Completed implementation or module. | Hardening proposal for asset extraction. | Required before macro-hardening review. | `backlog.md` |
-| `brain-constitution-template` | Template | `.agents/templates/GEMINI_BRAIN_TEMPLATE.md` | Brain | Active | Standard constitution for Brain Project Workspaces. | New Brain Project request. | `GEMINI.md` in Brain Project. | Required for all Brain Project Workspaces. | `ls-workflow-new-project` |
-| `gate-scorecard-template` | Template | `.agents/templates/GATE_SCORECARD_TEMPLATE.md` | Brain | Active | Phase 2 / Brain Acceptance scorecard template, not a Phase 1 technical gate. | Test/lint/docs/security/hardening evidence. | Brain acceptance score and commercial decision support. | Used only during Brain acceptance or Phase 2+ review. | N/A |
-| `decision-log-template` | Template | `.agents/templates/DECISION_LOG_TEMPLATE.md` | Brain | Planned | Captures architectural decisions and consequences. | Architecture or governance decision. | Decision log entry. | Required for significant architecture changes. | N/A |
-| `security-checklist-template` | Template | `.agents/templates/SECURITY_CHECKLIST_TEMPLATE.md` | Brain | Planned | Security review checklist for handover and gate review. | Module/service implementation. | Security review evidence. | Required before accepting modules that handle data/auth/secrets. | N/A |
-| `pr-template` | Template | `.github/pull_request_template.md` | Brain | Active | Optional GitHub PR template for advanced protected-branch mode. | Completed task implementation when PR flow is enabled. | PR description with checklist evidence. | Optional; not required for default Phase 1 direct-main lifecycle. | `backlog.md` |
-| `verify-gate-action` | Template | `.agents/templates/verify-gate.yml` | Brain | Active | GitHub Action workflow that runs the mandatory remote verification gate. | Push event on Satellite `main` and optional PR event. | Verified/failed CI status for Brain harvest. | Mandatory for all satellite repositories. | `npm run verify-gate` |
-| `branch-protection-checklist` | Template | `.agents/templates/BRANCH_PROTECTION_CHECKLIST.md` | Brain | Active | Optional advanced GitHub hardening guidance, not a Phase 1 requirement. | GitHub repository settings. | Optional protected-branch configuration. | Optional after baseline lifecycle is stable. | `backlog.md`, `ls-rule-master-governance` |
-| `codeowners-policy` | Template | `.github/CODEOWNERS` | Brain | Active | Defines repo ownership and mandatory review authority. | Repo configuration. | Automated PR assignment and protection. | Required for repository governance. | `GEMINI.md` |
-| `env-example-template` | Template | `.agents/templates/ENV_EXAMPLE_TEMPLATE` | Brain | Planned | Standard environment variable example file. | Service/module config requirements. | `.env.example`. | Required for projects/modules with runtime config. | `.gitignore`, `ls-rule-secret-management` |
-| `onboarding-checklist-template` | Template | `.agents/templates/ONBOARDING_CHECKLIST_TEMPLATE.md` | Brain | Planned | 24h onboarding checklist for replacement Hands. | New contributor/module assignment. | Ready-to-work checklist. | Required when onboarding Hands. | N/A |
-| `offboarding-checklist-template` | Template | `.agents/templates/OFFBOARDING_CHECKLIST_TEMPLATE.md` | Brain | Planned | 15-minute offboarding and revoke-access checklist. | Freelancer removal or risk event. | Access revocation and evidence trail. | Required when offboarding Hands. | N/A |
+| Name | Type | Path | Purpose |
+| --- | --- | --- | --- |
+| `task-spec-template` | Template | `.agents/templates/01_TASK_SPEC_TEMPLATE.md` | Base structure for task/module spec. |
+| `decision-logs-template` | Template | `.agents/templates/02_DECISION_LOGS_TEMPLATE.md` | Decision ledger for logic alignment. |
+| `progress-logs-template` | Template | `.agents/templates/03_LOGS_TEMPLATE.md` | Action log format for daily execution. |
+| `hardening-proposal-template` | Template | `.agents/templates/HARDENING_PROPOSAL_TEMPLATE.md` | Reusable logic extraction plan. |
+| `brain-constitution-template` | Template | `.agents/templates/GEMINI_BRAIN_TEMPLATE.md` | Standard constitution for Brain Workspaces. |
+| `gate-scorecard-template` | Template | `.agents/templates/GATE_SCORECARD_TEMPLATE.md` | Phase 2+ Brain acceptance scorecard. |
+| `verify-gate-action` | Template | `.github/workflows/link-strategy-ci.yml` | Unified CI Suite for tier-aware verification. |
+| `branch-protection-checklist` | Template | `.agents/templates/BRANCH_PROTECTION_CHECKLIST.md` | GitHub hardening guidance. |
+| `codeowners-policy` | Template | `.github/CODEOWNERS` | Repo ownership and review authority. |
+| `env-example-template` | Template | `.agents/templates/ENV_EXAMPLE_TEMPLATE` | Standard environment variable example. |
 
 ## Skill Registry
 
-| Name | Type | Path | Owner | Status | Purpose | Input | Output | Mandatory Usage | Related Docs |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `ls-skill-engine-ops` | Skill | `.agents/skills/brain/ls-skill-engine-ops/` | Brain | Active | Hardened capability for managing the Link Strategy Production Engine (Sync, Verification, Project/Module Gen). | Project/Satellite metadata. | Managed repository infrastructure. | Required for all platform operations (Sync, Gate, Init). | N/A |
-| `nodejs-backend-patterns` | Skill | `.agents/skills/hands/nodejs-backend-patterns/` | Brain | Active | Production-ready Node.js backend patterns (Express/Fastify, middleware, auth). | Backend task requirements. | Hardened Node.js implementation. | Optional/Recommended for Node.js work. | N/A |
-| `prompt-engineering-patterns` | Skill | `.agents/skills/hands/prompt-engineering-patterns/` | Brain | Active | Advanced prompt engineering techniques for production LLM performance. | Prompt design task. | Optimized prompts. | Required for AI Agent optimization. | N/A |
-| `python-design-patterns` | Skill | `.agents/skills/hands/python-design-patterns/` | Brain | Active | Python design patterns (KISS, Separation of Concerns, etc.). | Python development task. | Clean Python code. | Optional/Recommended for Python work. | N/A |
-| `react-state-management` | Skill | `.agents/skills/hands/react-state-management/` | Brain | Active | Modern React state management (Redux, Zustand, React Query). | Frontend state task. | Efficient state logic. | Optional/Recommended for React work. | N/A |
-| `tailwind-design-system` | Skill | `.agents/skills/hands/tailwind-design-system/` | Brain | Active | Scalable design systems with Tailwind CSS v4. | UI/UX development task. | Standardized Tailwind styles. | Required for UI Kit work. | N/A |
+| Name | Type | Path | Purpose |
+| --- | --- | --- | --- |
+| `ls-skill-engine-ops` | Skill | `.agents/skills/brain/ls-skill-engine-ops/` | Core engine management capability. |
+| `nodejs-backend-patterns` | Skill | `.agents/skills/hands/nodejs-backend-patterns/` | Production-ready Node.js patterns. |
+| `prompt-engineering` | Skill | `.agents/skills/hands/prompt-engineering-patterns/` | LLM performance optimization techniques. |
+| `python-design-patterns` | Skill | `.agents/skills/hands/python-design-patterns/` | Clean and modular Python patterns. |
+| `react-state-management` | Skill | `.agents/skills/hands/react-state-management/` | Modern React state patterns. |
+| `tailwind-design-system` | Skill | `.agents/skills/hands/tailwind-design-system/` | Scalable UI design with Tailwind v4. |
 
+## Tool & Script Registry
 
-## Tool Registry
+| Name | Type | Path | Purpose |
+| --- | --- | --- | --- |
+| `ls-engine-cli` | Tool | `.agents/tools/ls-engine/cli.mjs` | CLI source of truth for platform ops. |
+| `new-project` | Script | `npm run new-project` | Generates Brain Workspaces from Master. |
+| `new-hand-folder` | Script | `npm run new-hand-folder` | Initializes local task packaging. |
+| `init-satellite` | Script | `npm run init-satellite` | Provisions Cloud infrastructure for task. |
+| `verify-gate` | Script | `npm run verify-gate` | Local/CI technical gate verification. |
+| `push-rules` | Script | `npm run push-rules` | DNA/Shell asset synchronization. |
+| `pull-code` | Script | `npm run pull-code` | CI-gated code harvesting into Brain. |
+| `ls-gitpush` | Script | `npm run ls-gitpush` | Agent-led secure delivery to main. |
 
-| Name | Type | Path | Owner | Status | Purpose | Input | Output | Mandatory Usage | Related Docs |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `ls-tool-mcp-bridge` | Tool | `.agents/tools/ls-tool-mcp-bridge/` | Brain | Planned | Planned bridge between AI context and live system data. | Agent query/context. | Real-time data response. | Required for live data inquiry once implemented. | N/A |
-| `ls-tool-auditor-proxy` | Tool | `.agents/tools/ls-tool-auditor-proxy/` | Brain | Planned | Planned control layer for risky AI/Hands commands. | Proposed command/action. | Allow/block decision and audit record. | Required for Action Lane once implemented. | N/A |
-| `ls-tool-dev-sandbox` | Tool | `.agents/tools/ls-tool-dev-sandbox/` | Brain | Planned | Planned dockerized isolated execution environment. | Project/module source code. | Safe local runtime. | Required for satellite handover once implemented. | N/A |
+## Component & Dataset Registry
 
-## Script Registry
-
-| Name | Type | Path | Owner | Status | Purpose | Input | Output | Mandatory Usage | Related Docs |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `ls-engine-cli` | Tool | `.agents/tools/ls-engine/cli.mjs` | Brain | Active | Node.js CLI source of truth for Phase 1 operations. | npm command arguments. | Project/satellite/gate/sync actions. | Required for all platform automation. | `package.json`, `README.md`, `backlog.md` |
-| `new-project` | Script | `npm run new-project` | Brain | Active | Generates a Brain Project Workspace skeleton from Master. | `--project-name`, `--repo-name`, etc. | Brain Project Workspace. | Required for project setup. | `ls-workflow-new-project.md` |
-| `new-hand-folder` | Script | `npm run new-hand-folder` | Brain | Active | Khởi tạo "Gói bàn giao" (Task Folder) tại local kèm Spec và Profile. | `--path` | Local task folder với 4 file hộ chiếu. | Required for Packaging phase. | `ls-workflow-new-hand-folder.md` |
-| `init-satellite` | Script | `npm run init-satellite` | Brain | Active | Kích hoạt (Provisioning) Satellite Repo dựa trên folder đã đóng gói. | `--path`, `--repo-name`. | Remote GitHub Satellite repo. | Required for Provisioning phase. | `ls-workflow-init-satellite.md` |
-| `verify-gate` | Script | `npm run verify-gate` | Brain | Active | Performs local/CI Phase 1 technical gate checks and creates pass/fail evidence. | `--project-path`. | `GATE_REPORT.md`. | Required before delivery. | `ls-rule-gate-acceptance` |
-| `push-rules` | Script | `npm run push-rules` | Brain | Active | Syncs Shell Assets and DNA based on Slicing Profile mapping. | `--project-path`. | Updated Satellite assets. | Post-governance update. | `.LinkStrategy/04_SYNC_PROTOCOL.md` |
-| `pull-code` | Script | `npm run pull-code` | Brain | Active | CI-gated harvest of verified Satellite snapshot into Brain. | `--project-path`. | Harvested code in Brain Workspace. | Post-milestone harvest. | `ls-workflow-harvest-code.md`, `.LinkStrategy/04_SYNC_PROTOCOL.md` |
-| `ls-gitpush` | Script | `npm run ls-gitpush` | Brain | Active | Agent-led delivery: runs gate, stages allowed delivery files, commits, and pushes directly to Satellite `origin/main`. | `--project-path`, `--title`, optional `--body`. | Updated Satellite `main` commit awaiting CI signal. | Mandatory for all Hands submissions. | `ls-workflow-gitpush` |
-| `register-asset` | Script | `npm run register-asset` | Brain | Planned | Helps register new hardened assets in this index. | Asset metadata. | Updated or draft index entry. | Required after hardening once implemented. | `ASSET_INDEX.md` |
-
-## Component Registry
-
-| Name | Type | Path | Owner | Status | Purpose | Input | Output | Mandatory Usage | Related Docs |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `shared-ui-library` | Component | `components/ui/` | Brain | Placeholder | Planned shared UI component library for frontend work. Current README is empty. | Frontend task requirements. | Reusable UI components and patterns. | Required for frontend work once implemented. | `ls-skill-ui-kit` |
-
-## Dataset Registry
-
-| Name | Type | Path | Owner | Status | Purpose | Input | Output | Mandatory Usage | Related Docs |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `audit-trail-schema` | Dataset | `.agents/datasets/audit-trail.schema.json` | Brain | Planned | Defines local/future ledger audit record schema. | Agent/action event metadata. | Validated audit record shape. | Required before audit automation. | N/A |
-| `active-projects` | Dataset | `active-projects.json` | Brain | Active | Central registry of all Brain Project Workspaces managed by Master. | Platform scripts. | Project list for automation. | Required for batch project operations. | `.LinkStrategy/04_SYNC_PROTOCOL.md` |
-| `active-hands` | Dataset | `active-hands.json` | Brain | Active | Central registry of all Hands/Satellite Repos managed by a Brain Project. | Platform scripts. | Hands list with SHA and CI status. | Required for Brain harvest operations. | `.LinkStrategy/04_SYNC_PROTOCOL.md` |
-| `knowledge-piece-template` | Template | `.agents/templates/KNOWLEDGE_PIECE_TEMPLATE.md` | Brain | Planned | Standard format for reusable knowledge pieces before vector KB ingestion. | Lessons, patterns, anti-patterns. | Knowledge piece document. | Required for knowledge harvesting once created. | N/A |
-
-## Project Registry
-
-| Name | Type | Path | Owner | Status | Purpose | Input | Output | Mandatory Usage | Related Docs |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `demo-base-platform` | Project | `projects/DEMO-BASE-PLATFORM/` | Brain | Active | Reference project proving project factory, templates, logs, and gate verification. | Project factory scripts and templates. | Demo project workspace. | Required for Base Platform V1 validation. | `backlog.md` |
-| `INTERNAL-SIMPLE-SERVICE` | Project | `projects/INTERNAL-SIMPLE-SERVICE/` | Brain | Active | Automatically generated hardened satellite project. | N/A | Project structure | Mandatory | N/A |
-
-
-
+| Name | Type | Path | Purpose |
+| --- | --- | --- | --- |
+| `active-projects` | Dataset | `active-projects.json` | Registry of managed Brain Workspaces. |
+| `active-hands` | Dataset | `active-hands.json` | Registry of managed Satellite repos. |
 
 ---
 
 ## Registration Rules
 
 - Do not create a new asset if an existing asset can be extended safely.
-- New assets must use Link Strategy naming: `ls-rule-*`, `ls-workflow-*`, `ls-skill-*`, `ls-tool-*`, or clear template/script names.
+- New assets must use Link Strategy naming: `ls-rule-*`, `ls-workflow-*`, `ls-skill-*`, `ls-tool-*`.
 - Every new asset must be registered here in the same change that creates it.
-- Placeholder assets must not be treated as operational until their status is changed to `Draft` or `Active`.
-- `Active` requires enough documentation for another operator or AI Agent to use the asset without hidden context.
+- Assets must have documentation enough for another operator or AI Agent to use.

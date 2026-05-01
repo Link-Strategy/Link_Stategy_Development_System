@@ -9,11 +9,13 @@
   "scripts": {
     "new-project": "node .agents/tools/ls-engine/cli.mjs new-project",
     "new-hand-folder": "node .agents/tools/ls-engine/cli.mjs new-hand-folder",
-    "verify-gate": "node .agents/tools/ls-engine/cli.mjs verify-gate",
-    "ls-gitpush": "node .agents/tools/ls-engine/cli.mjs ls-gitpush",
+    "init-satellite": "node .agents/tools/ls-engine/cli.mjs init-satellite",
     "push-rules": "node .agents/tools/ls-engine/cli.mjs push-rules-to-satellite",
     "pull-code": "node .agents/tools/ls-engine/cli.mjs pull-code-from-satellite",
-    "init-satellite": "node .agents/tools/ls-engine/cli.mjs init-satellite",
+    "verify-brain": "node .agents/tools/ls-engine/cli.mjs verify-brain",
+    "verify-gate": "node .agents/tools/ls-engine/cli.mjs verify-gate",
+    "ls-gitpush": "node .agents/tools/ls-engine/cli.mjs ls-gitpush",
+    "ls-identity": "node .agents/tools/ls-engine/cli.mjs ls-identity",
     "self-test": "node .agents/tools/ls-engine/cli.mjs self-test"
   }
 }

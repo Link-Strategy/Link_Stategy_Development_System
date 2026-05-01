@@ -5,7 +5,7 @@ description: "Phase 1 secure delivery workflow for AI Hands Agent"
 
 # LS-WORKFLOW-GITPUSH
 
-Quy trình này là đường nộp bài bắt buộc của **AI Hands Agent** trong Satellite. Mục tiêu là push delivery lên `origin/main` sau khi Phase 1 Technical Gate pass local. Satellite `main` không phải nguồn sạch; Brain chỉ harvest commit đã pass GitHub Actions.
+Quy trình này là đường nộp bài bắt buộc của **AI Hands Agent** trong Satellite. Mục tiêu là push delivery lên `origin/main` sau khi Phase 1 Technical Gate pass local. Satellite `main` không phải nguồn sạch; Brain chỉ harvest commit đã pass GitHub Actions và vượt qua bài kiểm tra tính toàn vẹn (Integrity check) tại Brain-side.
 
 ## 1. Preflight Context
 
@@ -30,7 +30,7 @@ Trước khi nộp, Agent tự kiểm:
 - `03_LOGS.md` có Progress Snapshot mới trước lần push này.
 - `02_DECISION_LOGS.md` có quyết định/giả định vượt Spec.
 - `01_TASK_SPEC.md` vẫn giữ Task List Tổng làm baseline, không bị tick/sửa chỉ để báo tiến độ.
-- Không sửa `.agents/`, `.github/`, `GEMINI.md`.
+- Không sửa `.agents/`, `.github/`, `GEMINI.md`. Bất kỳ sự thay đổi nào tại các tệp quản trị này sẽ bị CI chặn đứng (Hard Reject) ngay lập tức.
 - `package.json` giữ `verify-gate`, `ls-gitpush` và không expose Brain-only scripts.
 - Không có secret hoặc file `.env` thật.
 
@@ -88,7 +88,7 @@ Tool sẽ:
 
 ## 7. Brain Harvest Rule
 
-Brain chỉ được chạy `npm run pull-code` để harvest tracked snapshot về Brain Project khi latest commit trên Satellite `main` có GitHub Actions `verification-gate` success. Nếu CI đang pending/fail/missing, `pull-code` phải block.
+Brain chỉ được chạy `npm run pull-code` để harvest tracked snapshot về Brain Project khi latest commit trên Satellite `main` có GitHub Actions `Link Strategy CI Suite` success. Nếu CI đang pending/fail/missing, `pull-code` phải block.
 
 ## 8. Failure Handling
 

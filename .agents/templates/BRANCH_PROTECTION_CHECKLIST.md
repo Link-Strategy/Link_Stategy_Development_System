@@ -4,7 +4,7 @@ Tài liệu này chỉ dùng khi Brain muốn nâng cấp Satellite repo lên m�
 
 Trong lifecycle mặc định hiện tại:
 
-- Brain Project chỉ nhận tracked snapshot từ Satellite commit đã PASS gate.
+- Brain Project chỉ harvest các mapping trong `slicing-profile.json` từ Satellite commit đã PASS gate.
 - Satellite `main` là execution lane của Hands.
 - Hands nộp bài bằng `npm run ls-gitpush`, tool push trực tiếp lên `origin/main`.
 - GitHub Actions chạy trên push vào `main`.
@@ -14,10 +14,10 @@ Trong lifecycle mặc định hiện tại:
 
 - [ ] Require a pull request before merging.
 - [ ] Require status checks to pass before merging.
-- [ ] Required check: `verification-gate (ubuntu-latest)` from `.github/workflows/verify-gate.yml`.
-- [ ] Required check: `verification-gate (windows-latest)` from `.github/workflows/verify-gate.yml`.
-- [ ] Required check: `verification-gate (macos-latest)` from `.github/workflows/verify-gate.yml`.
-- [ ] Required check: `block-illegal-changes` from `.github/workflows/rules-protection.yml`.
+- [ ] Required check: `verification-gate (ubuntu-latest)` from `.github/workflows/link-strategy-ci.yml`.
+- [ ] Required check: `verification-gate (windows-latest)` from `.github/workflows/link-strategy-ci.yml`.
+- [ ] Required check: `verification-gate (macos-latest)` from `.github/workflows/link-strategy-ci.yml`.
+- [ ] Governance path protection remains enabled inside `.github/workflows/link-strategy-ci.yml`.
 - [ ] Restrict direct pushes to Brain or Brain Delegate only.
 
 ## Permissions

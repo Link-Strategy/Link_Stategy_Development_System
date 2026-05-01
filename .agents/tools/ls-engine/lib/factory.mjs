@@ -1,5 +1,6 @@
+import fs from "node:fs";
 import path from "node:path";
-import { copyAndHardenAssetIndex, copyDir, copyDirWithRuleActivation, copyFile, copyIfExists, ensureDir, exists, readJson, readText, toPosix, writeText } from "./fs-utils.mjs";
+import { copyAndHardenAssetIndex, copyDir, copyDirWithRuleActivation, copyFile, copyIfExists, ensureDir, exists, readJson, toPosix, writeText } from "./fs-utils.mjs";
 import { mergeBrainPackageContract } from "./package-contract.mjs";
 import { run, runOut } from "./process-utils.mjs";
 
@@ -12,7 +13,7 @@ export async function newProject(runtime) {
 
   printSystemSnapshot(runtime);
   validateEnvironment(runtime);
-  checkDependencies();
+  checkDependencies(runtime);
   validateIsolation(runtime, projectPath);
 
   if (exists(projectPath)) {
@@ -25,6 +26,7 @@ export async function newProject(runtime) {
   ensureDir(path.join(projectPath, "docs"));
   ensureDir(path.join(projectPath, ".agents/rules"));
   ensureDir(path.join(projectPath, ".agents/workflows"));
+  ensureDir(path.join(projectPath, ".agents/templates"));
   ensureDir(path.join(projectPath, ".agents/tools/ls-engine"));
   ensureDir(path.join(projectPath, ".github"));
   ensureDir(path.join(projectPath, "components/ui"));
@@ -45,6 +47,7 @@ export async function newProject(runtime) {
   copyDir(runtime.resolvePath(".agents/skills/hands"), path.join(projectPath, ".agents/skills/hands"));
 
   copyDir(runtime.resolvePath(".agents/tools/ls-engine"), path.join(projectPath, ".agents/tools/ls-engine"));
+  copyDir(runtime.resolvePath(".agents/templates"), path.join(projectPath, ".agents/templates"));
   copyDir(runtime.resolvePath(".github"), path.join(projectPath, ".github"));
   copyDir(runtime.resolvePath("components/ui"), path.join(projectPath, "components/ui"));
   
@@ -117,11 +120,11 @@ function validateEnvironment(runtime) {
   }
 }
 
-function checkDependencies() {
+function checkDependencies(runtime) {
   const deps = [
-    { name: "git", cmd: ["git", "--version"] },
-    { name: "gh", cmd: ["gh", "--version"] }
+    { name: "git", cmd: ["git", "--version"] }
   ];
+  if (!runtime.args["no-github"]) deps.push({ name: "gh", cmd: ["gh", "--version"] });
   for (const dep of deps) {
     try {
       run(dep.cmd[0], dep.cmd.slice(1), { capture: true });
@@ -241,11 +244,23 @@ function updateRegistry(runtime, id, projectPath, remoteUrl, description) {
 }
 
 function initializeProjectRemote(runtime, projectPath, projectDirName) {
+  if (runtime.args["no-github"]) {
+    if (!exists(path.join(projectPath, ".git"))) run("git", ["init"], { cwd: projectPath });
+    ensureGitIdentity(projectPath);
+    run("git", ["add", "."], { cwd: projectPath });
+    if (runOut("git", ["status", "--porcelain"], projectPath)) {
+      run("git", ["commit", "-m", "chore(init): initialize brain project"], { cwd: projectPath });
+    }
+    run("git", ["branch", "-M", "main"], { cwd: projectPath });
+    return "";
+  }
+
   const organization = process.env.LS_ORGANIZATION || "Link-Strategy";
   const repoName = projectDirName;
   const visibility = process.env.LS_VISIBILITY || "--private";
   try {
     if (!exists(path.join(projectPath, ".git"))) run("git", ["init"], { cwd: projectPath });
+    ensureGitIdentity(projectPath);
     
     // Attempt to create. If it fails, we will try to fetch the existing one.
     run("gh", ["repo", "create", `${organization}/${repoName}`, visibility, "--source=.", "--remote=origin"], {
@@ -269,4 +284,9 @@ function initializeProjectRemote(runtime, projectPath, projectDirName) {
   }
 }
 
-
+function ensureGitIdentity(projectPath) {
+  const email = runOut("git", ["config", "user.email"], projectPath, true);
+  const name = runOut("git", ["config", "user.name"], projectPath, true);
+  if (!email) run("git", ["config", "user.email", "ls-engine@example.local"], { cwd: projectPath });
+  if (!name) run("git", ["config", "user.name", "LS Engine"], { cwd: projectPath });
+}

@@ -72,7 +72,7 @@ Scorecard 100 điểm, giải ngân, hardening đầy đủ và nghiệm thu ngh
 - Brain Project là nguồn sạch sau harvest.
 - Satellite `main` là execution lane của Hands, không phải trusted source tự thân.
 - Hands được push delivery lên Satellite `main` chỉ thông qua `npm run ls-gitpush`.
-- Brain chỉ được harvest tracked snapshot từ latest Satellite `main` commit khi GitHub Actions `verification-gate` của commit đó PASS; không harvest `.git/` hoặc file local/untracked.
+- Brain chỉ được harvest các mapping an toàn trong `slicing-profile.json` từ latest Satellite `main` commit khi GitHub Actions `verification-gate` của commit đó PASS; không harvest `.git/`, governance/runtime hoặc file local/untracked.
 
 ## 6. Audit & Logging
 

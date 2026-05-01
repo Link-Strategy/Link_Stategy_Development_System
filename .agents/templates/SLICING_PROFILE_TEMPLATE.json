@@ -27,6 +27,11 @@
         "description": "Workflow dành cho Hands"
       },
       {
+        "source": ".agents/templates/",
+        "target": ".agents/templates/",
+        "description": "Templates for Hands operations"
+      },
+      {
         "source": ".agents/templates/GEMINI_SATELLITE_TEMPLATE.md",
         "target": "GEMINI.md",
         "description": "Hiến pháp Vệ tinh"
@@ -88,11 +93,6 @@
     ]
   },
   "harvesting": [
-    {
-      "source": "src/features/[feature-name]/",
-      "target": "src/features/[feature-name]/",
-      "description": "Mã nguồn tính năng đã hoàn thiện"
-    },
     {
       "source": "02_DECISION_LOGS.md",
       "target": "02_DECISION_LOGS.md",

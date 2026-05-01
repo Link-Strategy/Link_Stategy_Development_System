@@ -12,7 +12,7 @@ Khi User yêu cầu tạo một Hand/Folder mới (ví dụ: "Tạo folder cho t
 1. Xác định đường dẫn mục tiêu (ví dụ: `src/features/login`).
 2. Sử dụng lệnh `run_command` để thực hiện:
    ```bash
-   npm run new-hand-folder -- --path "src/features/[feature-name]"
+   npm run new-hand-folder -- --path "src/features/login"
    ```
 3. Xác nhận 4 file hộ chiếu đã được tạo thành công trong folder.
 

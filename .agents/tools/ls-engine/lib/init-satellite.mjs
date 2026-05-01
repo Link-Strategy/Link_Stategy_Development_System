@@ -8,10 +8,11 @@ import { pushRules } from "./sync.mjs";
 export function initSatellite(runtime) {
   const projectPath = path.resolve(runtime.args.path || runtime.requireArg("project-path"));
   const repoName = runtime.requireArg("repo-name");
+  ensureDir(projectPath);
+  ensurePackagingTemplates(runtime, projectPath);
   const profilePath = path.join(projectPath, "slicing-profile.json");
   const profile = exists(profilePath) ? readJson(profilePath) : {};
   const organization = runtime.args.organization || profile.provisioning?.organization || "Link-Strategy";
-  ensureDir(projectPath);
 
 
 
@@ -48,6 +49,19 @@ export function initSatellite(runtime) {
 
   console.log("Direct-main delivery enabled; Brain harvest is CI-gated.");
   console.log(`SATELLITE READY: ${organization}/${repoName}`);
+}
+
+function ensurePackagingTemplates(runtime, projectPath) {
+  const templateDir = runtime.resolvePath(".agents/templates");
+  const profileTemplatePath = path.join(templateDir, "SLICING_PROFILE_TEMPLATE.json");
+  if (!exists(profileTemplatePath)) return;
+  const profileTemplate = readJson(profileTemplatePath);
+  const templates = profileTemplate.packaging?.templates || [];
+  for (const tpl of templates) {
+    const src = path.join(templateDir, tpl.src);
+    const dest = path.join(projectPath, tpl.dest);
+    if (!exists(dest) && exists(src)) copyFile(src, dest);
+  }
 }
 
 function registerHands(runtime, projectPath, repoName, organization, remoteUrl) {
@@ -121,6 +135,7 @@ function isInitialSatelliteAllowed(file) {
     normalized === "01_TASK_SPEC.md" ||
     normalized === "02_DECISION_LOGS.md" ||
     normalized === "03_LOGS.md" ||
+    normalized === "slicing-profile.json" ||
     normalized === "package.json" ||
     normalized === "package-lock.json" ||
     normalized === "npm-shrinkwrap.json" ||

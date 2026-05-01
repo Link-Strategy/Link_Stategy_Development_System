@@ -18,7 +18,7 @@ Chào Brain, đây là bản Hiến pháp quản trị dành cho **Brain Project
 ## II. QUY TRÌNH QUẢN TRỊ (BRAIN WORKFLOW)
 
 1. **Khởi động phiên làm việc:** Đọc `GEMINI.md`, `ASSET_INDEX.md`, các rule trong `.agents/rules/` và `.agents/rules/hands/`, các workflow trong `.agents/workflows/` và `.agents/workflows/hands/`, các skill trong `.agents/skills/` và `.agents/skills/hands/`, và `active-hands.json`.
-2. **Tạo Hands/Satellite:** Dùng workflow `.agents/workflows/ls-workflow-new-hands.md`. CLI thực thi là `npm run new-hands -- --project-path [ARCHITECTURE_PATH] --repo-name [REPO]`.
+2. **Tạo Hands/Satellite:** Có hai đường hợp lệ: tạo trực tiếp bằng `npm run new-hands -- --project-path [ARCHITECTURE_PATH] --repo-name [REPO]`, hoặc đóng gói trước bằng `.agents/workflows/ls-workflow-new-hand-folder.md` rồi kích hoạt bằng `.agents/workflows/ls-workflow-init-satellite.md`.
 3. **Giao việc:** Chuẩn bị tài liệu/spec trong `docs/`, cập nhật `01_TASK_SPEC.md` trong Satellite path, rồi sync governance bằng `.agents/workflows/ls-workflow-push-rules.md`.
 4. **Giám sát:** Theo dõi `active-hands.json`, CI status, `03_LOGS.md`, `02_DECISION_LOGS.md` và blocker của từng Satellite.
 5. **Thu hoạch (Harvest):** Chỉ harvest khi latest Satellite commit đã PASS gate, theo `.agents/workflows/ls-workflow-harvest-code.md`.

@@ -1,5 +1,14 @@
 export const harvestProtectedPaths = [".git"];
 
+export const harvestForbiddenTargets = [
+  ".agents",
+  ".github",
+  "GEMINI.md",
+  "ASSET_INDEX.md",
+  "src/core",
+  "src/components/ui"
+];
+
 export const satellitePackageScripts = {
   "verify-gate": "node .agents/tools/ls-engine/cli.mjs verify-gate",
   "ls-gitpush": "node .agents/tools/ls-engine/cli.mjs ls-gitpush"
@@ -35,6 +44,7 @@ export const requiredSatellitePaths = [
   "03_LOGS.md",
   "GEMINI.md",
   "README.md",
+  "slicing-profile.json",
   "package.json",
   "src",
   "tests"
@@ -49,12 +59,8 @@ export const requiredSpecMarkers = [
 ];
 
 export const placeholderPatterns = [
-  /\[TÃƒÂªn Module\/Task\]/,
-  /\[TÃªn Module\/Task\]/,
-  /\[TODO\]/i,
-  /\[TBD\]/i,
-  /\[MÃƒÂ´ tÃ¡ÂºÂ£/,
-  /\[MÃ´ táº£/,
-  /<replace/i,
-  /lorem ipsum/i
+  /\[[^\]\r\n]*(Tên|Dự án|Số hiệu|Draft|Approved|In Progress|P0|P1|P2|Pain point|ICP|Link|Mô tả|Dùng|Mobile|Tablet|Desktop|RBAC|Scopes|JWT|Danh sách|None|TBD|TODO)[^\]\r\n]*\]/iu,
+  /\[(TODO|TBD|FIXME|REPLACE|PLACEHOLDER)[^\]\r\n]*\]/iu,
+  /<replace/iu,
+  /lorem ipsum/iu
 ];

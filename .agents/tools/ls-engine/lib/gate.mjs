@@ -31,13 +31,13 @@ export function verifyGate(runtime, options = {}) {
   console.log("--- LINK STRATEGY: VERIFY GATE (PHASE 1) ---");
   console.log(`Project Path: ${projectPath}`);
 
-  const masterRules = runtime.resolvePath(".agents/rules");
+  const masterRules = resolveExpectedRulesDir(runtime);
   const projectRules = path.join(projectPath, ".agents/rules");
   if (!exists(projectRules)) fail("Governance rules folder is missing.");
   else {
     for (const file of listFiles(masterRules).filter((f) => f.endsWith(".md"))) {
       const target = path.join(projectRules, path.basename(file));
-      hashMatch(file, target, `Rule ${path.basename(file)}`, pass, fail);
+      hashMatchActivated(file, target, `Rule ${path.basename(file)}`, pass, fail);
     }
   }
 
@@ -85,8 +85,41 @@ function hashMatch(source, target, label, pass, fail) {
     fail(`${label} is missing from project.`);
     return;
   }
-  if (fileSha256(source) === fileSha256(target)) pass(`${label} matches Master governance.`);
+  if (textSha256(source) === textSha256(target)) pass(`${label} matches Master governance.`);
   else fail(`${label} has been modified outside Brain governance.`);
+}
+
+function resolveExpectedRulesDir(runtime) {
+  const handsRules = runtime.resolvePath(".agents/rules/hands");
+  if (exists(handsRules)) return handsRules;
+  return runtime.resolvePath(".agents/rules");
+}
+
+function hashMatchActivated(source, target, label, pass, fail) {
+  if (!exists(source)) {
+    fail(`Master ${label} is missing.`);
+    return;
+  }
+  if (!exists(target)) {
+    fail(`${label} is missing from project.`);
+    return;
+  }
+  const expected = normalizeText(activateRuleContent(readText(source)));
+  const actual = normalizeText(readText(target));
+  if (sha256(expected) === sha256(actual)) pass(`${label} matches activated governance.`);
+  else fail(`${label} has been modified outside Brain governance.`);
+}
+
+function activateRuleContent(content) {
+  return content.replace(/trigger:\s*["']?on_demand["']?/g, "trigger: always_on");
+}
+
+function textSha256(file) {
+  return sha256(normalizeText(readText(file)));
+}
+
+function normalizeText(content) {
+  return content.replace(/\r\n/g, "\n");
 }
 
 function hashTree(sourceDir, targetDir, label, pass, fail) {

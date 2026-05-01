@@ -14,7 +14,7 @@ Agent phải đọc:
 - `GEMINI.md`;
 - `ASSET_INDEX.md`;
 - `.agents/rules/*.md`;
-- `.agents/workflows/brain/ls-workflow-new-hand-folder.md`;
+- `.agents/workflows/ls-workflow-new-hand-folder.md`;
 - `active-hands.json`;
 - `01_TASK_SPEC.md`, `02_DECISION_LOGS.md`, `03_LOGS.md` trong Satellite nếu thay đổi governance có thể ảnh hưởng việc thi công.
 
@@ -48,21 +48,13 @@ Trước khi harvest thật, chạy dry-run:
 npm run pull-code -- --project-path <ARCHITECTURE_PATH> --dry-run
 ```
 
-Dry-run phải cho thấy tracked snapshot của Satellite commit sẽ được harvest. Snapshot có thể gồm:
+Dry-run phải cho thấy scope harvest theo `slicing-profile.json` của Satellite. Mỗi mapping có dạng:
 
-- `01_TASK_SPEC.md`
-- `02_DECISION_LOGS.md`
-- `03_LOGS.md`
-- `README.md`
-- `package.json`
-- `.env.example`
-- `.gitignore`
-- `src/`
-- `tests/`
-- `docs/`
-- governance/runtime files nếu chúng là tracked files trong Satellite repo đã PASS gate
+```text
+<source trong Satellite> -> <target trong Brain Project>
+```
 
-Không harvest `.git/` và không dựa vào file local/untracked trong Satellite folder. Nếu danh sách file không đúng phạm vi delivery, dừng lại và kiểm tra Satellite.
+Dry-run sẽ báo rõ source thiếu hoặc mapping không an toàn. Không harvest `.git/`, governance/runtime (`.agents/`, `.github/`, `GEMINI.md`, `ASSET_INDEX.md`) hoặc vùng Brain-protected như `src/core/` và `src/components/ui/`. Nếu danh sách mapping không đúng phạm vi delivery, dừng lại và sửa `slicing-profile.json` trước.
 
 ## 5. Harvest
 
@@ -72,9 +64,16 @@ Khi dry-run đúng và gate PASS, chạy:
 npm run pull-code -- --project-path <ARCHITECTURE_PATH>
 ```
 
-Workflow sẽ copy toàn bộ tracked files từ latest verified Satellite commit về đúng path trong Brain Project Workspace, bảo vệ `.git/` local nếu path đang là repo, và cập nhật `active-hands.json` với SHA, CI status và thời điểm harvest.
+Workflow sẽ copy đúng các mapping harvest từ latest verified Satellite commit về Brain Project Workspace, prune file stale trong target directory của mapping, và cập nhật `active-hands.json` với SHA, CI status và thời điểm harvest.
 
-Sau khi harvest snapshot, workflow tải `GATE_REPORT.md` artifact từ GitHub Actions về:
+Harvest thật sẽ fail closed nếu:
+
+- mapping còn placeholder chưa được thay bằng path thật;
+- source khai báo không tồn tại trong Satellite commit;
+- nhiều mapping trỏ cùng một target;
+- target đụng vùng Brain-protected.
+
+Sau khi harvest, workflow tải `GATE_REPORT.md` artifact từ GitHub Actions về:
 
 ```text
 docs/audit/gate-reports/<SATELLITE_PATH>/<SHA>/

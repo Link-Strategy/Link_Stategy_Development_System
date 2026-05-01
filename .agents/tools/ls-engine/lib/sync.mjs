@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { harvestProtectedPaths } from "./constants.mjs";
+import { harvestForbiddenTargets, harvestProtectedPaths } from "./constants.mjs";
 import { copyAndHardenAssetIndex, copyDir, copyDirWithRuleActivation, copyFile, copyFileWithRuleActivation, ensureDir, exists, listFiles, readJson, removeContents, toPosix } from "./fs-utils.mjs";
 import { mergePackageContract } from "./package-contract.mjs";
 import { run, runOut } from "./process-utils.mjs";
@@ -89,8 +89,7 @@ function pushRulesToPath(runtime, projectPath, args) {
     const isDna = (blueprint.mappings?.DNA || []).some(m => m.source === mapping.source) || 
                   (taskProfile.mappings?.DNA || []).some(m => m.source === mapping.source);
     
-    const isHands = !exists(runtime.resolvePath(".agents/rules/ls-rule-master-governance.md"));
-    const activate = isDna && isHands && mapping.source.includes("/hands/");
+    const activate = isDna && mapping.source.includes("/hands/");
 
     copies.push([src, dest, true, activate]);
   }
@@ -119,7 +118,7 @@ function pushRulesToPath(runtime, projectPath, args) {
       console.log(`[SYNC] Skipped (Protected Report): ${dest}`);
 
     } else {
-      if (replace) removeContents(dest);
+      if (replace) replaceTarget(dest);
 
       if (fs.statSync(src).isDirectory()) copyDirWithRuleActivation(src, dest, activate);
       else copyFileWithRuleActivation(src, dest, activate);
@@ -175,10 +174,20 @@ export function pullCode(runtime) {
   }
 
   try {
-    const harvested = harvestFiles(temp);
     if (dryRun) {
       console.log(`Would harvest to ${projectPath}:`);
-      console.log(harvested.length ? harvested.map((file) => ` - ${file}`).join("\n") : " - No tracked files found.");
+      const plan = harvestPlan(temp);
+      console.log(plan.length ? plan.map((item) => {
+        const notes = [
+          item.exists ? "" : "source missing",
+          ...(item.errors || [])
+        ].filter(Boolean);
+        return ` - ${item.source} -> ${item.target}${notes.length ? ` (${notes.join("; ")})` : ""}`;
+      }).join("\n") : " - No harvesting mappings found.");
+      const errors = plan.flatMap((item) => item.errors || []);
+      if (errors.length > 0) {
+        throw new Error(`[HARVEST DRY-RUN INVALID] Unsafe harvesting profile:\n${errors.map((error) => ` - ${error}`).join("\n")}`);
+      }
       return;
     }
     harvestTrackedSnapshot(temp, projectPath);
@@ -189,8 +198,21 @@ export function pullCode(runtime) {
   }
 }
 
+function replaceTarget(targetPath) {
+  if (!exists(targetPath)) return;
+  if (fs.statSync(targetPath).isDirectory()) removeContents(targetPath);
+  else fs.rmSync(targetPath, { force: true });
+}
+
 export function harvestFiles(sourceRoot) {
   return listTrackedFiles(sourceRoot);
+}
+
+export function harvestPlan(sourceRoot) {
+  const profilePath = path.join(sourceRoot, "slicing-profile.json");
+  if (!exists(profilePath)) return [];
+  const profile = readJson(profilePath);
+  return validateHarvestMappings(sourceRoot, profile.harvesting || [], { requireSources: false }).plan;
 }
 
 export function harvestTrackedSnapshot(sourceRoot, targetRoot) {
@@ -207,20 +229,16 @@ export function harvestTrackedSnapshot(sourceRoot, targetRoot) {
     return;
   }
 
+  const validation = validateHarvestMappings(sourceRoot, harvesting, { requireSources: true });
+  if (validation.errors.length > 0) {
+    throw new Error(`[HARVEST BLOCKED] Unsafe harvesting profile:\n${validation.errors.map((error) => ` - ${error}`).join("\n")}`);
+  }
+
   console.log(`[HARVEST] Executing profile-driven harvest...`);
 
-  // Protected paths that Hands should NEVER be allowed to overwrite in Monolith
-  const forbiddenTargets = [".agents", ".github", "GEMINI.md", "ASSET_INDEX.md", "src/core", "src/components/ui"];
-
-  for (const mapping of harvesting) {
-    const satelliteRel = toPosix(mapping.source);
-    const monolithRel = toPosix(mapping.target);
-
-    // Safety check: Is Hands trying to invade Brain sovereignty?
-    if (forbiddenTargets.some(p => monolithRel === p || monolithRel.startsWith(`${p}/`))) {
-      console.error(`[HARVEST BLOCKED] Hands attempted to overwrite protected Brain asset: ${monolithRel}`);
-      continue;
-    }
+  for (const mapping of validation.plan) {
+    const satelliteRel = mapping.source;
+    const monolithRel = mapping.target;
 
     const src = safeJoin(sourceRoot, satelliteRel);
     const dest = safeJoin(targetRoot, monolithRel);
@@ -234,12 +252,72 @@ export function harvestTrackedSnapshot(sourceRoot, targetRoot) {
         copyFile(src, dest); // Copy individual logs
       }
       console.log(`[HARVEST] Pulled: ${satelliteRel} -> ${monolithRel}`);
-    } else {
-      console.warn(`[HARVEST] Warning: Source not found in satellite: ${satelliteRel}`);
     }
   }
 
   console.log(`\nSUCCESS: Harvest completed based on slicing profile.\n`);
+}
+
+function validateHarvestMappings(sourceRoot, harvesting, { requireSources }) {
+  const plan = [];
+  const errors = [];
+  const seenTargets = new Map();
+
+  harvesting.forEach((mapping, index) => {
+    const source = normalizeMappingPath(mapping?.source || "");
+    const target = normalizeMappingPath(mapping?.target || "");
+    const itemErrors = [];
+    const label = `harvesting[${index}]`;
+
+    if (!source) itemErrors.push(`${label}: source is required`);
+    if (!target) itemErrors.push(`${label}: target is required`);
+    if (hasUnresolvedPlaceholder(source)) itemErrors.push(`${label}: source contains unresolved placeholder '${source}'`);
+    if (hasUnresolvedPlaceholder(target)) itemErrors.push(`${label}: target contains unresolved placeholder '${target}'`);
+
+    if (target) {
+      if (seenTargets.has(target)) {
+        itemErrors.push(`${label}: duplicate target '${target}' also used by harvesting[${seenTargets.get(target)}]`);
+      } else {
+        seenTargets.set(target, index);
+      }
+      if (isForbiddenHarvestTarget(target)) {
+        itemErrors.push(`${label}: target '${target}' overlaps protected Brain path`);
+      }
+    }
+
+    let existsSource = false;
+    if (source && !hasUnresolvedPlaceholder(source)) {
+      try {
+        existsSource = exists(safeJoin(sourceRoot, source));
+      } catch (error) {
+        itemErrors.push(`${label}: ${error.message}`);
+      }
+    }
+    if (requireSources && source && !existsSource) {
+      itemErrors.push(`${label}: source not found '${source}'`);
+    }
+
+    plan.push({ source, target, exists: existsSource, errors: itemErrors });
+    errors.push(...itemErrors);
+  });
+
+  return { plan, errors };
+}
+
+function normalizeMappingPath(value) {
+  return toPosix(String(value || "").trim()).replace(/\/+$/g, "");
+}
+
+function hasUnresolvedPlaceholder(value) {
+  return /\[[^\]\r\n]+\]/u.test(value);
+}
+
+function isForbiddenHarvestTarget(rel) {
+  const normalized = normalizeMappingPath(rel);
+  return harvestForbiddenTargets.some((protectedPath) => {
+    const protectedRel = normalizeMappingPath(protectedPath);
+    return normalized === protectedRel || normalized.startsWith(`${protectedRel}/`) || protectedRel.startsWith(`${normalized}/`);
+  });
 }
 
 /**

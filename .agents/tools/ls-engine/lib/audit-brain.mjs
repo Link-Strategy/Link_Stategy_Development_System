@@ -40,7 +40,7 @@ export function verifyBrain(runtime) {
   }
 
   // 2. DNA Integrity (Structure)
-  const required = [".agents/rules", ".agents/tools/ls-engine", "slicing-profile.json"];
+  const required = [".agents/rules", ".agents/tools/ls-engine"];
   for (const p of required) {
     if (exists(path.join(root, p))) {
       console.log(`[PASS] Core component present: ${p}`);

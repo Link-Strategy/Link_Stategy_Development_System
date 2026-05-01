@@ -14,7 +14,7 @@ Agent phải đọc:
 - `GEMINI.md`;
 - `ASSET_INDEX.md`;
 - `.agents/rules/*.md`;
-- `.agents/workflows/brain/ls-workflow-new-hand-folder.md`;
+- `.agents/workflows/ls-workflow-new-hand-folder.md`;
 - `active-hands.json`;
 - `01_TASK_SPEC.md`, `02_DECISION_LOGS.md`, `03_LOGS.md` trong Satellite nếu thay đổi governance có thể ảnh hưởng việc thi công.
 
@@ -26,7 +26,12 @@ Xác định path kiến trúc của Satellite hoặc dùng `--all` để đồn
 <ARCHITECTURE_PATH> hoặc --all
 ```
 
-Nếu path chưa tồn tại, dùng `LS-WORKFLOW-NEW-HANDS` thay vì workflow này. Nếu không truyền path, hệ thống sẽ mặc định dùng `active-hands.json`.
+Nếu path chưa tồn tại, tạo Satellite trước bằng một trong hai đường hợp lệ:
+
+- trực tiếp: `npm run new-hands -- --project-path <ARCHITECTURE_PATH> --repo-name <REPO>`;
+- staged: `.agents/workflows/ls-workflow-new-hand-folder.md` rồi `.agents/workflows/ls-workflow-init-satellite.md`.
+
+Nếu không truyền path, hệ thống sẽ mặc định dùng `active-hands.json`.
 
 ## 3. Dry Run
 
@@ -46,20 +51,21 @@ npm run push-rules -- --project-path <ARCHITECTURE_PATH> --git-push
 npm run push-rules -- --all --confirm --git-push
 ```
 
-Workflow này đồng bộ:
+Workflow này đồng bộ theo `slicing-profile.json` của Brain và task profile của Satellite. Scope mặc định có thể gồm:
 
 - `.agents/rules/`
 - `.agents/workflows/`
 - `.agents/templates/`
 - `.agents/tools/ls-engine/`
-- `.agents/skills/`
 - `.github/`
-- `components/ui/`
-- `assets/`
+- `src/core/`
+- `src/components/ui/`
+- `assets/` nếu có mapping và source tồn tại
 - `01_TASK_SPEC.md` (Hợp đồng thi công)
-- `02_DECISION_LOGS.md` & `03_LOGS.md` (Phản hồi/Nhật ký)
 - `GEMINI.md` dành cho Satellite
 - package contract bắt buộc của Satellite
+
+`02_DECISION_LOGS.md` và `03_LOGS.md` trong Satellite được bảo vệ khi đã tồn tại; Brain không overwrite log thi công của Hands trong lúc sync governance.
 
 ## 5. Verify After Sync
 

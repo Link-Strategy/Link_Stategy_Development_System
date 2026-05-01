@@ -114,6 +114,7 @@ Kết quả mặc định:
 |-- components/ui/
 |-- docs/
 |-- .env.example
+|-- ASSET_INDEX.md
 |-- active-hands.json
 |-- GEMINI.md
 |-- package.json
@@ -174,8 +175,10 @@ services/<NAME>/
 |-- 01_TASK_SPEC.md
 |-- 02_DECISION_LOGS.md
 |-- 03_LOGS.md
+|-- ASSET_INDEX.md
 |-- GEMINI.md
 |-- package.json
+|-- slicing-profile.json
 `-- README.md
 ```
 
@@ -193,6 +196,8 @@ Gói Hands/Satellite được sinh ra để Hands có thể thi công, kiểm ch
 | `package.json` | Chỉ expose lệnh Hands được phép dùng: `verify-gate` và `ls-gitpush`. |
 | `.env.example` | Mẫu cấu hình môi trường, không chứa secret thật. |
 | `.gitignore` | Chặn secret, dependency/build artifacts và report sinh tự động. |
+| `ASSET_INDEX.md` | Registry tài sản đã được harden cho tầng Hands/Satellite. |
+| `slicing-profile.json` | Profile điều khiển push/sync/harvest cho Satellite. |
 | `.agents/rules/` | Luật thi công bắt buộc được Brain/Master đồng bộ xuống. |
 | `.agents/workflows/` | Workflow nộp bài, gate và sync rules. |
 | `.agents/templates/` | Template cần thiết cho log/spec/gate trong Satellite. |
@@ -200,8 +205,7 @@ Gói Hands/Satellite được sinh ra để Hands có thể thi công, kiểm ch
 | `.github/CODEOWNERS` | Khai báo quyền sở hữu/review của Brain. |
 | `.github/pull_request_template.md` | Checklist PR và bằng chứng delivery. |
 | `.github/ISSUE_TEMPLATE/task_spec.yml` | Issue template cho task/spec. |
-| `.github/workflows/verify-gate.yml` | GitHub Actions kiểm tra delivery gate. |
-| `.github/workflows/rules-protection.yml` | GitHub Actions bảo vệ rule/governance assets. |
+| `.github/workflows/link-strategy-ci.yml` | GitHub Actions nhận diện tier, chạy self-test/audit/gate và bảo vệ governance assets. |
 | `src/` | Nơi Hands triển khai code. |
 | `tests/` | Nơi Hands viết và chạy test. |
 

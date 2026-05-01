@@ -16,6 +16,7 @@
     "verify-gate": "node .agents/tools/ls-engine/cli.mjs verify-gate",
     "ls-gitpush": "node .agents/tools/ls-engine/cli.mjs ls-gitpush",
     "ls-identity": "node .agents/tools/ls-engine/cli.mjs ls-identity",
-    "self-test": "node .agents/tools/ls-engine/cli.mjs self-test"
+    "self-test": "node .agents/tools/ls-engine/cli.mjs self-test",
+    "test": "node --test tests/*.test.mjs"
   }
 }

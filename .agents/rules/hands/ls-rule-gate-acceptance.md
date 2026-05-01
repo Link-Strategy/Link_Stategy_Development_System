@@ -30,7 +30,7 @@ Delivery chỉ được push bằng `ls-gitpush` khi tất cả điều kiện l
 
 Nếu một điều kiện FAIL, Agent phải sửa trong phạm vi được phép hoặc ghi blocker vào `03_LOGS.md`.
 
-Brain chỉ được harvest delivery về Brain Project khi GitHub Actions `verification-gate` của latest Satellite `main` commit PASS. Harvest lấy tracked snapshot của commit đã PASS, không lấy `.git/` hoặc file local/untracked. Satellite `main` có thể tạm fail CI, nhưng commit fail không được coi là nguồn sạch.
+Brain chỉ được harvest delivery về Brain Project khi GitHub Actions `verification-gate` của latest Satellite `main` commit PASS. Harvest lấy đúng các mapping an toàn trong `slicing-profile.json`, không lấy `.git/`, governance/runtime hoặc file local/untracked. Satellite `main` có thể tạm fail CI, nhưng commit fail không được coi là nguồn sạch.
 
 ## 3. Điều Không Thuộc Phase 1 Gate
 

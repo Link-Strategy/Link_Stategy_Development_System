@@ -88,7 +88,7 @@ Tool sẽ:
 
 ## 7. Brain Harvest Rule
 
-Brain chỉ được chạy `npm run pull-code` để harvest tracked snapshot về Brain Project khi latest commit trên Satellite `main` có GitHub Actions `Link Strategy CI Suite` success. Nếu CI đang pending/fail/missing, `pull-code` phải block.
+Brain chỉ được chạy `npm run pull-code` để harvest các mapping an toàn trong `slicing-profile.json` về Brain Project khi latest commit trên Satellite `main` có GitHub Actions `Link Strategy CI Suite` success. Nếu CI đang pending/fail/missing, `pull-code` phải block.
 
 ## 8. Failure Handling
 

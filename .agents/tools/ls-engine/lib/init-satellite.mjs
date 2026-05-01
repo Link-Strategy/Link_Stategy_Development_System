@@ -6,27 +6,26 @@ import { run, runOut } from "./process-utils.mjs";
 import { pushRules } from "./sync.mjs";
 
 export function initSatellite(runtime) {
-  const projectPath = path.resolve(runtime.requireArg("project-path"));
+  const projectPath = path.resolve(runtime.args.path || runtime.requireArg("project-path"));
   const repoName = runtime.requireArg("repo-name");
-  const organization = runtime.args.organization || "Link-Strategy";
+  const profilePath = path.join(projectPath, "slicing-profile.json");
+  const profile = exists(profilePath) ? readJson(profilePath) : {};
+  const organization = runtime.args.organization || profile.provisioning?.organization || "Link-Strategy";
   ensureDir(projectPath);
 
+
+
+
   if (!exists(path.join(projectPath, ".git"))) run("git", ["init"], { cwd: projectPath });
-  ensureDir(path.join(projectPath, "src"));
-  ensureDir(path.join(projectPath, "tests"));
-  const templateDir = runtime.resolvePath(".agents/templates");
-  const copyMap = [
-    [path.join(templateDir, "01_TASK_SPEC_TEMPLATE.md"), path.join(projectPath, "01_TASK_SPEC.md")],
-    [path.join(templateDir, "02_DECISION_LOGS_TEMPLATE.md"), path.join(projectPath, "02_DECISION_LOGS.md")],
-    [path.join(templateDir, "03_LOGS_TEMPLATE.md"), path.join(projectPath, "03_LOGS.md")],
-    [path.join(templateDir, "README_SATELLITE_TEMPLATE.md"), path.join(projectPath, "README.md")],
-    [path.join(templateDir, "ENV_EXAMPLE_TEMPLATE"), path.join(projectPath, ".env.example")]
-  ];
-  for (const [src, dest] of copyMap) {
-    if (!exists(dest) && exists(src)) copyFile(src, dest);
+  
+  const mandatoryPaths = profile.provisioning?.mandatory_paths || ["src", "tests"];
+  for (const p of mandatoryPaths) {
+    ensureDir(path.join(projectPath, p));
   }
 
   ensureSatelliteGitignore(projectPath);
+
+
   pushRules(runtime, { "project-path": projectPath, "git-push": false });
   validateSatelliteLayout(projectPath);
   stageInitialSatelliteFiles(projectPath);
@@ -57,17 +56,33 @@ function registerHands(runtime, projectPath, repoName, organization, remoteUrl) 
   const registry = readJson(registryPath);
   registry.hands ||= [];
   const relPath = path.relative(runtime.root, projectPath).replaceAll("\\", "/");
-  if (!registry.hands.some((h) => h.path === relPath)) {
-    registry.hands.push({
-      id: repoName,
-      path: relPath,
-      remote_url: remoteUrl,
-      last_sha: "",
-      ci_status: "unknown",
-      harvested_at: ""
-    });
-    writeText(registryPath, JSON.stringify(registry, null, 2) + "\n");
+  
+  const entry = {
+    id: repoName,
+    path: relPath,
+    remote_url: remoteUrl,
+    last_sha: "",
+    ci_status: "unknown",
+    harvested_at: ""
+  };
+
+  const byId = registry.hands.findIndex((h) => h.id === repoName);
+  const byPath = registry.hands.findIndex((h) => h.path === relPath);
+
+  if (byId >= 0) {
+    const existing = registry.hands[byId];
+    if (existing.path !== relPath) {
+      console.warn(`[REGISTRY WARNING] Satellite ID '${repoName}' moved from ${existing.path} to ${relPath}`);
+    }
+    registry.hands[byId] = { ...existing, ...entry };
+  } else if (byPath >= 0) {
+    console.warn(`[REGISTRY WARNING] Satellite at path '${relPath}' renamed from ${registry.hands[byPath].id} to ${repoName}`);
+    registry.hands[byPath] = { ...registry.hands[byPath], ...entry };
+  } else {
+    registry.hands.push(entry);
   }
+  
+  writeText(registryPath, JSON.stringify(registry, null, 2) + "\n");
 }
 
 export function ensureSatelliteGitignore(projectPath) {

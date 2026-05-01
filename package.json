@@ -8,14 +8,12 @@
   },
   "scripts": {
     "new-project": "node .agents/tools/ls-engine/cli.mjs new-project",
-    "new-module": "node .agents/tools/ls-engine/cli.mjs new-module",
+    "new-hand-folder": "node .agents/tools/ls-engine/cli.mjs new-hand-folder",
     "verify-gate": "node .agents/tools/ls-engine/cli.mjs verify-gate",
     "ls-gitpush": "node .agents/tools/ls-engine/cli.mjs ls-gitpush",
     "push-rules": "node .agents/tools/ls-engine/cli.mjs push-rules-to-satellite",
     "pull-code": "node .agents/tools/ls-engine/cli.mjs pull-code-from-satellite",
-    "new-hands": "node .agents/tools/ls-engine/cli.mjs new-hands",
     "init-satellite": "node .agents/tools/ls-engine/cli.mjs init-satellite",
-    "self-test": "node .agents/tools/ls-engine/cli.mjs self-test",
-    "stress-test": "node .agents/tools/ls-engine/cli.mjs stress-test"
+    "self-test": "node .agents/tools/ls-engine/cli.mjs self-test"
   }
 }

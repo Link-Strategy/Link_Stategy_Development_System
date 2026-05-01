@@ -19,7 +19,7 @@ export function selfTest(runtime) {
     console.log(`[SELF-TEST] fixture root: ${fixtureBase}`);
     run("node", [cliPath, "new-project", "--project-name", "CROSS", "--base-path", "projects", "--no-github"], { cwd: fixtureBase });
     const projectPath = path.join(fixtureBase, "projects", "CROSS");
-    run("node", [cliPath, "new-module", "--project-path", projectPath, "--module-name", "alpha"], { cwd: fixtureBase });
+
 
     const failGate = run("node", [cliPath, "verify-gate", "--project-path", projectPath], { cwd: fixtureBase, capture: true, allowFailure: true });
     if (failGate.status === 0) throw new Error("Self-test expected placeholder gate to fail, but it passed.");

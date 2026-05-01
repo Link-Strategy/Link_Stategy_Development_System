@@ -5,6 +5,7 @@ import { harvestProtectedPaths } from "./constants.mjs";
 import { copyAndHardenAssetIndex, copyDir, copyDirWithRuleActivation, copyFile, copyFileWithRuleActivation, ensureDir, exists, listFiles, readJson, removeContents, toPosix } from "./fs-utils.mjs";
 import { mergePackageContract } from "./package-contract.mjs";
 import { run, runOut } from "./process-utils.mjs";
+import { verifyGate } from "./gate.mjs";
 
 export function pushRules(runtime, overrides = {}) {
   const args = { ...runtime.args, ...overrides };
@@ -25,6 +26,9 @@ export function pushRules(runtime, overrides = {}) {
       return pushRulesToPath(runtime, path.resolve(projectPathArg), args);
     }
 
+    if (!args["confirm"]) {
+      throw new Error("[SAFETY BLOCKED] Batch operation '--all' requires '--confirm' flag to proceed. This operation affects multiple satellites.");
+    }
     console.log(`Pushing rules to ${hands.length} hands...`);
     for (const hand of hands) {
       const targetPath = runtime.resolvePath(hand.path);
@@ -46,58 +50,53 @@ function pushRulesToPath(runtime, projectPath, args) {
   const commitMessage = args["commit-message"] || "chore(sync): push updated rules from brain";
   if (!exists(projectPath)) throw new Error(`Project path not found: ${projectPath}`);
 
-  const copies = [
-    // Rule Copy Logic: Context-aware mapping
-    ...(() => {
-      const isMaster = exists(runtime.resolvePath(".agents/rules/ls-rule-master-governance.md"));
-      if (isMaster) {
-        // Master pushing to Brain: Flatten and ACTIVATE brain rules, keep hands rules as TEMPLATES
-        return [
-          [runtime.resolvePath(".agents/rules/brain"), path.join(projectPath, ".agents/rules"), true, true],
-          [runtime.resolvePath(".agents/rules/hands"), path.join(projectPath, ".agents/rules/hands"), true, false]
-        ];
-      } else {
-        // Brain pushing to Hands: Flatten and ACTIVATE hands rules to satellite root
-        return [
-          [runtime.resolvePath(".agents/rules/hands"), path.join(projectPath, ".agents/rules"), true, true]
-        ];
+  const taskProfilePath = path.join(projectPath, "slicing-profile.json");
+  const templatePath = runtime.resolvePath(".agents/templates/SLICING_PROFILE_TEMPLATE.json");
+  
+  let blueprint = exists(templatePath) ? readJson(templatePath) : { mappings: {} };
+  let taskProfile = exists(taskProfilePath) ? readJson(taskProfilePath) : { mappings: {} };
+
+  console.log(`[SYNC] Orchestrating slicing for: ${projectPath}`);
+
+  const copies = [];
+
+  // Helper to merge mappings (Template + Task Overrides)
+  const getCombinedMappings = (category) => {
+    const bMap = blueprint.mappings?.[category] || [];
+    const tMap = taskProfile.mappings?.[category] || [];
+    
+    // Merge: Blueprint as base, Task can add more. 
+    const combined = [...bMap];
+    for (const t of tMap) {
+      if (!combined.find(b => b.source === t.source && b.target === t.target)) {
+        combined.push(t);
       }
-    })(),
-    // Workflow Copy Logic: Context-aware
-    ...(() => {
-      const isMaster = exists(runtime.resolvePath(".agents/rules/ls-rule-master-governance.md"));
-      if (isMaster) {
-        return [
-          [runtime.resolvePath(".agents/workflows/brain"), path.join(projectPath, ".agents/workflows"), true, false],
-          [runtime.resolvePath(".agents/workflows/hands"), path.join(projectPath, ".agents/workflows/hands"), true, false]
-        ];
-      } else {
-        return [
-          [runtime.resolvePath(".agents/workflows/hands"), path.join(projectPath, ".agents/workflows"), true, false]
-        ];
-      }
-    })(),
-    // Skill Copy Logic: Context-aware
-    ...(() => {
-      const isMaster = exists(runtime.resolvePath(".agents/rules/ls-rule-master-governance.md"));
-      if (isMaster) {
-        return [
-          [runtime.resolvePath(".agents/skills/brain"), path.join(projectPath, ".agents/skills"), true, false],
-          [runtime.resolvePath(".agents/skills/hands"), path.join(projectPath, ".agents/skills/hands"), true, false]
-        ];
-      } else {
-        return [
-          [runtime.resolvePath(".agents/skills/hands"), path.join(projectPath, ".agents/skills"), true, false]
-        ];
-      }
-    })(),
-    [runtime.resolvePath(".agents/templates"), path.join(projectPath, ".agents/templates"), true, false],
-    [runtime.resolvePath(".agents/tools/ls-engine"), path.join(projectPath, ".agents/tools/ls-engine"), false, false],
-    [runtime.resolvePath(".github"), path.join(projectPath, ".github"), false, false],
-    [runtime.resolvePath("components/ui"), path.join(projectPath, "components/ui"), true, false],
-    [runtime.resolvePath("assets"), path.join(projectPath, "assets"), true, false],
-    [runtime.resolvePath(".agents/templates/GEMINI_SATELLITE_TEMPLATE.md"), path.join(projectPath, "GEMINI.md"), false, false]
+    }
+    return combined;
+  };
+
+  const allMappings = [
+    ...getCombinedMappings("DNA"),
+    ...getCombinedMappings("SHELL"),
+    ...getCombinedMappings("TASK")
   ];
+
+  for (const mapping of allMappings) {
+    const src = runtime.resolvePath(mapping.source);
+    const dest = path.join(projectPath, mapping.target);
+    
+    // DNA assets activation logic
+    const isDna = (blueprint.mappings?.DNA || []).some(m => m.source === mapping.source) || 
+                  (taskProfile.mappings?.DNA || []).some(m => m.source === mapping.source);
+    
+    const isHands = !exists(runtime.resolvePath(".agents/rules/ls-rule-master-governance.md"));
+    const activate = isDna && isHands && mapping.source.includes("/hands/");
+
+    copies.push([src, dest, true, activate]);
+  }
+
+
+
 
   for (const [src, dest, replace, activate] of copies) {
     if (!exists(src)) continue;
@@ -105,24 +104,33 @@ function pushRulesToPath(runtime, projectPath, args) {
       console.log(`Would ${replace ? "replace" : "copy"}${activate ? " and activate" : ""}: ${src} -> ${dest}`);
       continue;
     }
-    if (replace) removeContents(dest);
-    if (fs.statSync(src).isDirectory()) copyDirWithRuleActivation(src, dest, activate);
-    else copyFileWithRuleActivation(src, dest, activate);
+    
+    // Special Handlers for Link Strategy Core Files
+    const fileName = path.basename(dest);
+    if (fileName === "package.json") {
+      mergePackageContract(dest);
+      console.log(`[SYNC] Merged package contract: ${dest}`);
+    } else if (fileName === "ASSET_INDEX.md") {
+      const isMaster = exists(runtime.resolvePath(".agents/rules/ls-rule-master-governance.md"));
+      copyAndHardenAssetIndex(src, dest, isMaster ? "brain" : "hands");
+      console.log(`[SYNC] Hardened Asset Index: ${dest}`);
+    } else if ((fileName === "02_DECISION_LOGS.md" || fileName === "03_LOGS.md") && exists(dest)) {
+      // Protect Hands' reports (Decision & Implementation logs) from being overwritten by Brain
+      console.log(`[SYNC] Skipped (Protected Report): ${dest}`);
+
+    } else {
+      if (replace) removeContents(dest);
+
+      if (fs.statSync(src).isDirectory()) copyDirWithRuleActivation(src, dest, activate);
+      else copyFileWithRuleActivation(src, dest, activate);
+    }
   }
-  if (dryRun) console.log(`Would merge package contract: ${path.join(projectPath, "package.json")}`);
-  else mergePackageContract(path.join(projectPath, "package.json"));
-  // ASSET_INDEX.md: Harden for target tier
-  const isMaster = exists(runtime.resolvePath(".agents/rules/ls-rule-master-governance.md"));
-  const targetTier = isMaster ? "brain" : "hands";
-  if (!dryRun) {
-    copyAndHardenAssetIndex(runtime.resolvePath("ASSET_INDEX.md"), path.join(projectPath, "ASSET_INDEX.md"), targetTier);
-  } else {
-    console.log(`Would harden ASSET_INDEX.md for tier: ${targetTier}`);
-  }
+
 
   if (args["git-push"] && dryRun) console.log("DRY RUN: skipping git commit and push.");
   else if (args["git-push"]) {
-    const gitAddList = [".agents", ".github", "GEMINI.md", "package.json", "assets", "components/ui", "01_TASK_SPEC.md", "02_DECISION_LOGS.md", "03_LOGS.md"];
+    // Dynamic Git Add: Only stage files/folders that are defined in mappings
+    const gitAddList = allMappings.map(m => m.target.split("/")[0]).filter((v, i, a) => a.indexOf(v) === i);
     const existingToAdd = gitAddList.filter(f => exists(path.join(projectPath, f)));
     
     if (existingToAdd.length > 0) {
@@ -135,6 +143,7 @@ function pushRulesToPath(runtime, projectPath, args) {
       }
     }
   }
+
 }
 
 export function pullCode(runtime) {
@@ -158,6 +167,13 @@ export function pullCode(runtime) {
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), "ls-harvest-"));
   run("git", ["clone", "--depth", "1", "--branch", remoteBranch, remoteUrl, temp], { cwd: runtime.root });
 
+  console.log(`[HARVEST] Performing Brain-side verification for: ${remoteUrl}`);
+  const isVerified = verifyGate(runtime, { projectPath: temp });
+  if (!isVerified) {
+    fs.rmSync(temp, { recursive: true, force: true });
+    throw new Error(`[HARVEST BLOCKED] Satellite content failed Brain-side integrity check. Harvest aborted to protect Monolith DNA.`);
+  }
+
   try {
     const harvested = harvestFiles(temp);
     if (dryRun) {
@@ -178,15 +194,73 @@ export function harvestFiles(sourceRoot) {
 }
 
 export function harvestTrackedSnapshot(sourceRoot, targetRoot) {
-  const sourceFiles = listTrackedFiles(sourceRoot);
-  removeStaleTrackedFiles(targetRoot, new Set(sourceFiles));
-  for (const rel of sourceFiles) {
-    const src = safeJoin(sourceRoot, rel);
-    const dest = safeJoin(targetRoot, rel);
-    copyFile(src, dest);
+  const profilePath = path.join(sourceRoot, "slicing-profile.json");
+  if (!exists(profilePath)) {
+    throw new Error(`[HARVEST ERROR] slicing-profile.json not found in satellite at ${sourceRoot}. Cannot determine harvest scope.`);
   }
-  console.log(`Harvested tracked snapshot: ${sourceFiles.length} files -> ${targetRoot}`);
+
+  const profile = readJson(profilePath);
+  const harvesting = profile.harvesting || [];
+  
+  if (harvesting.length === 0) {
+    console.warn(`[HARVEST] Warning: No harvesting mappings found in profile. Nothing to pull.`);
+    return;
+  }
+
+  console.log(`[HARVEST] Executing profile-driven harvest...`);
+
+  // Protected paths that Hands should NEVER be allowed to overwrite in Monolith
+  const forbiddenTargets = [".agents", ".github", "GEMINI.md", "ASSET_INDEX.md", "src/core", "src/components/ui"];
+
+  for (const mapping of harvesting) {
+    const satelliteRel = toPosix(mapping.source);
+    const monolithRel = toPosix(mapping.target);
+
+    // Safety check: Is Hands trying to invade Brain sovereignty?
+    if (forbiddenTargets.some(p => monolithRel === p || monolithRel.startsWith(`${p}/`))) {
+      console.error(`[HARVEST BLOCKED] Hands attempted to overwrite protected Brain asset: ${monolithRel}`);
+      continue;
+    }
+
+    const src = safeJoin(sourceRoot, satelliteRel);
+    const dest = safeJoin(targetRoot, monolithRel);
+
+    if (exists(src)) {
+      if (fs.statSync(src).isDirectory()) {
+        // Prune stale files in target before copying new ones to ensure clean sync
+        pruneStaleFiles(src, dest);
+        copyDir(src, dest); 
+      } else {
+        copyFile(src, dest); // Copy individual logs
+      }
+      console.log(`[HARVEST] Pulled: ${satelliteRel} -> ${monolithRel}`);
+    } else {
+      console.warn(`[HARVEST] Warning: Source not found in satellite: ${satelliteRel}`);
+    }
+  }
+
+  console.log(`\nSUCCESS: Harvest completed based on slicing profile.\n`);
 }
+
+/**
+ * Removes files from target directory that do not exist in source directory.
+ * This ensures that deletions in the satellite are propagated back to the monolith.
+ */
+function pruneStaleFiles(srcDir, destDir) {
+  if (!exists(destDir)) return;
+  const srcFiles = new Set(fs.readdirSync(srcDir));
+  for (const entry of fs.readdirSync(destDir)) {
+    if (!srcFiles.has(entry)) {
+      const stalePath = path.join(destDir, entry);
+      // Extra safety check: never prune protected core paths even if missing in source
+      if (isProtectedHarvestPath(stalePath)) continue;
+      
+      fs.rmSync(stalePath, { recursive: true, force: true });
+      console.log(`[HARVEST] Pruned stale asset: ${entry}`);
+    }
+  }
+}
+
 
 function removeStaleTrackedFiles(targetRoot, sourceSet) {
   if (!exists(path.join(targetRoot, ".git"))) return;

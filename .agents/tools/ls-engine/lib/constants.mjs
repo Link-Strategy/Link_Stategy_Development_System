@@ -16,7 +16,6 @@ export const brainPackageScripts = {
 export const brainOnlyPackageScripts = new Set([
   "new-project",
   "new-hands",
-  "new-module",
   "push-rules",
   "pull-code",
   "init-satellite",

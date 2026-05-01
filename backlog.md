@@ -52,15 +52,16 @@ Hệ thống Link Strategy phát triển theo 3 giai đoạn hội tụ để ch
 
 ```mermaid
 graph TD
-    M[1. Master: Hạ tầng & Rule] -->|new-project| B[2. Brain: Chiến lược & Spec]
-    B -->|new-hands| H[3. Hands: Thi công & Log]
-    H -->|src - tests - logs| E{4. Verification Gate}
+    M[1. Master: Hạ tầng & Rule] -->|new-project| B[2. Brain: Đóng gói - Packaging]
+    B -->|init-satellite| P[3. Brain: Kích hoạt - Provisioning]
+    P -->|Satellite Repo| H[4. Hands: Thi công & Log]
+    H -->|src - tests - logs| E{5. Verification Gate}
     E -->|FAIL| F[Sửa lỗi]
     F --> H
-    E -->|PASS| G[5. Secure Delivery]
+    E -->|PASS| G[6. Secure Delivery]
     G -->|ls-gitpush| GH[GitHub CI Status]
-    GH -->|SUCCESS| I[6. Brain: Harvest & Registry]
-    I --> J[7. Hardening: Pattern về Master]
+    GH -->|SUCCESS| I[7. Brain: Harvest & Registry]
+    I --> J[8. Hardening: Pattern về Master]
     J -->|ASSET_INDEX.md| M
 ```
 
@@ -71,24 +72,39 @@ Dựa trên hệ thống "Bộ khung thép" 3 tầng, vòng đời sản xuất 
 *   **Hành động:** Thiết kế bộ khung, engine và bộ quy tắc chuẩn.
 *   **Kết quả:** Sẵn sàng các "phôi" dự án đạt chuẩn.
 
-### 2. Brain: Khởi tạo & Đặc tả (Strategy & Spec)
+### 2. Brain: Đóng gói & Đặc tả (Packaging)
 *   **Người thực hiện:** Brain Agent.
-*   **Hành động:** Chạy `npm run new-project -- --project-name <NAME>` để tạo trạm điều phối dự án. Brain tự tổ chức tài liệu chiến lược/spec/roadmap trong `docs/`.
-*   **Kết quả:** Một dự án độc lập có hiến pháp riêng và kế hoạch thi công rõ ràng.
+*   **Hành động:** Chạy `npm run new-hand-folder` để tạo trạm điều phối tại local. Biên soạn Spec và Profile.
+*   **Kết quả:** Một "Gói bàn giao" hoàn chỉnh sẵn sàng kích hoạt.
 
-### 3. Hands: Thi công & Bằng chứng (Execution & Evidence)
+### 3. Brain: Kích hoạt & Cấp phát (Provisioning)
+*   **Người thực hiện:** Brain Agent.
+*   **Hành động:** Chạy `npm run init-satellite` để đẩy lát cắt feature lên GitHub.
+*   **Kết quả:** Hands nhận Satellite Repo biệt lập và sạch sẽ.
+
+### 4. Hands: Thi công & Bằng chứng (Execution & Evidence)
 *   **Người thực hiện:** Hands Agent (Freelancer).
 *   **Hành động:** Kế thừa Skills/UI Kit từ Brain để viết code và test. Ghi nhật ký thực thi liên tục vào `03_LOGS.md`.
 *   **Kết quả:** Module hoàn thiện kèm theo đầy đủ bằng chứng thực tế.
 
-### 4. Kiểm định & Nộp bài (Gate & Delivery)
+### 5. Kiểm định (Verification Gate)
 *   **Người thực hiện:** Hệ thống tự động.
-*   **Hành động:** `verify-gate` chấm điểm tại local; `ls-gitpush` nộp bài lên GitHub; GitHub Actions kiểm định lại lần cuối.
-*   **Kết quả:** Code đạt chuẩn "nguyên đai nguyên kiện" trên GitHub.
+*   **Hành động:** `verify-gate` chấm điểm tại local và GitHub Actions kiểm định lại lần cuối.
+*   **Kết quả:** Code đạt chuẩn "nguyên đai nguyên kiện" với Integrity Hash.
 
-### 5. Thu hoạch & Hóa thạch (Harvest & Hardening)
+### 6. Nộp bài (Secure Delivery)
+*   **Người thực hiện:** Hands Agent qua `ls-gitpush`.
+*   **Hành động:** Nộp bài lên GitHub sau khi pass local gate.
+*   **Kết quả:** Commit sẵn sàng để Brain thu hoạch.
+
+### 7. Thu hoạch (Harvesting)
+*   **Người thực hiện:** Brain Agent qua `pull-code`.
+*   **Hành động:** Thu hoạch code dựa trên profile sau khi CI Status báo SUCCESS.
+*   **Kết quả:** Code vệ tinh được tích hợp an toàn vào Monolith.
+
+### 8. Hóa thạch (Hardening)
 *   **Người thực hiện:** Brain + Master Agents.
-*   **Hành động:** Brain chạy `pull-code` để thu hoạch bài nộp sau khi CI PASS. Lọc các pattern tốt đề xuất nộp về Master.
+*   **Hành động:** Lọc các pattern tốt đề xuất nộp về Master.
 *   **Kết quả:** Dự án về đích, tri thức mới được cập nhật vào kho tàng Master.
 
 ---
@@ -142,14 +158,6 @@ Dựa trên hệ thống "Bộ khung thép" 3 tầng, vòng đời sản xuất 
 - DoD: Chạy một lệnh tạo được Brain Project "nguyên đai nguyên kiện" trên GitHub.
 - Ưu tiên: P0. [HOÀN THÀNH - BỌC THÉP]
 
-### 1.3.2 - Tạo script sinh module mới trong project
-
-- [x] Hành động: Tạo `npm run new-module`.
-- [x] Hành động: Input gồm `project_path`, `module_name`.
-- [x] Hành động: Output tạo `src/[module]/README.md` và `docs/blueprints/[module]/01_TASK_SPEC.md`.
-- Đầu ra: Module-based tasking rõ ràng.
-- DoD: Có thể giao module độc lập cho Hands mà không lẫn với module khác.
-- Ưu tiên: P0.
 
 ### 1.3.3 - Thiết lập cấu hình môi trường Engine (.env)
 
@@ -349,6 +357,34 @@ Dựa trên hệ thống "Bộ khung thép" 3 tầng, vòng đời sản xuất 
 - [ ] Hành động: Bổ sung templates cho Docker Compose, Mock Server, Seed Data và Event/Observability contracts.
 - **Tiêu chuẩn đạt chuẩn:** Gói bàn giao (Handover Package) đầy đủ các cấu phần kỹ thuật để Hands có thể thi công ngay.
 
+### Phase 2.10 - Bộ máy FE Multi-Satellite (Sovereign Slicing) [COMPLETED]
+
+#### 2.10.1 - Kiến trúc Slicing (Packaging & Provisioning)
+- [x] Hành động: Thiết lập cơ chế bàn giao 2 giai đoạn (Local Packaging -> Cloud Provisioning).
+- [x] Hành động: Xây dựng tài liệu kiến trúc `.LinkStrategy/06_FE_MULTI_SATELLITE_ARCHITECTURE.md`.
+- Kết quả: Đã nhất quán hóa quy trình bàn giao "Sạch", biệt lập feature.
+
+#### 2.10.2 - Quy trình Agent (Workflows)
+- [x] Hành động: Tạo `ls-workflow-new-hand-folder.md` (Packaging).
+- [x] Hành động: Tạo `ls-workflow-init-satellite.md` (Provisioning).
+- [x] Hành động: Refactor toàn bộ workflow thành chỉ thị thực thi cho Agent (Agent Instructions).
+- Kết quả: Agent có thể tự động hóa việc đóng gói và kích hoạt vệ tinh.
+
+#### 2.10.3 - Profile-Driven Engine (Pure Slicing & Harvest)
+- [x] Hành động: Loại bỏ toàn bộ hardcode danh sách file trong `ls-engine`.
+- [x] Hành động: Chuyển đổi sang mô hình dùng **Slicing Profile** làm SSOT duy nhất cho cả PUSH và PULL.
+- [x] Hành động: Hợp nhất cấu hình vào `SLICING_PROFILE_TEMPLATE.json` (bao gồm mục Harvesting).
+- [x] Hành động: Triển khai logic bảo vệ file 02, 03 khỏi bị Brain ghi đè.
+- [x] Hành động: Xây dựng chốt chặn chủ quyền (Sovereignty Check) khi Harvest để bảo vệ Monolith.
+- Kết quả: Hệ thống linh hoạt 100%, bảo mật dữ liệu tuyệt đối cho cả Brain và Hands.
+
+
+#### 2.10.4 - Hoàn thiện Tooling CLI
+- [x] Hành động: Triển khai lệnh `new-hand-folder`.
+- [x] Hành động: Nâng cấp lệnh `init-satellite` và `push-rules`.
+- [x] Hành động: Dọn dẹp `package.json` và `ASSET_INDEX.md`.
+- Kết quả: Bộ công cụ CLI sẵn sàng cho vận hành thực tế.
+
 ### 2.2.2 - Hoàn thiện bộ Communication & Review Plane Templates
 
 - [x] Hành động: Hoàn thiện `02_DECISION_LOGS_TEMPLATE.md` cho việc chốt logic.
@@ -383,7 +419,8 @@ Dựa trên hệ thống "Bộ khung thép" 3 tầng, vòng đời sản xuất 
 ### 2.5.3 - Hoàn thiện `scripts/README.md`
 
 - [x] Hành động: Hoàn thiện `scripts/README.md`.
-- [x] Hành động: Liệt kê các script: new-project, new-hands, new-module, verify-gate, push-rules, pull-code, ls-gitpush. (Đóng gói trong Skill Engine Ops).
+- [x] Hành động: Liệt kê các script: new-project, new-hands, verify-gate, push-rules, pull-code, ls-gitpush. (Đóng gói trong Skill Engine Ops).
+
 - Đầu ra: Scripts folder có catalog.
 - DoD: Người mới biết chạy script nào cho việc gì.
 - Ưu tiên: P0.
@@ -404,6 +441,32 @@ Dựa trên hệ thống "Bộ khung thép" 3 tầng, vòng đời sản xuất 
 - Đầu ra: Skill library có format.
 - DoD: Skill mới có chuẩn đóng gói.
 - Ưu tiên: P1.
+
+#### 2.10.5 - Chuyên môn hóa Satellite (Packaging Stage)
+- [x] Hành động: Tạo lệnh `npm run new-hand-folder -- --path [folder-path]`.
+- [x] Hành động: Tự động nạp 4 file "hộ chiếu" (Spec, Decision, Logs, Slicing Profile) vào thư mục.
+- Đầu ra: Một "Gói bàn giao" local hoàn chỉnh để Brain biên soạn.
+- DoD: Folder được tạo có đầy đủ template và sẵn sàng cho giai đoạn biên soạn.
+- Ưu tiên: P0.
+
+
+#### 2.10.6 - Bộ máy Cắt lát theo Cấu hình (Provisioning Engine)
+- [x] Hành động: Nâng cấp `init-satellite` và `push-rules` để đọc `slicing-profile.json`.
+- [x] Hành động: Thực hiện **Selective Push** dựa trên Mapping (Source -> Target).
+- [x] Hành động: Triển khai logic "Strip" động: Chỉ đẩy các file được whitelist trong profile.
+- Đầu ra: Satellite Repo được đúc chính xác theo lát cắt nghiệp vụ.
+- DoD: Satellite Repo chỉ chứa Shell Assets và Feature cụ thể, chạy được ngay.
+- Ưu tiên: P0.
+
+
+
+#### 2.10.7 - Hoàn thiện Workflow FE Multi-Satellite
+- [x] Hành động: Đồng bộ `ls-workflow-new-hand-folder.md` với bộ engine mới.
+- [x] Hành động: Thực hiện Pilot bàn giao một màn hình FE thực tế bằng quy trình 2 giai đoạn.
+- Đầu ra: Quy trình bàn giao FE đạt độ tin cậy công nghiệp.
+- DoD: Brain bàn giao task FE chỉ bằng 2 bước: Packaging (Local) -> Provisioning (Cloud).
+- Ưu tiên: P0.
+
 
 ### 2.5.6 - Tạo cấu trúc `.agents/tools`
 
@@ -511,7 +574,7 @@ Dựa trên hệ thống "Bộ khung thép" 3 tầng, vòng đời sản xuất 
 ### 2.9.1 - Chạy pilot trên project mẫu
 
 - [x] Hành động: Tạo project mẫu bằng `npm run new-project`.
-- [x] Hành động: Tạo module mẫu bằng `npm run new-module`.
+- [x] Hành động: Điền tài liệu project trong `docs/` và kiểm tra luồng Satellite với `01_TASK_SPEC.md`, `02_DECISION_LOGS.md`, `03_LOGS.md`, README.md.
 - [x] Hành động: Điền tài liệu project trong `docs/` và kiểm tra luồng Satellite với `01_TASK_SPEC.md`, `02_DECISION_LOGS.md`, `03_LOGS.md`, README.md.
 - [x] Hành động: Chạy `npm run verify-gate`.
 - Đầu ra: Một vòng delivery giả lập đầy đủ.

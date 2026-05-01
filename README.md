@@ -75,7 +75,6 @@ Base Platform dùng Node.js engine qua các lệnh:
 ```bash
 npm run new-project   # Master: Tạo Brain Project mới
 npm run new-hands     # Brain: Tạo Satellite/Hands mới trong dự án
-npm run new-module    # Brain: Tạo module nhỏ trong dự án
 npm run verify-gate   # Master/Brain/Hands: Kiểm tra chốt chặn kỹ thuật
 npm run push-rules    # Brain: Ép DNA, Spec và Assets xuống Hands (hỗ trợ --all)
 npm run pull-code     # Brain: Thu hoạch code từ Hands sau khi PASS gate
@@ -218,19 +217,6 @@ Sau khi `new-hands` chạy xong, workflow sẽ:
 8. Push branch `main`.
 9. Ghi thông tin Hands vào `active-hands.json` của Brain Project.
 
-## Tạo Module Workspace
-
-Lệnh chuẩn:
-
-```bash
-npm run new-module -- --project-path "<PROJECT_PATH>" --module-name "<MODULE_NAME>"
-```
-
-Kết quả:
-
-```text
-<PROJECT_PATH>/
-|-- src/
 |   `-- <MODULE_NAME>/
 |       `-- README.md
 `-- docs/

@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 import { lsGitPush } from "./lib/delivery.mjs";
-import { newModule, newProject } from "./lib/factory.mjs";
+import { newHandFolder, newProject } from "./lib/factory.mjs";
+
+
 import { verifyGate } from "./lib/gate.mjs";
 import { initSatellite } from "./lib/init-satellite.mjs";
 import { createRuntime } from "./lib/runtime.mjs";
@@ -20,8 +22,9 @@ async function main() {
   switch (command) {
     case "new-project":
       return newProject(runtime);
-    case "new-module":
-      return newModule(runtime);
+    case "new-hand-folder":
+      return newHandFolder(runtime);
+
     case "verify-gate":
       return verifyGate(runtime, { projectPath: args["project-path"] || "." });
     case "ls-gitpush":
@@ -65,7 +68,8 @@ function printUsage() {
 
 Commands:
   new-project --project-name NAME
-  new-module --project-path PATH --module-name NAME
+  new-hand-folder --path PATH
+
   verify-gate --project-path PATH
   ls-gitpush --title TITLE [--body BODY] [--commit-message MSG] [--project-path PATH]
   push-rules-to-satellite [--project-path PATH] [--all] [--commit-message MSG] [--git-push] [--dry-run]

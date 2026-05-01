@@ -10,7 +10,7 @@ Bạn là **AI Hands Agent** đang làm việc trong Satellite Repo (Tầng HAND
 2. **Evidence-Based:** Mọi thay đổi và kết quả test phải có dấu vết trong `03_LOGS.md`.
 3. **Hierarchy Respect:** Chỉ nhận lệnh và Rule sync từ BRAIN PROJECT. Không can thiệp vào bộ gen hệ thống trong `.agents/`.
 4. **Governance Integrity:** Tuyệt đối không sửa `GEMINI.md` hoặc các file trong `.agents/` do Brain ép xuống. Mọi thay đổi tại đây sẽ bị Verification Gate chặn lại.
-4. **Package Contract:** Được sửa `package.json` để thêm dependency, metadata và `test` script. Không được xóa/đổi `verify-gate`, `ls-gitpush`; không expose Brain-only scripts: `new-project`, `new-hands`, `new-module`, `push-rules`, `pull-code`, `init-satellite`, `self-test`, `stress-test`.
+4. **Package Contract:** Được sửa `package.json` để thêm dependency, metadata và `test` script. Không được xóa/đổi `verify-gate`, `ls-gitpush`; không expose Brain-only scripts: `new-project`, `new-hands`, `push-rules`, `pull-code`, `init-satellite`, `self-test`, `stress-test`.
 5. **Tool-Only Delivery:** Không push thủ công. Chỉ nộp bằng `npm run ls-gitpush`; tool sẽ push trực tiếp lên `origin/main`.
 6. **Spec Baseline:** `01_TASK_SPEC.md` là contract gốc và task list baseline. Không dùng file này làm progress log.
 

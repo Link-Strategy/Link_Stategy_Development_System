@@ -1,0 +1,107 @@
+{
+  "name": "FE Multi-Satellite Slicing Profile",
+  "version": "2.3.0",
+  "description": "Nguồn chân lý duy nhất điều phối luồng đẩy (Push) và thu hoạch (Harvest).",
+  "provisioning": {
+    "organization": "Link-Strategy",
+    "mandatory_paths": ["src", "tests"]
+  },
+  "packaging": {
+    "templates": [
+      { "src": "01_TASK_SPEC_TEMPLATE.md", "dest": "01_TASK_SPEC.md" },
+      { "src": "02_DECISION_LOGS_TEMPLATE.md", "dest": "02_DECISION_LOGS.md" },
+      { "src": "03_LOGS_TEMPLATE.md", "dest": "03_LOGS.md" },
+      { "src": "SLICING_PROFILE_TEMPLATE.json", "dest": "slicing-profile.json" }
+    ]
+  },
+  "mappings": {
+    "DNA": [
+      {
+        "source": ".agents/rules/hands/",
+        "target": ".agents/rules/",
+        "description": "Luật thực thi dành cho Hands"
+      },
+      {
+        "source": ".agents/workflows/hands/",
+        "target": ".agents/workflows/",
+        "description": "Workflow dành cho Hands"
+      },
+      {
+        "source": ".agents/templates/GEMINI_SATELLITE_TEMPLATE.md",
+        "target": "GEMINI.md",
+        "description": "Hiến pháp Vệ tinh"
+      },
+      {
+        "source": ".agents/templates/README_SATELLITE_TEMPLATE.md",
+        "target": "README.md",
+        "description": "Hướng dẫn vận hành vệ tinh"
+      },
+      {
+        "source": ".agents/templates/ENV_EXAMPLE_TEMPLATE",
+        "target": ".env.example",
+        "description": "Cấu hình môi trường mẫu"
+      },
+      {
+        "source": ".agents/tools/ls-engine/",
+        "target": ".agents/tools/ls-engine/",
+        "description": "Bộ máy vận hành Link Strategy"
+      },
+      {
+        "source": ".github/workflows/verify-gate.yml",
+        "target": ".github/workflows/verify-gate.yml",
+        "description": "Chốt chặn CI/CD tự động"
+      },
+      {
+        "source": "ASSET_INDEX.md",
+        "target": "ASSET_INDEX.md",
+        "description": "Danh mục tài sản hệ thống"
+      }
+    ],
+    "SHELL": [
+      {
+        "source": "src/core/",
+        "target": "src/core/",
+        "description": "Hệ điều hành của App"
+      },
+      {
+        "source": "src/components/ui/",
+        "target": "src/components/ui/",
+        "description": "Thư viện giao diện dùng chung"
+      },
+      {
+        "source": "assets/",
+        "target": "assets/",
+        "description": "Tài nguyên tĩnh"
+      },
+      {
+        "source": "package.json",
+        "target": "package.json",
+        "description": "Cấu hình dự án"
+      }
+    ],
+    "TASK": [
+      {
+        "source": "01_TASK_SPEC.md",
+        "target": "01_TASK_SPEC.md",
+        "description": "Đặc tả nhiệm vụ (Brain -> Hands)"
+      }
+    ]
+  },
+  "harvesting": [
+    {
+      "source": "src/features/[feature-name]/",
+      "target": "src/features/[feature-name]/",
+      "description": "Mã nguồn tính năng đã hoàn thiện"
+    },
+    {
+      "source": "02_DECISION_LOGS.md",
+      "target": "02_DECISION_LOGS.md",
+      "description": "Nhật ký chốt phương án từ vệ tinh"
+    },
+    {
+      "source": "03_LOGS.md",
+      "target": "03_LOGS.md",
+      "description": "Nhật ký thực thi chi tiết"
+    }
+  ]
+}

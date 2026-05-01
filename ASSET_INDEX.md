@@ -47,6 +47,7 @@ Every asset should be tracked with these fields:
 | `master-agent-governance` | Rule | `GEMINI.md` | Brain | Active | Defines current AI agent behavior and workspace-level execution discipline. | Any AI agent session. | Operating rules for agent behavior. | Required at the start of every AI-assisted session. | `ASSET_INDEX.md` |
 | `base-platform-backlog` | Project | `backlog.md` | Brain | Active | Tracks implementation work for Base Platform V1. | Current repo state and governance docs. | Prioritized checklist and status. | Required when choosing next platform task. | `README.md`, `ASSET_INDEX.md` |
 | `antigravity-technical-spec` | Constitution | `.agents/README.md` | Brain | Active | Official technical specification for Antigravity directory structure, rule formatting, and hierarchy. | Agent configuration or asset creation. | Technical compliance for the production engine. | Required when creating new rules, workflows, or skills. | `backlog.md`, https://antigravity.codes |
+| `ls-sync-protocol` | Constitution | `.LinkStrategy/04_SYNC_PROTOCOL.md` | Brain | Active | Master protocol for Profile-Driven Slicing, Mirror & Strip mechanism, and CI-Gated Harvesting. | Packaging or Provisioning task. | Architectural alignment for synchronization. | Mandatory for all sync operations. | `ls-rule-master-governance.md`, `01_SOP_LINK_STRATEGY.md` |
 
 
 ## Rules Registry
@@ -69,9 +70,11 @@ Every asset should be tracked with these fields:
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `ls-workflow-gitpush` | Workflow | `.agents/workflows/hands/ls-workflow-gitpush.md` | Brain | Active | Quy trình bàn giao và nộp bài an toàn (Agent-led Secure Delivery). | Task/module delivery request. | Standard execution sequence. | Mandatory for all delivery work. | N/A |
 | `ls-workflow-new-project` | Workflow | `.agents/workflows/master/ls-workflow-new-project.md` | Brain | Active | Step-by-step workflow for creating a Brain Project Workspace. | New project request. | Initialized Brain Project Workspace. | Required for new project setup. | `npm run new-project` |
-| `ls-workflow-new-hands` | Workflow | `.agents/workflows/brain/ls-workflow-new-hands.md` | Brain | Active | Step-by-step workflow for initializing a Hands/Satellite repository. | Hands task/workspace request. | Initialized Hands/Satellite repo. | Required for Hands onboarding. | `npm run new-hands` |
-| `ls-workflow-push-rules` | Workflow | `.agents/workflows/brain/ls-workflow-push-rules.md` | Brain | Active | Syncs governance, workflows, templates, engine, GitHub config, and shared assets to a Satellite repo. | Satellite path. | Updated Satellite governance/runtime. | Required after governance/runtime updates. | `npm run push-rules`, `docs/sync-linkage.md` |
-| `ls-workflow-harvest-code` | Workflow | `.agents/workflows/brain/ls-workflow-harvest-code.md` | Brain | Active | Harvests the verified tracked snapshot and gate report artifact from a Satellite repo back into the Brain Project Workspace. | Satellite path with PASS remote gate. | Harvested Satellite snapshot, archived `GATE_REPORT.md`, and updated `active-hands.json`. | Required before accepting Satellite output into Brain. | `npm run pull-code`, `docs/sync-linkage.md` || `ls-workflow-daily-harvesting` | Workflow | `.agents/workflows/ls-workflow-daily-harvesting.md` | Brain | Planned | End-of-day workflow for extracting knowledge, risks, and hardening candidates from project docs, Hands logs, and commits. | `docs/`, Hands/Satellite `03_LOGS.md`, commits, `02_DECISION_LOGS.md`. | Knowledge pieces and hardening candidates. | Required for Brain daily review once created. | N/A |
+| `ls-workflow-init-satellite` | Workflow | `.agents/workflows/brain/ls-workflow-init-satellite.md` | Brain | Active | Agent instructions for provisioning a Satellite repository from a local folder. | Local folder and metadata. | Provisioned remote repo. | Required for provisioning phase. | `ls-workflow-init-satellite.md` |
+| `ls-workflow-new-hand-folder` | Workflow | `.agents/workflows/brain/ls-workflow-new-hand-folder.md` | Brain | Active | Agent instructions for initializing and drafting a local task folder (Packaging). | Feature request. | Local folder with Spec/Profile. | Required for packaging phase. | `ls-workflow-new-hand-folder.md` |
+| `ls-workflow-push-rules` | Workflow | `.agents/workflows/brain/ls-workflow-push-rules.md` | Brain | Active | Syncs governance, workflows, templates, engine, GitHub config, and shared assets to a Satellite repo. | Satellite path. | Updated Satellite governance/runtime. | Required after governance/runtime updates. | `npm run push-rules`, `.LinkStrategy/04_SYNC_PROTOCOL.md` |
+| `ls-workflow-harvest-code` | Workflow | `.agents/workflows/brain/ls-workflow-harvest-code.md` | Brain | Active | Harvests the verified tracked snapshot and gate report artifact from a Satellite repo back into the Brain Project Workspace. | Satellite path with PASS remote gate. | Harvested Satellite snapshot, archived `GATE_REPORT.md`, and updated `active-hands.json`. | Required before accepting Satellite output into Brain. | `npm run pull-code`, `.LinkStrategy/04_SYNC_PROTOCOL.md` |
+| `ls-workflow-daily-harvesting` | Workflow | `.agents/workflows/ls-workflow-daily-harvesting.md` | Brain | Planned | End-of-day workflow for extracting knowledge, risks, and hardening candidates from project docs, Hands logs, and commits. | `docs/`, Hands/Satellite `03_LOGS.md`, commits, `02_DECISION_LOGS.md`. | Knowledge pieces and hardening candidates. | Required for Brain daily review once created. | N/A |
 
 ## Template Registry
 
@@ -118,29 +121,29 @@ Every asset should be tracked with these fields:
 | Name | Type | Path | Owner | Status | Purpose | Input | Output | Mandatory Usage | Related Docs |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `ls-engine-cli` | Tool | `.agents/tools/ls-engine/cli.mjs` | Brain | Active | Node.js CLI source of truth for Phase 1 operations. | npm command arguments. | Project/satellite/gate/sync actions. | Required for all platform automation. | `package.json`, `README.md`, `backlog.md` |
-| `new-project` | Script | `npm run new-project` | Brain | Active | Generates a Brain Project Workspace skeleton from Master and registers local path plus GitHub remote URL when available. | `--project-name`, optional `--no-github`, `--remote-url`, `--repo-name`, `--organization`, `--public`. | `../[PROJECT_NAME]/` and `active-projects.json` entry. | Required for consistent project creation. | `ls-workflow-new-project.md` |
-| `new-module` | Script | `npm run new-module` | Brain | Active | Generates a lightweight module scaffold inside a project. | `--project-path`, `--module-name`. | `src/[module]/README.md` and `docs/blueprints/[module]/01_TASK_SPEC.md`. | Required for module-based tasking. | N/A |
-| `new-hands` | Script | `npm run new-hands` | Brain | Active | Initializes a Hands/Satellite repository from a Brain Project Workspace. | `--project-path`, `--repo-name`. | Production-ready Hands/Satellite repository. | Required for Hands onboarding. | `ls-workflow-new-hands.md` |
+| `new-project` | Script | `npm run new-project` | Brain | Active | Generates a Brain Project Workspace skeleton from Master. | `--project-name`, `--repo-name`, etc. | Brain Project Workspace. | Required for project setup. | `ls-workflow-new-project.md` |
+| `new-hand-folder` | Script | `npm run new-hand-folder` | Brain | Active | Khởi tạo "Gói bàn giao" (Task Folder) tại local kèm Spec và Profile. | `--path` | Local task folder với 4 file hộ chiếu. | Required for Packaging phase. | `ls-workflow-new-hand-folder.md` |
+| `init-satellite` | Script | `npm run init-satellite` | Brain | Active | Kích hoạt (Provisioning) Satellite Repo dựa trên folder đã đóng gói. | `--path`, `--repo-name`. | Remote GitHub Satellite repo. | Required for Provisioning phase. | `ls-workflow-init-satellite.md` |
 | `verify-gate` | Script | `npm run verify-gate` | Brain | Active | Performs local/CI Phase 1 technical gate checks and creates pass/fail evidence. | `--project-path`. | `GATE_REPORT.md`. | Required before delivery. | `ls-rule-gate-acceptance` |
-| `push-rules` | Script | `npm run push-rules` | Brain | Active | Pushes governance assets and Node engine from Brain Project to Satellite. | `--project-path`, optional `--dry-run`. | Updated rules/tooling in satellite. | Post-governance update. | `ls-workflow-push-rules.md`, `docs/sync-linkage.md` |
-| `pull-code` | Script | `npm run pull-code` | Brain | Active | CI-gated harvest of the verified tracked Satellite snapshot into Brain Project Workspace. | `--project-path`, optional `--remote-url`, `--dry-run`, `--skip-ci-check`. | Satellite tracked files integrated into Brain Project only after remote gate success. | Post-milestone Brain harvest. | `ls-workflow-harvest-code.md`, `docs/sync-linkage.md` |
-| `ls-gitpush` | Script | `npm run ls-gitpush` | Brain | Active | Agent-led delivery: runs gate, stages allowed delivery files, commits, and pushes directly to Satellite `origin/main`. | `--project-path`, `--title`, optional `--body`. | Updated Satellite `main` commit awaiting CI signal. | Mandatory for all Hands submissions. | `.LinkStrategy/01_SOP_LINK_STRATEGY.md` |
+| `push-rules` | Script | `npm run push-rules` | Brain | Active | Syncs Shell Assets and DNA based on Slicing Profile mapping. | `--project-path`. | Updated Satellite assets. | Post-governance update. | `.LinkStrategy/04_SYNC_PROTOCOL.md` |
+| `pull-code` | Script | `npm run pull-code` | Brain | Active | CI-gated harvest of verified Satellite snapshot into Brain. | `--project-path`. | Harvested code in Brain Workspace. | Post-milestone harvest. | `ls-workflow-harvest-code.md`, `.LinkStrategy/04_SYNC_PROTOCOL.md` |
+| `ls-gitpush` | Script | `npm run ls-gitpush` | Brain | Active | Agent-led delivery: runs gate, stages allowed delivery files, commits, and pushes directly to Satellite `origin/main`. | `--project-path`, `--title`, optional `--body`. | Updated Satellite `main` commit awaiting CI signal. | Mandatory for all Hands submissions. | `ls-workflow-gitpush` |
 | `register-asset` | Script | `npm run register-asset` | Brain | Planned | Helps register new hardened assets in this index. | Asset metadata. | Updated or draft index entry. | Required after hardening once implemented. | `ASSET_INDEX.md` |
 
 ## Component Registry
 
 | Name | Type | Path | Owner | Status | Purpose | Input | Output | Mandatory Usage | Related Docs |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `shared-ui-library` | Component | `components/ui/` | Brain | Placeholder | Planned shared UI component library for frontend work. Current README is empty. | Frontend task requirements. | Reusable UI components and patterns. | Required for frontend work once implemented. | `ls-skill-ui-kit`, `.LinkStrategy/02_FULL_SYSTEM_CONFIGURATION.md` |
+| `shared-ui-library` | Component | `components/ui/` | Brain | Placeholder | Planned shared UI component library for frontend work. Current README is empty. | Frontend task requirements. | Reusable UI components and patterns. | Required for frontend work once implemented. | `ls-skill-ui-kit` |
 
 ## Dataset Registry
 
 | Name | Type | Path | Owner | Status | Purpose | Input | Output | Mandatory Usage | Related Docs |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `audit-trail-schema` | Dataset | `.agents/datasets/audit-trail.schema.json` | Brain | Planned | Defines local/future ledger audit record schema. | Agent/action event metadata. | Validated audit record shape. | Required before audit automation. | `.LinkStrategy/02_FULL_SYSTEM_CONFIGURATION.md` |
-| `active-projects` | Dataset | `active-projects.json` | Brain | Active | Central registry of all Brain Project Workspaces managed by Master. | Platform scripts. | Project list for automation. | Required for batch project operations. | `docs/sync-linkage.md` |
-| `active-hands` | Dataset | `active-hands.json` | Brain | Active | Central registry of all Hands/Satellite Repos managed by a Brain Project. | Platform scripts. | Hands list with SHA and CI status. | Required for Brain harvest operations. | `docs/sync-linkage.md` |
-| `knowledge-piece-template` | Template | `.agents/templates/KNOWLEDGE_PIECE_TEMPLATE.md` | Brain | Planned | Standard format for reusable knowledge pieces before vector KB ingestion. | Lessons, patterns, anti-patterns. | Knowledge piece document. | Required for knowledge harvesting once created. | `.LinkStrategy/01_SOP_LINK_STRATEGY.md` |
+| `audit-trail-schema` | Dataset | `.agents/datasets/audit-trail.schema.json` | Brain | Planned | Defines local/future ledger audit record schema. | Agent/action event metadata. | Validated audit record shape. | Required before audit automation. | N/A |
+| `active-projects` | Dataset | `active-projects.json` | Brain | Active | Central registry of all Brain Project Workspaces managed by Master. | Platform scripts. | Project list for automation. | Required for batch project operations. | `.LinkStrategy/04_SYNC_PROTOCOL.md` |
+| `active-hands` | Dataset | `active-hands.json` | Brain | Active | Central registry of all Hands/Satellite Repos managed by a Brain Project. | Platform scripts. | Hands list with SHA and CI status. | Required for Brain harvest operations. | `.LinkStrategy/04_SYNC_PROTOCOL.md` |
+| `knowledge-piece-template` | Template | `.agents/templates/KNOWLEDGE_PIECE_TEMPLATE.md` | Brain | Planned | Standard format for reusable knowledge pieces before vector KB ingestion. | Lessons, patterns, anti-patterns. | Knowledge piece document. | Required for knowledge harvesting once created. | N/A |
 
 ## Project Registry
 
@@ -149,11 +152,8 @@ Every asset should be tracked with these fields:
 | `demo-base-platform` | Project | `projects/DEMO-BASE-PLATFORM/` | Brain | Active | Reference project proving project factory, templates, logs, and gate verification. | Project factory scripts and templates. | Demo project workspace. | Required for Base Platform V1 validation. | `backlog.md` |
 | `INTERNAL-SIMPLE-SERVICE` | Project | `projects/INTERNAL-SIMPLE-SERVICE/` | Brain | Active | Automatically generated hardened satellite project. | N/A | Project structure | Mandatory | N/A |
 
-## Training Registry
 
-| Name | Type | Path | Owner | Status | Purpose | Input | Output | Mandatory Usage | Related Docs |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `auditor-training` | Dataset | `.LinkStrategy/Training/auditor/` | Brain | Active | Auditor Capability Training curriculum and handbook. | Candidate profile. | Trained Auditor. | Required for Auditor onboarding. | N/A |
+
 
 ---
 

@@ -85,8 +85,8 @@ export async function newProject(runtime) {
     if (exists(projectPath)) {
       console.log(`[CLEANUP] Removing incomplete project directory: ${projectPath}`);
       // Simple safety check to ensure we don't delete master root or something crazy
-      if (projectPath.length > runtime.root.length) {
-         run("powershell", ["Remove-Item", "-Recurse", "-Force", projectPath]);
+      if (projectPath.length > runtime.root.length && path.resolve(projectPath).startsWith(path.resolve(runtime.root))) {
+         fs.rmSync(projectPath, { recursive: true, force: true });
       }
     }
     throw error;
@@ -159,23 +159,43 @@ function printVerificationReport(projectPath, projectName, remoteUrl) {
   console.log(report.join("\n"));
 }
 
-export function newModule(runtime) {
-  const projectPath = runtime.resolvePath(runtime.requireArg("project-path"));
-  const moduleName = runtime.requireArg("module-name");
-  if (!exists(projectPath)) throw new Error(`Project path does not exist: ${projectPath}`);
-  const moduleDir = path.join(projectPath, "src", moduleName);
-  const docsDir = path.join(projectPath, "docs", "blueprints", moduleName);
-  ensureDir(moduleDir);
-  ensureDir(docsDir);
-  copyIfExists(runtime.resolvePath(".agents/templates/01_TASK_SPEC_TEMPLATE.md"), path.join(docsDir, "01_TASK_SPEC.md"));
-  writeText(path.join(moduleDir, "README.md"), `# MODULE: ${moduleName}
+export function newHandFolder(runtime) {
+  const folderPath = runtime.resolvePath(runtime.requireArg("path"));
+  const templateDir = runtime.resolvePath(".agents/templates");
+  const profileTemplatePath = path.join(templateDir, "SLICING_PROFILE_TEMPLATE.json");
 
-[Description]
+  if (!exists(profileTemplatePath)) {
+    throw new Error("[PACKAGING ERROR] SLICING_PROFILE_TEMPLATE.json not found. Cannot determine packaging rules.");
+  }
 
-- [Spec](../../docs/blueprints/${moduleName}/01_TASK_SPEC.md)
-`);
-  console.log(`Success: Module added at ${moduleDir}`);
+  const profileTemplate = readJson(profileTemplatePath);
+  const templates = profileTemplate.packaging?.templates || [];
+
+  ensureDir(folderPath);
+
+
+  for (const tpl of templates) {
+    const src = path.join(templateDir, tpl.src);
+    const dest = path.join(folderPath, tpl.dest);
+    if (!exists(dest)) {
+      if (exists(src)) {
+        copyFile(src, dest);
+        console.log(`[PACKAGING] Created: ${tpl.dest}`);
+      } else {
+        console.warn(`[PACKAGING] Warning: Template source not found: ${tpl.src}`);
+      }
+    } else {
+      console.log(`[PACKAGING] Already exists: ${tpl.dest}`);
+    }
+  }
+
+  console.log(`\nSUCCESS: Handover Package initialized at ${folderPath}`);
+  console.log(`Next step: Edit Spec and Slicing Profile, then run 'init-satellite'.\n`);
 }
+
+
+
+
 
 function updateRegistry(runtime, id, projectPath, remoteUrl, description) {
   const registryPath = runtime.resolvePath("active-projects.json");
@@ -190,7 +210,6 @@ function updateRegistry(runtime, id, projectPath, remoteUrl, description) {
   // Normalize path to be relative to Master root for portability
   const relativePath = toPosix(path.relative(runtime.root, projectPath));
   
-  const existingIndex = registry.projects.findIndex((p) => p.id === id);
   const entry = { 
     id, 
     path: relativePath, 
@@ -199,12 +218,18 @@ function updateRegistry(runtime, id, projectPath, remoteUrl, description) {
     description: description || `Brain Project: ${id}` 
   };
 
-  if (existingIndex >= 0) {
-    const existing = registry.projects[existingIndex];
+  const byId = registry.projects.findIndex((p) => p.id === id);
+  const byPath = registry.projects.findIndex((p) => p.path === relativePath);
+
+  if (byId >= 0) {
+    const existing = registry.projects[byId];
     if (existing.path !== relativePath) {
-      console.warn(`[REGISTRY WARNING] Project ID '${id}' already exists at a different path: ${existing.path}. Updating to: ${relativePath}`);
+      console.warn(`[REGISTRY WARNING] Project ID '${id}' moved from ${existing.path} to ${relativePath}`);
     }
-    registry.projects[existingIndex] = { ...existing, ...entry };
+    registry.projects[byId] = { ...existing, ...entry };
+  } else if (byPath >= 0) {
+    console.warn(`[REGISTRY WARNING] Project at path '${relativePath}' renamed from ${registry.projects[byPath].id} to ${id}`);
+    registry.projects[byPath] = { ...registry.projects[byPath], ...entry };
   } else {
     registry.projects.push(entry);
   }

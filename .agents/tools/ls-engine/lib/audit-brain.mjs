@@ -7,6 +7,7 @@ export function verifyBrain(runtime) {
   const root = runtime.root;
   let hasErrors = false;
   let hasWarnings = false;
+  let registry = null;
 
   // 1. Registry Validation
   const registryPath = path.join(root, "active-hands.json");
@@ -15,7 +16,7 @@ export function verifyBrain(runtime) {
     hasErrors = true;
   } else {
     try {
-      const registry = readJson(registryPath);
+      registry = readJson(registryPath);
       const hands = registry.hands || [];
       console.log(`[PASS] Registry found: ${hands.length} hands registered.`);
       
@@ -51,8 +52,7 @@ export function verifyBrain(runtime) {
   }
 
   // 3. Connectivity Check (Warnings only)
-  if (exists(registryPath)) {
-    const registry = readJson(registryPath);
+  if (registry) {
     const hands = registry.hands || [];
     console.log("\n[CHECK] Verifying satellite connectivity...");
     for (const hand of hands) {

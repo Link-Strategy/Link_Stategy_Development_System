@@ -5,6 +5,7 @@ import path from "node:path";
 import test from "node:test";
 
 import { placeholderPatterns, satellitePackageScripts } from "../.agents/tools/ls-engine/lib/constants.mjs";
+import { verifyBrain } from "../.agents/tools/ls-engine/lib/audit-brain.mjs";
 import { verifyGate } from "../.agents/tools/ls-engine/lib/gate.mjs";
 import { harvestPlan, harvestTrackedSnapshot, pushRules } from "../.agents/tools/ls-engine/lib/sync.mjs";
 
@@ -127,6 +128,12 @@ test("harvest blocks protected Brain targets and their parents", () => {
   ], {
     "src/index.js": "export const broad = true;\n"
   });
+
+  assertHarvestBlocked("root-target", [
+    { source: ".", target: "." }
+  ], {
+    "src/index.js": "export const root = true;\n"
+  });
 });
 
 test("harvest copies valid narrow mappings", () => {
@@ -247,5 +254,27 @@ Input -> output.
 
     assert.equal(passed, true);
     assert.equal(fs.existsSync(path.join(project, "GATE_REPORT.md")), true);
+  });
+});
+
+test("verifyBrain reports invalid registry JSON without crashing before summary", () => {
+  withTempDir("verify-brain-invalid-json", (root) => {
+    writeText(root, ".agents/rules/rule.md", "# Rule\n");
+    writeText(root, ".agents/tools/ls-engine/cli.mjs", "export const engine = true;\n");
+    writeText(root, "active-hands.json", "{ bad json");
+
+    const previousExit = process.exit;
+    let exitCode = null;
+    process.exit = (code) => {
+      exitCode = code;
+      throw new Error(`process.exit:${code}`);
+    };
+
+    try {
+      assert.throws(() => verifyBrain(testRuntime(root)), /process\.exit:1/);
+      assert.equal(exitCode, 1);
+    } finally {
+      process.exit = previousExit;
+    }
   });
 });

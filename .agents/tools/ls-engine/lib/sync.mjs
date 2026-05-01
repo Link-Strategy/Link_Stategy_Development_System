@@ -271,6 +271,8 @@ function validateHarvestMappings(sourceRoot, harvesting, { requireSources }) {
 
     if (!source) itemErrors.push(`${label}: source is required`);
     if (!target) itemErrors.push(`${label}: target is required`);
+    if (isRootHarvestPath(source)) itemErrors.push(`${label}: source cannot be repository root '${source}'`);
+    if (isRootHarvestPath(target)) itemErrors.push(`${label}: target cannot be repository root '${target}'`);
     if (hasUnresolvedPlaceholder(source)) itemErrors.push(`${label}: source contains unresolved placeholder '${source}'`);
     if (hasUnresolvedPlaceholder(target)) itemErrors.push(`${label}: target contains unresolved placeholder '${target}'`);
 
@@ -312,6 +314,10 @@ function hasUnresolvedPlaceholder(value) {
   return /\[[^\]\r\n]+\]/u.test(value);
 }
 
+function isRootHarvestPath(value) {
+  return value === "." || value === "./";
+}
+
 function isForbiddenHarvestTarget(rel) {
   const normalized = normalizeMappingPath(rel);
   return harvestForbiddenTargets.some((protectedPath) => {
@@ -331,7 +337,7 @@ function pruneStaleFiles(srcDir, destDir) {
     if (!srcFiles.has(entry)) {
       const stalePath = path.join(destDir, entry);
       // Extra safety check: never prune protected core paths even if missing in source
-      if (isProtectedHarvestPath(stalePath)) continue;
+      if (isProtectedHarvestPath(path.relative(destDir, stalePath))) continue;
       
       fs.rmSync(stalePath, { recursive: true, force: true });
       console.log(`[HARVEST] Pruned stale asset: ${entry}`);
@@ -449,14 +455,13 @@ export function assertRemoteCiPassed(remoteUrl, branch, workflowName) {
   const matching = runs.filter((runItem) => 
     runItem.name === workflowName || 
     runItem.name === "Link Strategy Verification Gate" || 
-    runItem.path?.endsWith("/link-strategy-ci.yml") ||
-    runItem.path?.endsWith("/verify-gate.yml")
+    runItem.path?.endsWith("/link-strategy-ci.yml")
   );
   const success = matching.find((runItem) => runItem.head_sha === sha && runItem.status === "completed" && runItem.conclusion === "success");
   if (!success) {
     const seen = matching.length
       ? matching.map((runItem) => ` - ${runItem.name}: ${runItem.status}/${runItem.conclusion || "none"} (${runItem.head_sha})`).join("\n")
-      : " - No matching verification-gate workflow run found.";
+      : " - No matching Link Strategy CI workflow run found.";
     throw new Error(`Brain harvest blocked: latest ${branch} commit has not passed GitHub Actions verification-gate.\nCommit: ${sha}\n${seen}`);
   }
   console.log(`GitHub Actions verified for ${repo.owner}/${repo.name}@${sha}: ${success.name} success.`);

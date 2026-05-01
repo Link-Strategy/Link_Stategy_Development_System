@@ -87,13 +87,23 @@ export async function newProject(runtime) {
     console.error(`[FATAL ERROR] Project initialization failed: ${error.message}`);
     if (exists(projectPath)) {
       console.log(`[CLEANUP] Removing incomplete project directory: ${projectPath}`);
-      // Simple safety check to ensure we don't delete master root or something crazy
-      if (projectPath.length > runtime.root.length && path.resolve(projectPath).startsWith(path.resolve(runtime.root))) {
+      if (canCleanupProjectPath(runtime, projectPath)) {
          fs.rmSync(projectPath, { recursive: true, force: true });
+      } else {
+        console.warn(`[CLEANUP] Skipped unsafe cleanup target: ${projectPath}`);
       }
     }
     throw error;
   }
+}
+
+function canCleanupProjectPath(runtime, projectPath) {
+  const absoluteMaster = path.resolve(runtime.root);
+  const absoluteProject = path.resolve(projectPath);
+  const parent = path.resolve(absoluteMaster, runtime.args["base-path"] || process.env.LS_BASE_PATH || "..");
+  return absoluteProject !== absoluteMaster &&
+    path.dirname(absoluteProject) === parent &&
+    path.basename(absoluteProject).length > 0;
 }
 
 function printSystemSnapshot(runtime) {

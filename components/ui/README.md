@@ -18,7 +18,7 @@ Mọi thay đổi hoặc bổ sung vào thư mục này đều phải tuân th�
 
 ## 🚀 Cách sử dụng
 
-1. Kiểm tra danh sách component hiện có trong `ASSET_INDEX.md`.
+1. Kiểm tra danh sách component hiện có trong `asset-index.json`.
 2. Nếu component đã tồn tại, tuyệt đối không viết lại.
 3. Nếu cần tạo component mới, hãy gửi `HARDENING_PROPOSAL` sau khi hoàn thiện dự án pilot.
 

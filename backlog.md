@@ -2,6 +2,8 @@
 
 Tài liệu này chuyển hóa các yêu cầu từ bộ Blueprint hiện hành thành danh sách hành động cụ thể để triển khai Cỗ máy sản xuất phần mềm Link Strategy.
 
+**Source of Truth cho development:** `backlog.md` là nguồn sự thật vận hành cho trạng thái phase, tiêu chuẩn hoàn thành, quyết định ưu tiên và phạm vi triển khai tiếp theo. Blueprint trong `.LinkStrategy/` là doctrine/constitution; khi chuyển thành việc kỹ thuật, backlog này là nơi chốt scope, DoD và bằng chứng nghiệm thu.
+
 ## Mục Tiêu Vận Hành
 
 Xây dựng một hệ thống có thể:
@@ -29,6 +31,7 @@ Hệ thống Link Strategy phát triển theo 3 giai đoạn hội tụ để ch
 *   **Mục tiêu:** Xây dựng "Bộ khung thép" ở cấp cơ chế nền: khởi tạo repo/project, đồng bộ Master-Satellite, cưỡng chế luật và Verification Gate.
 *   **Trọng tâm:** Master-Satellite Sync, Governance Enforcement, GitHub Actions Automation, `ls-gitpush` Integrity, Asset Registry.
 *   **Key Milestone:** Hệ thống hạ tầng, đồng bộ luật và gate kỹ thuật đã được "Bọc thép" hoàn toàn với cơ chế tự nhận diện danh tính (Identity Detection) và bộ CI Suite đa tầng.
+*   **Closeout Evidence:** [docs/audit/phase-1-closeout.md](docs/audit/phase-1-closeout.md) là gói bằng chứng đóng Phase 1 hiện hành.
 *   **Ngoài phạm vi Phase 1:** Nghiệm thu bởi Brain, giải ngân, review checklist chuyên sâu, onboarding/offboarding Hands, SAST/dependency scan đầy đủ và kho audit dài hạn thuộc Phase 2+.
 
 ### Giai đoạn 2: Scale & Production (6 - 18 tháng) - [TRẠNG THÁI: ĐANG TRIỂN KHAI]
@@ -62,7 +65,7 @@ graph TD
     GH --> I[6. Brain: Harvest & Registry]
     I -->|pull-code| J[7. Brain-side Verify]
     J --> K[8. Hardening: Pattern về Master]
-    K -->|ASSET_INDEX.md| M
+    K -->|asset-index.json| M
 ```
 
 Dựa trên hệ thống "Bộ khung thép" 3 tầng, vòng đời sản xuất của Link Strategy được vận hành như sau:
@@ -131,9 +134,8 @@ Dựa trên hệ thống "Bộ khung thép" 3 tầng, vòng đời sản xuất 
 
 ### 1.1.0 - Thiết lập Khung Quản trị Master (Index, Rules, Workflows)
 
-- [x] Hành động: Tích hợp Chiến lược kinh doanh (`00_BLUEPRINT`) vào `ASSET_INDEX.md` và `GEMINI.md`.
-- [x] Hành động: Chuẩn hóa `ASSET_INDEX.md` thành registry quản trị tài sản (Rules, Skills, Tools...).
-- [x] Hành động: Hoàn thiện `GEMINI.md` với Bootstrap Order và các quy tắc thực thi dứt khoát.
+- [x] Hành động: Chuyển đổi sang mô hình **Blueprint-driven Registry** (`active-projects.json` -> `asset-index.json`).
+- [x] Hành động: Hoàn thiện `GEMINI.md` với Bootstrap Order đọc trực tiếp Registry JSON.
 - [x] Hành động: Thiết lập Luật quản trị Master (`ls-rule-master-governance.md`) và Quy trình bàn giao Master (`ls-workflow-delivery-loop.md`).
 - **Tiêu chuẩn đạt chuẩn:** Bộ khung quản trị sẵn sàng, đảm bảo tính nhất quán giữa Chiến lược - Tài sản - Quy trình.
 
@@ -183,6 +185,7 @@ Dựa trên hệ thống "Bộ khung thép" 3 tầng, vòng đời sản xuất 
 - [x] Hành động: Tạo script chấm gate kỹ thuật PASS/FAIL.
 - [x] Hành động: Kiểm tra tồn tại 01_TASK_SPEC.md, 02_DECISION_LOGS.md, 03_LOGS.md, README.md, tests folder.
 - [x] Hành động: Kiểm tra tính nguyên vẹn của Rules và Engine (Integrity Check).
+- [x] Hành động: Bắt buộc `asset-index.json` trong Satellite và validate schema registry trước khi cho qua gate.
 - [x] Hành động: Chặn nộp bài nếu phát hiện Brain-only scripts trong Satellite.
 - [x] Hành động: Xuất báo cáo `GATE_REPORT.md` kèm SHA256 Integrity Hash.
 - Đầu ra: Chốt chặn KCS tự động cho mọi Satellite.
@@ -303,6 +306,17 @@ Dựa trên hệ thống "Bộ khung thép" 3 tầng, vòng đời sản xuất 
 - DoD: PR có commit history đủ rõ cho AI/Brain hiểu tiến độ mà không cần họp.
 - Ưu tiên: P1.
 
+### 1.99.0 - Phase 1 Closeout & Acceptance
+
+- [x] Hành động: Chốt `backlog.md` là source of truth cho development roadmap, phase status, DoD và acceptance evidence.
+- [x] Hành động: Tạo closeout pack tại `docs/audit/phase-1-closeout.md` để gom trạng thái, invariant đã khóa và lệnh kiểm chứng.
+- [x] Hành động: Chuẩn hóa thuật ngữ Master/Brain/Hands trong sync protocol, tránh nhập nhằng Brain Project với Master Monorepo.
+- [x] Hành động: Dọn tham chiếu tên file asset index Markdown cũ còn sót trong tài liệu cấu hình hệ thống; chuẩn chính thức là `asset-index.json`.
+- [x] Hành động: Xác nhận test suite và self-test pass sau hardening registry/layer policy.
+- Đầu ra: Phase 1 có bằng chứng đóng gói, tiêu chuẩn acceptance rõ và không còn phụ thuộc vào tài liệu asset index Markdown cũ.
+- DoD: `npm test` pass, `npm run self-test` pass, kiểm tra legacy asset-index Markdown không còn match vận hành, và closeout pack chỉ rõ ranh giới Phase 1/Phase 2.
+- Ưu tiên: P0. [HOÀN THÀNH - PHASE 1 CLOSED]
+
 
 
 
@@ -310,15 +324,80 @@ Dựa trên hệ thống "Bộ khung thép" 3 tầng, vòng đời sản xuất 
 ---
 
 ## Phase 2: Standardization & Support
-*Hoàn thiện tài liệu mẫu, hỗ trợ phát triển và quản trị tri thức.*
+*Biến nền Phase 1 thành hệ điều hành vận hành thực tế cho Brain: quan sát trạng thái, review/acceptance, evidence archive, lifecycle Satellite và hardening tri thức có kiểm soát.*
+
+> [!FOCUS]
+> **Phase 2 Operating Spine:** ưu tiên những năng lực giúp Brain vận hành nhiều Satellite thật: `ls-status`, review/acceptance workflow, audit evidence, lifecycle state và security baseline tối thiểu. Các hạng mục hấp dẫn nhưng phụ thuộc dữ liệu sạch như Vector KB, generalizer tự động và automation quy mô lớn chỉ triển khai sau khi evidence/review/knowledge format đã ổn định.
+
+### 2.0.1 - Operational Visibility Spine (`ls-status`) [NEW - P0]
+
+- [ ] Hành động: Tạo lệnh `npm run ls-status` chạy được tại Master, Brain Project và Hands/Satellite.
+- [ ] Hành động: Hiển thị tier hiện tại, registry hợp lệ hay lỗi, project/satellite active, trạng thái gate gần nhất, harvest lag và drift cảnh báo.
+- [ ] Hành động: Đọc `active-projects.json`, `active-hands.json`, `asset-index.json`, `slicing-profile.json` và các report local nếu tồn tại.
+- [ ] Hành động: Trả output dạng người đọc được trước; JSON output có thể bổ sung sau khi format ổn định.
+- Đầu ra: Brain có một bảng trạng thái CLI tối thiểu trước khi vận hành nhiều Satellite.
+- DoD: Một lệnh trả lời được “tôi đang ở tầng nào, registry có sạch không, Satellite nào đang rủi ro, việc nào chưa harvest/review”.
+- Ưu tiên: P0.
+
+### 2.0.2 - Brain Review & Acceptance Workflow [NEW - P0]
+
+- [ ] Hành động: Tạo `.agents/templates/REVIEW_REPORT_TEMPLATE.md`.
+- [ ] Hành động: Tạo `.agents/templates/ACCEPTANCE_REPORT_TEMPLATE.md`.
+- [ ] Hành động: Tạo workflow Brain review dựa trên diff code, `03_LOGS.md`, `GATE_REPORT.md`, test evidence và task spec.
+- [ ] Hành động: Quy định decision states: `needs_changes`, `accepted`, `accepted_with_followup`, `rejected`.
+- [ ] Hành động: Ghi final SHA, reviewer, evidence links và acceptance rationale vào report.
+- Đầu ra: Brain có cầu nối rõ giữa “gate pass” và “business accepted”.
+- DoD: Không harvest/final accept một Satellite nếu chưa có review decision và acceptance evidence tối thiểu.
+- Ưu tiên: P0.
+
+### 2.0.3 - File-based Evidence Archive [NEW - P0]
+
+- [ ] Hành động: Tạo `docs/audit/README.md` mô tả cấu trúc evidence local.
+- [ ] Hành động: Chuẩn hóa thư mục `docs/audit/gate-reports/`, `docs/audit/review-reports/`, `docs/audit/acceptance-reports/`, `docs/audit/security-reports/`.
+- [ ] Hành động: Quy định naming theo `<project>/<satellite>/<yyyy-mm-dd>-<short-sha>-<type>.md`.
+- [ ] Hành động: Liên kết evidence archive với `pull-code`, review workflow và acceptance report.
+- Đầu ra: Audit chạy được bằng file trước khi có MCP/Supabase bridge.
+- DoD: Mỗi delivery có thể truy ngược gate, review, acceptance và SHA bằng đường dẫn file ổn định.
+- Ưu tiên: P0.
+
+### 2.0.4 - Satellite Lifecycle State [NEW - P1]
+
+- [ ] Hành động: Chuẩn hóa trạng thái Satellite trong `active-hands.json`: `draft`, `provisioned`, `in_progress`, `submitted`, `failed_gate`, `needs_changes`, `accepted`, `harvested`, `closed`.
+- [ ] Hành động: Cập nhật workflow để chuyển trạng thái tại các mốc `new-hands`, `ls-gitpush`, review, `pull-code` và closeout.
+- [ ] Hành động: Ghi final SHA, last gate status, review report path và harvest target vào lifecycle metadata.
+- Đầu ra: Brain biết từng Satellite đang nằm ở mốc nào mà không cần đọc chat.
+- DoD: `ls-status` hiển thị lifecycle state và cảnh báo Satellite bị kẹt lâu ở một trạng thái.
+- Ưu tiên: P1.
+
+### 2.0.5 - Registry & Profile Drift Check [NEW - P1]
+
+- [ ] Hành động: Thêm kiểm tra asset trong `asset-index.json` tồn tại thật và không thoát workspace.
+- [ ] Hành động: Cảnh báo file quan trọng tồn tại nhưng chưa được đăng ký registry nếu thuộc vùng `.agents/`, `components/`, `assets/`, `docs/` hoặc `src/`.
+- [ ] Hành động: Kiểm tra `slicing-profile.json` có source/target hợp lệ, không trùng target và không chạm protected paths.
+- [ ] Hành động: Tích hợp cảnh báo drift vào `ls-status`; lỗi nghiêm trọng vẫn do `verify-gate` reject.
+- Đầu ra: Brain phát hiện lệch registry/profile trước khi giao hoặc harvest.
+- DoD: Drift rõ ràng được báo bằng CLI, không cần debug bằng mắt qua nhiều JSON.
+- Ưu tiên: P1.
+
+### 2.0.6 - Brain Review Queue & Workload Control [NEW - P0]
+
+- [ ] Hành động: Thiết kế `ls-status` cho bối cảnh một core dev phụ trách Brain quản lý khoảng 10 Hands/Satellite cùng lúc.
+- [ ] Hành động: Nhóm Satellite theo queue vận hành: `blocked`, `failed_gate`, `submitted`, `needs_changes`, `accepted_waiting_harvest`, `stale_sync`, `closed`.
+- [ ] Hành động: Mỗi entry trong `active-hands.json` phải có tối thiểu: `owner`, `module`, `status`, `repo`, `path`, `last_sha`, `last_gate_status`, `submitted_at`, `reviewed_at`.
+- [ ] Hành động: Cảnh báo nếu Satellite ở trạng thái `submitted` quá SLA review hoặc `in_progress` quá SLA delivery.
+- [ ] Hành động: Output phải chỉ ra “next action” cho Brain: review, request changes, harvest, resync hoặc close.
+- Đầu ra: Core dev có thể điều phối 10 Hands mà không cần spreadsheet hoặc chat thủ công làm nguồn trạng thái.
+- DoD: Một lệnh hiển thị được hàng chờ review, việc cần làm tiếp theo và các Satellite đang quá hạn.
+- Ưu tiên: P0.
 
 ### 2.1.0 - Hardening Security & Enforcement (Strategic Deferral from Phase 1)
 
 #### 2.1.1 - Thiết lập Security Automation Baseline
 - [ ] Hành động: Tạo `.agents/templates/THREAT_MODEL_TEMPLATE.md`.
-- [ ] Hành động: Tích hợp Dependency Scan và SAST baseline vào workflow.
-- Đầu ra: Quy trình rà quét rủi ro tự động.
-- DoD: Module rủi ro cao phải có bằng chứng quét bảo mật trước khi vào Gate.
+- [ ] Hành động: Tích hợp secret scan và dependency audit baseline trước; SAST đầy đủ chỉ bật sau khi review/evidence archive ổn định.
+- [ ] Hành động: Gắn security checklist vào Brain review cho module rủi ro cao.
+- Đầu ra: Quy trình rà quét rủi ro tối thiểu, đủ dùng cho delivery thật nhưng chưa over-engineer.
+- DoD: Module rủi ro cao có threat model hoặc security checklist, dependency audit cơ bản và bằng chứng scan trước acceptance.
 - Ưu tiên: P1.
 
 #### 2.1.2 - Thực thi Secret Management Protocol
@@ -335,10 +414,12 @@ Dựa trên hệ thống "Bộ khung thép" 3 tầng, vòng đời sản xuất 
 - Đầu ra: Review kỹ thuật có checklist thống nhất.
 
 #### 2.1.4 - Thiết lập delivery evidence archive
-- [x] Hành động: Tạo cấu trúc `docs/audit/gate-reports/` khi Brain harvest và tải `GATE_REPORT.md` artifact từ GitHub Actions.
-- [ ] Hành động: Tạo cấu trúc `docs/audit/review-reports/`.
-- [ ] Hành động: Tạo cấu trúc `docs/audit/security-reports/`.
-- [ ] Hành động: Quy định naming for evidence theo project/module/date.
+- [ ] Hành động: Gộp triển khai vào `2.0.3 - File-based Evidence Archive` để tránh hai chuẩn audit song song.
+- [ ] Hành động: Tạo cấu trúc gate/review/acceptance/security reports theo naming convention thống nhất.
+- [ ] Hành động: Liên kết evidence path vào review report, acceptance report và lifecycle state.
+- Đầu ra: Một chuẩn evidence duy nhất cho delivery.
+- DoD: Không còn report nằm rời rạc ngoài cấu trúc `docs/audit/`.
+- Ưu tiên: P0.
 
 #### 2.1.5 - Quy trình Phê duyệt và Giải ngân dựa trên Log
 - [ ] Hành động: Thiết lập cơ chế ghi nhận quyết định phê duyệt trong tài liệu dự án tại `docs/`, có liên kết đến `03_LOGS.md` của Hands/Satellite.
@@ -348,17 +429,20 @@ Dựa trên hệ thống "Bộ khung thép" 3 tầng, vòng đời sản xuất 
 ### 2.1.6 - Skill Activation & Integration (NEW)
 *Kích hoạt các bộ kỹ năng đã có sẵn trong .agents/skills/ vào quy trình sản xuất hàng loạt.*
 
-- [ ] Hành động: Tích hợp `prompt-engineering-patterns` vào quy trình Review của AI Agent để tối ưu hóa câu lệnh.
-- [ ] Hành động: Thiết lập kịch bản mẫu sử dụng `nodejs-backend-patterns` cho các module API.
-- [ ] Hành động: Áp dụng `python-design-patterns` vào các task xử lý dữ liệu/AI.
-- [ ] Hành động: Đồng bộ `react-state-management` và `tailwind-design-system` vào `ls-skill-ui-kit`.
-- Đầu ra: Tăng 200% năng suất nhờ tái sử dụng tài sản kỹ năng có sẵn.
-- DoD: Mỗi skill có ít nhất 1 dự án mẫu (Demo) áp dụng thành công.
+- [ ] Hành động: Chuẩn hóa README/usage/trigger context cho từng skill trước khi ép tích hợp vào workflow.
+- [ ] Hành động: Chọn tối đa 2 skill đầu tiên để pilot trong review hoặc delivery thật.
+- [ ] Hành động: Mỗi skill được kích hoạt phải có một acceptance example và risk note.
+- [ ] Hành động: Chỉ đồng bộ skill vào UI/API workflow khi đã có bằng chứng dùng thành công.
+- Đầu ra: Skill library được kích hoạt có kiểm soát, tránh nhồi năng lực chưa chứng minh vào quy trình chính.
+- DoD: Mỗi skill active có usage rõ, trigger rõ, ví dụ nghiệm thu rõ và không làm tăng nhiễu context cho Hands.
+- Ưu tiên: P1.
 
 
 #### 2.1.7 - Brain Review Support (Moved from Phase 1)
 - [ ] Hành động: Tạo Review Checklist chuẩn cho Brain để tối ưu hóa việc duyệt bài.
 - [ ] Hành động: Thiết lập các tiêu chuẩn phản hồi nhanh (Quick feedback loop) cho Hands.
+- [ ] Hành động: Đồng bộ mục này với `2.0.2 - Brain Review & Acceptance Workflow`; nếu trùng, gộp nội dung vào template review.
+- Ưu tiên: P0.
 
 
 
@@ -394,15 +478,29 @@ Dựa trên hệ thống "Bộ khung thép" 3 tầng, vòng đời sản xuất 
 #### 2.10.4 - Hoàn thiện Tooling CLI
 - [x] Hành động: Triển khai lệnh `new-hand-folder`.
 - [x] Hành động: Nâng cấp lệnh `init-satellite` và `push-rules`.
-- [x] Hành động: Dọn dẹp `package.json` và `ASSET_INDEX.md`.
+- [x] Hành động: Dọn dẹp `package.json` và `asset-index.json`.
+- [x] Hành động: Cho phép `asset-index.json` đi qua allowlist của `init-satellite` và `ls-gitpush` vì đây là registry bắt buộc của Satellite.
 - Kết quả: Bộ công cụ CLI sẵn sàng cho vận hành thực tế.
+
+#### 2.10.8 - Registry & Layer Policy Hardening
+- [x] Hành động: Tách chính sách phân tầng vào `layer-policy.mjs` để `gate`, `package-contract`, `sync`, `delivery` và test dùng chung một nguồn sự thật.
+- [x] Hành động: Tạo `asset-registry.mjs` để sinh metadata asset nhất quán và validate schema `asset-index.json`.
+- [x] Hành động: Đổi logic registry sang chỉ đăng ký asset đã tồn tại thật ở target sau khi sync/bootstrap.
+- [x] Hành động: Thêm negative tests cho registry thiếu/sai schema, duplicate asset id, path thoát root và Brain-only scripts trong Satellite.
+- [x] Hành động: Thêm test `newProject` với blueprint thật của Master để khóa tính tương thích end-to-end.
+- [x] Hành động: Thêm `silent` option cho `detectIdentity` để test không bị nhiễu output.
+- Kết quả: Registry, quyền hạn và tài sản theo layer được enforce bằng code và test thay vì chỉ dựa trên tài liệu.
+- DoD: `npm test` pass 18/18, `npm run self-test` pass, `asset-index.json` sai schema bị gate reject.
+- Ưu tiên: P0. [HOÀN THÀNH - REGISTRY HARDENED]
 
 ### 2.2.2 - Hoàn thiện bộ Communication & Review Plane Templates
 
 - [x] Hành động: Hoàn thiện `02_DECISION_LOGS_TEMPLATE.md` cho việc chốt logic.
 - [x] Hành động: Chuẩn hóa `03_LOGS_TEMPLATE.md` (Hành động) và `01_TASK_SPEC_TEMPLATE.md` (Đặc tả).
-- [ ] Hành động: Tạo bộ template giao tiếp: Task Ticket, Pull Request, Review Report và Acceptance Report.
+- [ ] Hành động: Tạo bộ template giao tiếp tối thiểu: Task Ticket, Review Report và Acceptance Report. Pull Request template đã có thì chỉ cập nhật khi thiếu trường evidence.
+- [ ] Hành động: Review Report và Acceptance Report phải đồng bộ với `2.0.2`.
 - **Tiêu chuẩn đạt chuẩn:** Mọi trao đổi và quyết định đều được văn bản hóa đồng bộ, không phụ thuộc chat rời.
+- Ưu tiên: P0.
 
 ### 2.2.3 - Hoàn thiện bộ Security & Strategic Alignment Templates
 
@@ -441,9 +539,10 @@ Dựa trên hệ thống "Bộ khung thép" 3 tầng, vòng đời sản xuất 
 
 - [ ] Hành động: Tạo command `npm run register-asset`.
 - [ ] Hành động: Input gồm asset name, type, path, description, owner, status.
-- [ ] Hành động: Cập nhật `ASSET_INDEX.md` hoặc tạo entry draft để Brain review.
+- [ ] Hành động: Không ghi thẳng `asset-index.json` nếu registry đang được sinh tự động; trước hết tạo draft/hardening proposal để Brain review.
+- [ ] Hành động: Sau khi review, asset mới phải được thêm vào Blueprint/Slicing Profile nguồn rồi để engine sinh lại registry.
 - Đầu ra: Việc thêm asset không bị quên đăng ký.
-- DoD: Asset mới luôn có dấu vết trong index.
+- DoD: Asset mới luôn có dấu vết trong hardening proposal, Blueprint nguồn và registry sinh lại.
 - Ưu tiên: P2.
 
 ### 2.5.5 - Tạo cấu trúc `.agents/skills`
@@ -501,7 +600,8 @@ Dựa trên hệ thống "Bộ khung thép" 3 tầng, vòng đời sản xuất 
 
 - [ ] Hành động: Tạo `docs/audit/README.md`.
 - [ ] Hành động: Tạo folder `docs/audit/logs/`.
-- [ ] Hành động: Quy định local Markdown/JSON audit trước khi có MCP/Supabase bridge.
+- [ ] Hành động: Gộp với `2.0.3 - File-based Evidence Archive`; không tạo chuẩn audit thứ hai nếu chưa cần.
+- [ ] Hành động: Quy định local Markdown trước, JSON schema chỉ dùng cho machine-readable audit sau khi format ổn định.
 - Đầu ra: Audit chạy được bằng file trước.
 - DoD: Không bị phụ thuộc hạ tầng ngoài để bắt đầu audit discipline.
 - Ưu tiên: P1.
@@ -546,41 +646,44 @@ Dựa trên hệ thống "Bộ khung thép" 3 tầng, vòng đời sản xuất 
 - [x] Hành động: Khởi tạo cấu trúc đào tạo tại `.LinkStrategy/Training/auditor/`.
 - [x] Hành động: Xây dựng 06 Module đào tạo Auditor (Research, Productivity, Forensics, Architecture, Infrastructure, Rainmaking).
 - [x] Hành động: Hoàn thiện Handbook Templates cho Auditor (Account Thesis, Pain Map, Problem Classification, Intervention Thesis).
-- [x] Hành động: Đăng ký tài sản đào tạo vào `ASSET_INDEX.md`.
+- [x] Hành động: Đăng ký tài sản đào tạo vào `asset-index.json`.
 - Đầu ra: Hệ thống đào tạo Auditor sẵn sàng thực thi.
 - DoD: Có đầy đủ curriculum và templates cho từng module đào tạo.
 - Ưu tiên: P0.
 
-### 2.10.0 - Advanced Production Automation (NEW)
+### 2.11.0 - Advanced Production Automation (Deferred Until Operating Spine Stabilizes)
 *Tự động hóa nâng cao để quản trị quy mô lớn và tối ưu hóa dòng chảy tri thức.*
 
-#### 2.10.1 - Công cụ Tổng quát hóa Tri thức (Knowledge Generalizer)
-- [ ] Hành động: Tạo script `npm run generalize-asset`.
-- [ ] Hành động: Hỗ trợ Brain tự động tìm và thay thế thông tin nhạy cảm (PII) hoặc logic đặc thù khách hàng bằng các placeholders/config.
+#### 2.11.1 - Công cụ Tổng quát hóa Tri thức (Knowledge Generalizer)
+- [ ] Hành động: Chưa tạo script tự động cho tới khi `KNOWLEDGE_PIECE_TEMPLATE.md`, privacy checklist và ít nhất 3 knowledge piece thủ công đạt chuẩn.
+- [ ] Hành động: Định nghĩa quy tắc tổng quát hóa thủ công: thay PII, customer-specific config, hardcoded business logic bằng placeholder có giải thích.
+- [ ] Hành động: Sau pilot thủ công, mới tạo script `npm run generalize-asset` nếu pattern đủ lặp lại.
 - Đầu ra: Tri thức dự án được "làm sạch" sẵn sàng đưa về Master.
-- DoD: Asset sau khi generalize không còn chứa dữ liệu khách hàng.
-- Ưu tiên: P1.
+- DoD: Asset sau khi generalize không còn chứa dữ liệu khách hàng và có bằng chứng anonymization.
+- Ưu tiên: P2.
 
-#### 2.10.2 - Bảng điều khiển Trạng thái Dự án (Project Health Dashboard)
-- [ ] Hành động: Tạo lệnh `npm run ls-status`.
-- [ ] Hành động: Hiển thị trạng thái tổng hợp từ `active-projects.json` và `active-hands.json` (SHA, CI status, Harvest lag).
-- Đầu ra: Tầm nhìn 360 độ về toàn bộ hệ thống vệ tinh.
-- DoD: Brain có thể biết dự án nào đang gặp rủi ro (CI Fail) chỉ bằng 1 lệnh.
-- Ưu tiên: P1.
+#### 2.11.2 - Bảng điều khiển Trạng thái Dự án (Project Health Dashboard)
+- [ ] Hành động: Triển khai theo `2.0.1 - Operational Visibility Spine`; mục này chỉ mở rộng thành dashboard sau khi CLI status ổn định.
+- [ ] Hành động: Bổ sung JSON output, batch view và CI provider integration khi cần vận hành nhiều repo thật.
+- Đầu ra: Tầm nhìn 360 độ về toàn bộ hệ thống vệ tinh sau khi status CLI đã chứng minh format.
+- DoD: Dashboard không tạo nguồn dữ liệu mới; chỉ trình bày lại dữ liệu từ registry, lifecycle và evidence archive.
+- Ưu tiên: P2.
 
-#### 2.10.3 - Giao thức Đóng dự án (Satellite Decommissioning)
+#### 2.11.3 - Giao thức Đóng dự án (Satellite Decommissioning)
 - [ ] Hành động: Tạo lệnh `npm run close-satellite`.
-- [ ] Hành động: Tự động hóa việc đóng Satellite repo, thu hồi quyền truy cập và lưu trữ bản backup cuối cùng.
+- [ ] Hành động: Trước khi revoke GitHub quyền, cập nhật lifecycle state thành `closed`, ghi final SHA, review report, acceptance report và harvest target.
+- [ ] Hành động: Tự động hóa việc đóng Satellite repo, thu hồi quyền truy cập và lưu trữ bản backup cuối cùng sau khi closeout file-based đã ổn định.
 - Đầu ra: Quy trình kết thúc dự án sạch sẽ và an toàn.
-- DoD: Repo vệ tinh được lưu trữ và mọi quyền truy cập được revoke sau khi dự án hoàn thành.
+- DoD: Repo vệ tinh được đánh dấu closed, evidence đầy đủ, backup rõ ràng và mọi quyền truy cập được revoke sau khi dự án hoàn thành.
 - Ưu tiên: P2.
 
-#### 2.10.4 - Cầu nối Tri thức Vector (Vector KB Bridge)
+#### 2.11.4 - Cầu nối Tri thức Vector (Vector KB Bridge)
 - [ ] Hành động: Phát triển công cụ `ls-tool-kb-bridge`.
-- [ ] Hành động: Tự động nạp các `Knowledge Piece` từ Master vào Vector Database (Pinecone/Chroma).
+- [ ] Hành động: Chỉ tự động nạp các `Knowledge Piece` đã qua anonymization và có acceptance metadata từ Master vào Vector Database.
+- [ ] Hành động: Không triển khai trước khi `2.6.3`, `2.8.5` và evidence archive có dữ liệu thật.
 - Đầu ra: Bộ não của Agent có khả năng tra cứu tri thức thực chiến bằng ngôn ngữ tự nhiên.
-- DoD: Agent có thể trả lời câu hỏi dựa trên các tri thức đã được harvest.
-- Ưu tiên: P2.
+- DoD: Agent có thể trả lời câu hỏi dựa trên tri thức đã harvest, đã anonymize và có nguồn evidence rõ.
+- Ưu tiên: P3.
 
 
 ### 2.9.1 - Chạy pilot trên project mẫu
@@ -596,7 +699,7 @@ Dựa trên hệ thống "Bộ khung thép" 3 tầng, vòng đời sản xuất 
 ### 2.9.2 - Hardening sau pilot
 
 - [ ] Hành động: Viết hardening proposal cho phần nào trong pilot có thể tái sử dụng.
-- [ ] Hành động: Đăng ký asset vào `ASSET_INDEX.md`.
+- [ ] Hành động: Đăng ký asset vào `asset-index.json`.
 - [ ] Hành động: Cập nhật rules/templates nếu phát hiện lỗ hổng.
 - Đầu ra: Pilot không chỉ demo mà tạo thêm asset.
 - DoD: Ít nhất 1 asset hoặc template được cải thiện sau pilot.

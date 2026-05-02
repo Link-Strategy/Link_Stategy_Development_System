@@ -8,8 +8,7 @@ Quy trình này tự động hóa việc khởi tạo một trạm điều phố
 
 1. **Nạp Ngữ cảnh (Context Loading)**:
    Đọc các file sau để nắm bắt quy tắc và danh mục tài sản:
-   - [GEMINI.md](file:///d:/Business%20Analyze/Link_Stategy_Development_System/GEMINI.md)
-   - [ASSET_INDEX.md](file:///d:/Business%20Analyze/Link_Stategy_Development_System/ASSET_INDEX.md)
+   - [active-projects.json](../../../active-projects.json)
 
 2. **Thực thi Khởi tạo (Execution)**:
    Agent không cần đọc file Master DNA thủ công. Chạy lệnh sau để tạo Project Workspace ngang hàng với Master. Thay thế `<NAME>` bằng tên dự án.

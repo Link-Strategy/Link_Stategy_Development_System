@@ -28,7 +28,7 @@ Quy tắc này định nghĩa **Phase 1 Technical Gate** cho Satellite delivery.
 1. Tự rà lại implementation so với Technical Contract và DoD trong Spec.
 2. Chạy `npm test`.
 3. Chạy `npm run verify-gate -- --project-path .`.
-4. Nếu PASS, nộp bài qua [ls-workflow-gitpush](file:///d:/Business%20Analyze/Link_Stategy_Development_System/.agents/workflows/hands/ls-workflow-gitpush.md).
+4. Nếu PASS, nộp bài qua [ls-workflow-gitpush](../../workflows/hands/ls-workflow-gitpush.md).
 
 ## 4. Cách thức Xác minh (Verification for Agent)
 
@@ -40,4 +40,4 @@ Agent phải tự kiểm tra trước khi nộp bài:
 ---
 **Status:** ACTIVE PHASE 1 TECHNICAL GATE RULE  
 **Priority:** LEVEL 1
-**See also:** [ls-workflow-gitpush](file:///d:/Business%20Analyze/Link_Stategy_Development_System/.agents/workflows/hands/ls-workflow-gitpush.md)
+**See also:** [ls-workflow-gitpush](../../workflows/hands/ls-workflow-gitpush.md)

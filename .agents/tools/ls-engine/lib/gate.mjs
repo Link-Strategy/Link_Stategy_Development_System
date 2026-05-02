@@ -1,5 +1,6 @@
 import path from "node:path";
-import { placeholderPatterns, requiredSpecMarkers } from "./constants.mjs";
+import { validateAssetRegistry } from "./asset-registry.mjs";
+import { placeholderPatterns, requiredSatellitePaths, requiredSpecMarkers } from "./constants.mjs";
 import { exists, fileSha256, listFiles, readJson, readText, relative, sha256, writeText } from "./fs-utils.mjs";
 import { run } from "./process-utils.mjs";
 import { validatePackageContract } from "./package-contract.mjs";
@@ -44,10 +45,11 @@ export function verifyGate(runtime, options = {}) {
   hashTree(runtime.resolvePath(".agents/tools/ls-engine"), path.join(projectPath, ".agents/tools/ls-engine"), "Node engine", pass, fail);
   hashMatch(runtime.resolvePath(".agents/templates/GEMINI_SATELLITE_TEMPLATE.md"), path.join(projectPath, "GEMINI.md"), "GEMINI.md", pass, fail);
 
-  for (const required of ["package.json", "README.md", "03_LOGS.md", "02_DECISION_LOGS.md", "01_TASK_SPEC.md", "src", "tests"]) {
+  for (const required of requiredSatellitePaths) {
     if (exists(path.join(projectPath, required))) pass(`${required} found.`);
     else fail(`${required} is missing.`);
   }
+  validateProjectAssetRegistry(projectPath, pass, fail);
   validatePackageContract(projectPath, pass, fail);
 
   const specPath = path.join(projectPath, "01_TASK_SPEC.md");
@@ -74,6 +76,24 @@ export function verifyGate(runtime, options = {}) {
   }
   console.log("STATUS: PASS");
   return true;
+}
+
+function validateProjectAssetRegistry(projectPath, pass, fail) {
+  const registryPath = path.join(projectPath, "asset-index.json");
+  if (!exists(registryPath)) return;
+  let registry;
+  try {
+    registry = readJson(registryPath);
+  } catch (error) {
+    fail(`asset-index.json is not valid JSON: ${error.message}`);
+    return;
+  }
+  const errors = validateAssetRegistry(registry, { rootPath: projectPath, requireGeneratedAt: false });
+  if (errors.length) {
+    for (const error of errors) fail(`asset-index.json: ${error}`);
+  } else {
+    pass("asset-index.json schema is valid.");
+  }
 }
 
 function hashMatch(source, target, label, pass, fail) {

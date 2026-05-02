@@ -58,4 +58,4 @@ Phase 1 sử dụng cổng kỹ thuật tự động:
 ---
 **Status:** ACTIVE MASTER RULE  
 **Priority:** LEVEL 1 (OVERRIDE ALL)
-**Ref:** [ls-workflow-gitpush](file:///d:/Business%20Analyze/Link_Stategy_Development_System/.agents/workflows/hands/ls-workflow-gitpush.md)
+**Ref:** [ls-workflow-gitpush](../workflows/hands/ls-workflow-gitpush.md)

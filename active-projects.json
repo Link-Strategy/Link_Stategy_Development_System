@@ -1,3 +1,92 @@
 {
-  "projects": []
+  "projects": [],
+  "blueprint": {
+    "description": "Cấu hình chuẩn để khởi tạo Brain Project Workspace từ Master",
+    "ensure_dirs": [
+      "assets",
+      "docs",
+      ".agents/rules/hands",
+      ".agents/workflows/hands",
+      ".agents/skills/hands",
+      ".agents/templates",
+      ".agents/tools/ls-engine",
+      ".github",
+      "components/ui"
+    ],
+    "sync": [
+      {
+        "id": "rules-brain",
+        "src": ".agents/rules/brain",
+        "dest": ".agents/rules",
+        "activate": true,
+        "purpose": "Brain-tier governance and project orchestration rules."
+      },
+      {
+        "id": "rules-hands",
+        "src": ".agents/rules/hands",
+        "dest": ".agents/rules/hands",
+        "purpose": "Hands-tier operational and delivery rules."
+      },
+      {
+        "id": "workflows-brain",
+        "src": ".agents/workflows/brain",
+        "dest": ".agents/workflows",
+        "purpose": "Brain-tier project management workflows."
+      },
+      {
+        "id": "workflows-hands",
+        "src": ".agents/workflows/hands",
+        "dest": ".agents/workflows/hands",
+        "purpose": "Hands-tier task execution workflows."
+      },
+      {
+        "id": "skills-brain",
+        "src": ".agents/skills/brain",
+        "dest": ".agents/skills",
+        "purpose": "Brain-tier specialized engine capabilities."
+      },
+      {
+        "id": "skills-hands",
+        "src": ".agents/skills/hands",
+        "dest": ".agents/skills/hands",
+        "purpose": "Hands-tier domain-specific skills."
+      },
+      {
+        "id": "ls-engine",
+        "src": ".agents/tools/ls-engine",
+        "dest": ".agents/tools/ls-engine",
+        "purpose": "Core Link Strategy platform engine."
+      },
+      {
+        "id": "templates",
+        "src": ".agents/templates",
+        "dest": ".agents/templates",
+        "purpose": "Standardized task and documentation templates."
+      },
+      {
+        "id": "ci-suite",
+        "src": ".github",
+        "dest": ".github",
+        "purpose": "GitHub Actions CI/CD and verification gates."
+      },
+      {
+        "id": "ui-kit",
+        "src": "components/ui",
+        "dest": "components/ui",
+        "purpose": "Standardized Link Strategy UI component library."
+      },
+      {
+        "id": "constitution",
+        "src": ".agents/templates/GEMINI_BRAIN_TEMPLATE.md",
+        "dest": "GEMINI.md",
+        "purpose": "Brain-tier project constitution."
+      },
+      {
+        "id": "env-example",
+        "src": ".agents/templates/ENV_EXAMPLE_TEMPLATE",
+        "dest": ".env.example",
+        "purpose": "Standard environment variable template."
+      }
+    ]
+  }
 }

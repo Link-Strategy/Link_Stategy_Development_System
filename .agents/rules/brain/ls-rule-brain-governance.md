@@ -13,7 +13,7 @@ Quy tắc này quy định quyền hạn và trách nhiệm của Brain Project 
 > Brain chịu trách nhiệm định nghĩa Spec (`01_TASK_SPEC.md`) và Acceptance Criteria. Tuyệt đối không giao việc bằng lời nói; mọi yêu cầu phải được văn bản hóa.
 
 - Brain có quyền phê duyệt hoặc từ chối delivery dựa trên kết quả `verify-gate`.
-- Brain điều phối việc đồng bộ tri thức (Rules, Skills) xuống Satellite qua [ls-workflow-push-rules](file:///d:/Business%20Analyze/Link_Stategy_Development_System/.agents/workflows/brain/ls-workflow-push-rules.md).
+- Brain điều phối việc đồng bộ tri thức (Rules, Skills) xuống Satellite qua [ls-workflow-push-rules](../../workflows/brain/ls-workflow-push-rules.md).
 
 ## 2. Quản lý Vệ tinh (Satellite Management)
 

@@ -8,9 +8,9 @@ Quy trình này dùng để cập nhật các quy tắc quản trị, công cụ
 
 1. **Nạp Ngữ cảnh (Context Loading)**:
    Đọc các file quản trị lõi:
-   - [GEMINI.md](file:///d:/Business%20Analyze/Link_Stategy_Development_System/GEMINI.md)
-   - [ASSET_INDEX.md](file:///d:/Business%20Analyze/Link_Stategy_Development_System/ASSET_INDEX.md)
-   - `active-hands.json` (để xác định danh sách vệ tinh)
+   - [GEMINI.md](../../../GEMINI.md)
+   - [asset-index.json](../../../asset-index.json)
+   - [active-hands.json](../../../active-hands.json) (để xác định danh sách vệ tinh)
 
 2. **Kiểm tra trước khi Sync (Dry Run)**:
    Xác định path của Satellite hoặc dùng `--all`.

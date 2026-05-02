@@ -21,9 +21,9 @@ Master Monorepo bảo vệ chủ quyền hệ thống của Link Strategy và l�
 | `docs/` | Tài liệu làm việc, blueprint, ghi chú audit, tham chiếu vận hành và hồ sơ cấp dự án. |
 | `projects/` | Workspace dự án client hoặc nội bộ được sinh và quản trị bởi production engine. |
 | `scripts/` | Script hạ tầng và workflow dùng chung cho tạo dự án, gate verification và đăng ký asset. |
-| `ASSET_INDEX.md` | Registry và điểm bootstrap để tìm rules, skills, tools, templates và shared assets. |
+| `asset-index.json` | Registry và điểm bootstrap Agent-Native để tìm rules, skills, tools, templates và shared assets. |
 | `GEMINI.md` | Luật thực thi đang hoạt động cho AI Agent trong workspace này. |
-| `backlog.md` | Backlog triển khai Base Platform. |
+| `backlog.md` | Source of truth cho development roadmap, phase status, DoD và acceptance evidence. |
 
 ## Tài Liệu Vận Hành
 
@@ -33,8 +33,9 @@ Master Monorepo bảo vệ chủ quyền hệ thống của Link Strategy và l�
 - [.LinkStrategy/01_SOP_LINK_STRATEGY.md](.LinkStrategy/01_SOP_LINK_STRATEGY.md)
 - [.LinkStrategy/02_FULL_SYSTEM_CONFIGURATION.md](.LinkStrategy/02_FULL_SYSTEM_CONFIGURATION.md)
 - [.LinkStrategy/03_HANDOVER_SPEC.md](.LinkStrategy/03_HANDOVER_SPEC.md)
-- [ASSET_INDEX.md](ASSET_INDEX.md)
+- [asset-index.json](asset-index.json)
 - [GEMINI.md](GEMINI.md)
+- [backlog.md](backlog.md)
 
 ## Kiến Trúc 4 Plane
 
@@ -60,7 +61,9 @@ Repository vận hành theo vòng lặp hardened của Link Strategy:
 Hệ thống Link Strategy đã hoàn thiện các cơ chế cốt lõi để vận hành tự động:
 
 - **3-Tier Hierarchy:** Chuẩn hóa Hiến pháp GEMINI và quyền hạn cho Master, Brain và Hands.
-- **DNA Transmission:** `ASSET_INDEX.md` được truyền thẳng từ Master xuống Brain để duy trì tính nhất quán tri thức.
+- **Agent-Native Registry:** `asset-index.json` được sinh tự động từ Blueprint, đảm bảo tính nhất quán tri thức 100%.
+- **Registry Schema Enforcement:** `verify-gate` bắt buộc `asset-index.json` tồn tại, hợp lệ schema, không trùng asset id và không chứa path thoát workspace.
+- **Layer Policy Module:** Quyền hạn, required paths, package scripts và protected paths được gom vào policy dùng chung để giảm lệch contract giữa Gate, Sync, Delivery và Init.
 - **Batch Push Rules:** Hỗ trợ đồng bộ hàng loạt DNA, Spec và Assets từ Brain xuống toàn bộ Satellite trong `active-hands.json` chỉ bằng một lệnh.
 - **Verification Gate:** Chốt chặn kỹ thuật tự động kiểm tra tính toàn vẹn của Rules và Engine tại local và CI.
 - **Spec-Driven Delivery:** Brain sở hữu và đẩy Spec xuống Hands; Hands thực thi và nộp bằng chứng qua Logs.
@@ -91,6 +94,7 @@ npm run new-project -- --project-name "<PROJECT_NAME>"
 
 **Cơ chế vận hành:**
 - **Automated Preflight:** Tự động kiểm tra Master Assets và Dependencies (`git`, `gh`).
+- **Blueprint-driven Creation:** Đọc `active-projects.json.blueprint` để quyết định thư mục cần tạo, asset cần đồng bộ và registry cần sinh.
 - **System Snapshot:** Hiển thị bối cảnh Master hiện tại ngay khi khởi động.
 - **Isolation Enforcement:** Chặn đứng việc tạo dự án bên trong Master folder.
 - **GitHub Automation:** Tự động tạo repo Private, kết nối remote và push initial commit.
@@ -114,7 +118,7 @@ Kết quả mặc định:
 |-- components/ui/
 |-- docs/
 |-- .env.example
-|-- ASSET_INDEX.md
+|-- asset-index.json
 |-- active-hands.json
 |-- GEMINI.md
 |-- package.json
@@ -130,6 +134,7 @@ Gói Brain Project được sinh ra để Brain có thể quản lý dự án đ
 | `GEMINI.md` | Hiến pháp vận hành riêng cho Brain Project. |
 | `docs/` | Kho tài liệu dự án do Brain tự do xác định cấu trúc, tên file và nội dung. Không sinh template mặc định. |
 | `.env.example` | Mẫu biến môi trường không chứa secret thật. |
+| `asset-index.json` | Generated JSON asset registry của Brain Project; chỉ ghi asset tồn tại thật sau bootstrap. |
 | `README.md` | Hướng dẫn vận hành nhanh cho Brain Project. |
 | `package.json` | Command surface cho Brain: `new-hands`, `push-rules`, `pull-code`, `verify-gate`, `self-test`. |
 | `active-hands.json` | Registry theo dõi các Hands/Satellite repo của project. |
@@ -175,7 +180,7 @@ services/<NAME>/
 |-- 01_TASK_SPEC.md
 |-- 02_DECISION_LOGS.md
 |-- 03_LOGS.md
-|-- ASSET_INDEX.md
+|-- asset-index.json
 |-- GEMINI.md
 |-- package.json
 |-- slicing-profile.json
@@ -196,7 +201,7 @@ Gói Hands/Satellite được sinh ra để Hands có thể thi công, kiểm ch
 | `package.json` | Chỉ expose lệnh Hands được phép dùng: `verify-gate` và `ls-gitpush`. |
 | `.env.example` | Mẫu cấu hình môi trường, không chứa secret thật. |
 | `.gitignore` | Chặn secret, dependency/build artifacts và report sinh tự động. |
-| `ASSET_INDEX.md` | Registry tài sản đã được harden cho tầng Hands/Satellite. |
+| `asset-index.json` | Generated JSON asset registry cho tầng Hands/Satellite; được `verify-gate` validate trước khi delivery. |
 | `slicing-profile.json` | Profile điều khiển push/sync/harvest cho Satellite. |
 | `.agents/rules/` | Luật thi công bắt buộc được Brain/Master đồng bộ xuống. |
 | `.agents/workflows/` | Workflow nộp bài, gate và sync rules. |
@@ -216,10 +221,21 @@ Sau khi `new-hands` chạy xong, workflow sẽ:
 3. Tạo `src/` và `tests/` bên trong Hands/Satellite repo nếu chưa có.
 4. Đồng bộ governance/runtime từ Brain Project xuống Satellite.
 5. Validate layout bắt buộc.
-6. Commit initial governance.
-7. Tạo hoặc dùng GitHub remote `origin`.
-8. Push branch `main`.
-9. Ghi thông tin Hands vào `active-hands.json` của Brain Project.
+6. Validate và stage `asset-index.json` như registry bắt buộc của Satellite.
+7. Commit initial governance.
+8. Tạo hoặc dùng GitHub remote `origin`.
+9. Push branch `main`.
+10. Ghi thông tin Hands vào `active-hands.json` của Brain Project.
+
+## Registry & Gate Contract
+
+`asset-index.json` là registry JSON chính thức thay thế mọi asset index dạng Markdown cũ. Engine sinh registry từ Blueprint/Slicing Profile, chỉ đăng ký asset đã tồn tại thật tại target, và `verify-gate` sẽ reject khi:
+
+- thiếu `asset-index.json`;
+- `identity.name`, `identity.tier`, `identity.version` hoặc asset field bắt buộc bị thiếu;
+- `identity.tier` không thuộc `master`, `brain`, `hands`;
+- asset id bị trùng;
+- asset path là absolute path hoặc thoát khỏi workspace.
 
 |   `-- <MODULE_NAME>/
 |       `-- README.md
@@ -234,3 +250,5 @@ Module phải đủ nhỏ để có thể thi công, review và thay Hands độ
 ## Trạng Thái Platform Hiện Tại
 
 Repo hiện đã có cấu trúc nền, tài liệu quản trị ban đầu và Node.js automation cho project factory, satellite onboarding, gate verification, rule sync, code harvest và safe delivery. Các phần chuẩn hóa sâu hơn vẫn tiếp tục được theo dõi trong [backlog.md](backlog.md).
+
+Phase 1 đã được đóng bằng closeout pack tại [docs/audit/phase-1-closeout.md](docs/audit/phase-1-closeout.md). Từ thời điểm này, mọi thay đổi phát triển mới phải cập nhật `backlog.md` trước hoặc cùng lúc với code/docs liên quan để giữ backlog là source of truth.

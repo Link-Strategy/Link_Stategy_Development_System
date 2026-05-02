@@ -17,12 +17,12 @@ Chào Agent, đây là bản Hiến pháp thực thi cao nhất tại Workspace 
 
 Để đảm bảo context luôn đầy đủ và không sai sót, Agent **PHẢI** thực hiện bootstrap theo thứ tự:
 
-1. Đọc file `ASSET_INDEX.md` để nắm danh mục tài sản hiện có.
+1. Đọc file `asset-index.json` để nắm danh mục tài sản hiện có.
 2. Đọc các Rule Master tại `.agents/rules/` và các phôi tại `brain/`, `hands/`.
 3. Đọc các Workflow tại `.agents/workflows/master/`, `brain/`, `hands/`.
 4. Đọc các Skill tại `.agents/skills/brain/`, `hands/`.
 4. Kiểm tra tài liệu liên quan trong `docs/` và registry trước khi thay đổi cấu trúc hoặc workflow.
-5. Tuyệt đối không tự viết lại logic nếu đã có Asset tương ứng trong `ASSET_INDEX.md`.
+5. Tuyệt đối không tự viết lại logic nếu đã có Asset tương ứng trong `asset-index.json`.
 
 ---
 
@@ -41,7 +41,7 @@ Chào Agent, đây là bản Hiến pháp thực thi cao nhất tại Workspace 
 
 1. **Documentation:** Duy trì tài liệu vận hành trong `docs/` hoặc tài liệu cụ thể của project/Satellite; root workspace không dùng `03_LOGS.md`.
 2. **Hardening:** Chủ động đề xuất bóc tách các đoạn code/module có khả năng tái sử dụng để đưa vào kho `.agents/`.
-3. **Index Registry:** Mọi asset mới hoặc thay đổi trạng thái phải được cập nhật ngay vào `ASSET_INDEX.md`.
+3. **Index Registry:** Mọi asset mới hoặc thay đổi trạng thái phải được cập nhật ngay vào `asset-index.json`.
 
 ---
 

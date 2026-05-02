@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
-import { copyAndHardenAssetIndex, copyDir, copyDirWithRuleActivation, copyFile, copyIfExists, ensureDir, exists, readJson, toPosix, writeText } from "./fs-utils.mjs";
+import { assetFromMapping, validateAssetRegistry } from "./asset-registry.mjs";
+import { copyDir, copyDirWithRuleActivation, copyFile, copyIfExists, ensureDir, exists, readJson, toPosix, writeText } from "./fs-utils.mjs";
 import { mergeBrainPackageContract } from "./package-contract.mjs";
 import { run, runOut } from "./process-utils.mjs";
 
@@ -9,6 +10,7 @@ export async function newProject(runtime) {
   const basePath = runtime.args["base-path"] || process.env.LS_BASE_PATH || "..";
   const projectDirName = projectName;
   const projectPath = runtime.resolvePath(basePath, projectDirName);
+  const targetTier = "brain";
   const templateDir = runtime.resolvePath(".agents/templates");
 
   printSystemSnapshot(runtime);
@@ -21,43 +23,71 @@ export async function newProject(runtime) {
     return;
   }
 
+  const registryPath = runtime.resolvePath("active-projects.json");
+  if (!exists(registryPath)) {
+    throw new Error("[PREFLIGHT FAIL] active-projects.json missing. Cannot read blueprint.");
+  }
+
+  const registry = readJson(registryPath);
+  const blueprint = registry.blueprint;
+
+  if (!blueprint) {
+    throw new Error("[PREFLIGHT FAIL] No 'blueprint' found in active-projects.json. Cannot initialize project.");
+  }
+
   try {
-    ensureDir(path.join(projectPath, "assets"));
-  ensureDir(path.join(projectPath, "docs"));
-  ensureDir(path.join(projectPath, ".agents/rules"));
-  ensureDir(path.join(projectPath, ".agents/workflows"));
-  ensureDir(path.join(projectPath, ".agents/templates"));
-  ensureDir(path.join(projectPath, ".agents/tools/ls-engine"));
-  ensureDir(path.join(projectPath, ".github"));
-  ensureDir(path.join(projectPath, "components/ui"));
+    // 1. Ensure required directories
+    for (const dir of (blueprint.ensure_dirs || [])) {
+      ensureDir(path.join(projectPath, dir));
+    }
 
-  ensureDir(path.join(projectPath, ".agents/rules/hands"));
-  // Master -> Brain: Flatten and ACTIVATE brain rules
-  copyDirWithRuleActivation(runtime.resolvePath(".agents/rules/brain"), path.join(projectPath, ".agents/rules"), true);
-  // Master -> Brain: Keep hands rules as TEMPLATES (on_demand)
-  copyDirWithRuleActivation(runtime.resolvePath(".agents/rules/hands"), path.join(projectPath, ".agents/rules/hands"), false);
-  // Workflows: Flatten brain workflows, keep hands workflows in subfolder
-  ensureDir(path.join(projectPath, ".agents/workflows/hands"));
-  copyDir(runtime.resolvePath(".agents/workflows/brain"), path.join(projectPath, ".agents/workflows"));
-  copyDir(runtime.resolvePath(".agents/workflows/hands"), path.join(projectPath, ".agents/workflows/hands"));
+    // 2. Process all Sync blocks (Directories and Files)
+    const syncs = blueprint.sync || [];
+    for (const item of syncs) {
+      const src = runtime.resolvePath(item.src);
+      const dest = path.join(projectPath, item.dest);
+      
+      if (!exists(src)) continue;
 
-  // Skills: Flatten brain skills, keep hands skills in subfolder
-  ensureDir(path.join(projectPath, ".agents/skills/hands"));
-  copyDir(runtime.resolvePath(".agents/skills/brain"), path.join(projectPath, ".agents/skills"));
-  copyDir(runtime.resolvePath(".agents/skills/hands"), path.join(projectPath, ".agents/skills/hands"));
+      const stat = fs.statSync(src);
+      if (stat.isDirectory()) {
+        if (item.activate !== undefined) {
+          copyDirWithRuleActivation(src, dest, item.activate);
+        } else {
+          copyDir(src, dest);
+        }
+      } else {
+        // File mapping
+        if (item.activate) {
+          let content = fs.readFileSync(src, "utf8");
+          // Replace placeholders
+          content = content.replace(/\[PROJECT_NAME\]/g, projectName);
+          content = content.replace(/\[PROJECT_ID\]/g, projectName.toLowerCase());
+          
+          // Trigger activation
+          content = content.replace(/trigger:\s*["']?on_demand["']?/g, 'trigger: always_on');
+          
+          writeText(dest, content);
+        } else if (path.basename(item.dest) === ".env.example") {
+          copyIfExists(src, dest);
+        } else {
+          copyFile(src, dest);
+        }
+      }
+    }
 
-  copyDir(runtime.resolvePath(".agents/tools/ls-engine"), path.join(projectPath, ".agents/tools/ls-engine"));
-  copyDir(runtime.resolvePath(".agents/templates"), path.join(projectPath, ".agents/templates"));
-  copyDir(runtime.resolvePath(".github"), path.join(projectPath, ".github"));
-  copyDir(runtime.resolvePath("components/ui"), path.join(projectPath, "components/ui"));
-  
-  mergeBrainPackageContract(path.join(projectPath, "package.json"), { name: projectDirName.toLowerCase() });
+    // 3. Initialize Satellite Registry for Brain Tier
+    if (targetTier === "brain") {
+      const activeHandsPath = path.join(projectPath, "active-hands.json");
+      if (!exists(activeHandsPath)) {
+        writeText(activeHandsPath, JSON.stringify({ hands: [] }, null, 2) + "\n");
+      }
+    }
 
-  copyFile(path.join(templateDir, "GEMINI_BRAIN_TEMPLATE.md"), path.join(projectPath, "GEMINI.md"));
-  copyAndHardenAssetIndex(runtime.resolvePath("ASSET_INDEX.md"), path.join(projectPath, "ASSET_INDEX.md"), "brain");
-  copyIfExists(path.join(templateDir, "ENV_EXAMPLE_TEMPLATE"), path.join(projectPath, ".env.example"));
+    // 4. Generate Project Registry (Agent-Native index)
+    generateProjectRegistry(projectPath, projectDirName, blueprint, targetTier);
 
-  writeText(path.join(projectPath, "active-hands.json"), JSON.stringify({ hands: [] }, null, 2) + "\n");
+    mergeBrainPackageContract(path.join(projectPath, "package.json"), { name: projectDirName.toLowerCase() });
 
   const readmeContent = `# BRAIN PROJECT: ${projectDirName}
 
@@ -81,7 +111,7 @@ export async function newProject(runtime) {
 
   let remoteUrl = initializeProjectRemote(runtime, projectPath, projectDirName);
 
-  updateRegistry(runtime, projectDirName, toPosix(path.relative(runtime.root, projectPath)), remoteUrl, `Automatically generated Brain Project.`);
+  updateRegistry(runtime, projectDirName, projectPath, remoteUrl, `Automatically generated Brain Project.`);
   printVerificationReport(projectPath, projectDirName, remoteUrl);
   } catch (error) {
     console.error(`[FATAL ERROR] Project initialization failed: ${error.message}`);
@@ -122,7 +152,7 @@ function printSystemSnapshot(runtime) {
 }
 
 function validateEnvironment(runtime) {
-  const required = ["ASSET_INDEX.md", "active-projects.json", ".agents/rules/ls-rule-master-governance.md"];
+  const required = ["asset-index.json", "active-projects.json", ".agents/rules/ls-rule-master-governance.md"];
   for (const file of required) {
     if (!exists(runtime.resolvePath(file))) {
       throw new Error(`[PREFLIGHT FAIL] Missing master asset: ${file}. Ensure you are running in the Master Workspace.`);
@@ -152,6 +182,43 @@ function validateIsolation(runtime, projectPath) {
   if (absoluteProject.startsWith(absoluteMaster) && absoluteProject !== absoluteMaster) {
     throw new Error(`[ISOLATION VIOLATION] Cannot create project workspace inside the Master Workspace directory.\nTarget: ${absoluteProject}\nMaster: ${absoluteMaster}\nUse '--base-path ..' to create it as a sibling.`);
   }
+}
+
+function generateProjectRegistry(projectPath, projectName, blueprint, targetTier) {
+  const assets = [];
+
+  // Transform all Sync blocks into assets
+  const syncs = blueprint.sync || [];
+  for (const item of syncs) {
+    const dest = item.dest || item.target;
+    if (!dest || !exists(path.join(projectPath, dest))) continue;
+    assets.push(assetFromMapping(item, { fallbackPurpose: "Synchronized project assets." }));
+  }
+
+  // Add Brain-specific assets
+  if (targetTier === "brain") {
+    assets.push({
+      id: "active-hands",
+      type: "Dataset",
+      path: "active-hands.json",
+      purpose: "Registry of managed Satellite repos."
+    });
+  }
+
+  const registry = {
+    identity: {
+      name: `${projectName} Registry`,
+      tier: targetTier,
+      version: "1.0.0",
+      generated_at: new Date().toISOString()
+    },
+    assets
+  };
+
+  const errors = validateAssetRegistry(registry, { rootPath: projectPath, requireGeneratedAt: true });
+  if (errors.length) throw new Error(`Invalid generated project registry:\n${errors.map((error) => ` - ${error}`).join("\n")}`);
+
+  writeText(path.join(projectPath, "asset-index.json"), JSON.stringify(registry, null, 2) + "\n");
 }
 
 function printVerificationReport(projectPath, projectName, remoteUrl) {

@@ -1,0 +1,268 @@
+{
+  "identity": {
+    "name": "Link Strategy - MASTER Registry",
+    "tier": "master",
+    "version": "2.1.0",
+    "updated_at": "2026-05-02T10:57:00Z"
+  },
+  "assets": [
+    {
+      "id": "master-agent-governance",
+      "type": "Rule",
+      "path": "GEMINI.md",
+      "purpose": "Operating rules for AI agent behavior and discipline."
+    },
+    {
+      "id": "base-platform-backlog",
+      "type": "Project",
+      "path": "backlog.md",
+      "purpose": "Tracks implementation work and roadmap."
+    },
+    {
+      "id": "antigravity-technical-spec",
+      "type": "Constitution",
+      "path": ".agents/README.md",
+      "purpose": "Technical spec for directory structure and rules."
+    },
+    {
+      "id": "ls-sync-protocol",
+      "type": "Constitution",
+      "path": ".LinkStrategy/04_SYNC_PROTOCOL.md",
+      "purpose": "Protocol for Slicing, Sync, and Harvesting."
+    },
+    {
+      "id": "ls-identity-detection",
+      "type": "Tool",
+      "path": ".agents/tools/ls-engine/lib/identity.mjs",
+      "purpose": "Automated tier-based identity detection."
+    },
+    {
+      "id": "ls-rule-master-governance",
+      "type": "Rule",
+      "path": ".agents/rules/ls-rule-master-governance.md",
+      "purpose": "Master rule for Brain sovereignty and CI enforcement."
+    },
+    {
+      "id": "ls-rule-brain-governance",
+      "type": "Rule",
+      "path": ".agents/rules/brain/ls-rule-brain-governance.md",
+      "purpose": "Governance for Brain project coordination."
+    },
+    {
+      "id": "ls-rule-gate-acceptance",
+      "type": "Rule",
+      "path": ".agents/rules/hands/ls-rule-gate-acceptance.md",
+      "purpose": "Technical gate criteria for Satellite delivery."
+    },
+    {
+      "id": "ls-rule-handover-protocol",
+      "type": "Rule",
+      "path": ".agents/rules/brain/ls-rule-handover-protocol.md",
+      "purpose": "Defines handover package and DoD for modules."
+    },
+    {
+      "id": "ls-rule-secret-management",
+      "type": "Rule",
+      "path": ".agents/rules/hands/ls-rule-secret-management.md",
+      "purpose": "Secret handling and key revocation policy."
+    },
+    {
+      "id": "ls-rule-conventional-commits",
+      "type": "Rule",
+      "path": ".agents/rules/hands/ls-rule-conventional-commits.md",
+      "purpose": "Standardized Git history for replaceability."
+    },
+    {
+      "id": "ls-rule-handover-guide",
+      "type": "Rule",
+      "path": ".agents/rules/hands/ls-rule-handover-guide-for-hands.md",
+      "purpose": "Guide for Hands handling Specs and Figma."
+    },
+    {
+      "id": "ls-workflow-gitpush",
+      "type": "Workflow",
+      "path": ".agents/workflows/hands/ls-workflow-gitpush.md",
+      "purpose": "Secure delivery workflow for Hands."
+    },
+    {
+      "id": "ls-workflow-new-project",
+      "type": "Workflow",
+      "path": ".agents/workflows/master/ls-workflow-new-project.md",
+      "purpose": "Step-by-step for creating Brain Workspaces."
+    },
+    {
+      "id": "ls-workflow-init-satellite",
+      "type": "Workflow",
+      "path": ".agents/workflows/brain/ls-workflow-init-satellite.md",
+      "purpose": "Provisioning a Satellite repo from local."
+    },
+    {
+      "id": "ls-workflow-new-hand-folder",
+      "type": "Workflow",
+      "path": ".agents/workflows/brain/ls-workflow-new-hand-folder.md",
+      "purpose": "Initializing and drafting task folders."
+    },
+    {
+      "id": "ls-workflow-push-rules",
+      "type": "Workflow",
+      "path": ".agents/workflows/brain/ls-workflow-push-rules.md",
+      "purpose": "Syncing DNA/Shell assets to Satellites."
+    },
+    {
+      "id": "ls-workflow-harvest-code",
+      "type": "Workflow",
+      "path": ".agents/workflows/brain/ls-workflow-harvest-code.md",
+      "purpose": "CI-gated harvest of verified code to Brain."
+    },
+    {
+      "id": "task-spec-template",
+      "type": "Template",
+      "path": ".agents/templates/01_TASK_SPEC_TEMPLATE.md",
+      "purpose": "Base structure for task/module spec."
+    },
+    {
+      "id": "decision-logs-template",
+      "type": "Template",
+      "path": ".agents/templates/02_DECISION_LOGS_TEMPLATE.md",
+      "purpose": "Decision ledger for logic alignment."
+    },
+    {
+      "id": "progress-logs-template",
+      "type": "Template",
+      "path": ".agents/templates/03_LOGS_TEMPLATE.md",
+      "purpose": "Action log format for daily execution."
+    },
+    {
+      "id": "hardening-proposal-template",
+      "type": "Template",
+      "path": ".agents/templates/HARDENING_PROPOSAL_TEMPLATE.md",
+      "purpose": "Reusable logic extraction plan."
+    },
+    {
+      "id": "brain-constitution-template",
+      "type": "Template",
+      "path": ".agents/templates/GEMINI_BRAIN_TEMPLATE.md",
+      "purpose": "Standard constitution for Brain Workspaces."
+    },
+    {
+      "id": "gate-scorecard-template",
+      "type": "Template",
+      "path": ".agents/templates/GATE_SCORECARD_TEMPLATE.md",
+      "purpose": "Phase 2+ Brain acceptance scorecard."
+    },
+    {
+      "id": "verify-gate-action",
+      "type": "Template",
+      "path": ".github/workflows/link-strategy-ci.yml",
+      "purpose": "Unified CI Suite for tier-aware verification."
+    },
+    {
+      "id": "branch-protection-checklist",
+      "type": "Template",
+      "path": ".agents/templates/BRANCH_PROTECTION_CHECKLIST.md",
+      "purpose": "GitHub hardening guidance."
+    },
+    {
+      "id": "codeowners-policy",
+      "type": "Template",
+      "path": ".github/CODEOWNERS",
+      "purpose": "Repo ownership and review authority."
+    },
+    {
+      "id": "env-example-template",
+      "type": "Template",
+      "path": ".agents/templates/ENV_EXAMPLE_TEMPLATE",
+      "purpose": "Standard environment variable example."
+    },
+    {
+      "id": "ls-skill-engine-ops",
+      "type": "Skill",
+      "path": ".agents/skills/brain/ls-skill-engine-ops/",
+      "purpose": "Core engine management capability."
+    },
+    {
+      "id": "nodejs-backend-patterns",
+      "type": "Skill",
+      "path": ".agents/skills/hands/nodejs-backend-patterns/",
+      "purpose": "Production-ready Node.js patterns."
+    },
+    {
+      "id": "prompt-engineering",
+      "type": "Skill",
+      "path": ".agents/skills/hands/prompt-engineering-patterns/",
+      "purpose": "LLM performance optimization techniques."
+    },
+    {
+      "id": "python-design-patterns",
+      "type": "Skill",
+      "path": ".agents/skills/hands/python-design-patterns/",
+      "purpose": "Clean and modular Python patterns."
+    },
+    {
+      "id": "react-state-management",
+      "type": "Skill",
+      "path": ".agents/skills/hands/react-state-management/",
+      "purpose": "Modern React state patterns."
+    },
+    {
+      "id": "tailwind-design-system",
+      "type": "Skill",
+      "path": ".agents/skills/hands/tailwind-design-system/",
+      "purpose": "Scalable UI design with Tailwind v4."
+    },
+    {
+      "id": "ls-engine-cli",
+      "type": "Tool",
+      "path": ".agents/tools/ls-engine/cli.mjs",
+      "purpose": "CLI source of truth for platform ops."
+    },
+    {
+      "id": "new-project",
+      "type": "Script",
+      "path": "npm run new-project",
+      "purpose": "Generates Brain Workspaces from Master."
+    },
+    {
+      "id": "new-hand-folder",
+      "type": "Script",
+      "path": "npm run new-hand-folder",
+      "purpose": "Initializes local task packaging."
+    },
+    {
+      "id": "init-satellite",
+      "type": "Script",
+      "path": "npm run init-satellite",
+      "purpose": "Provisions Cloud infrastructure for task."
+    },
+    {
+      "id": "verify-gate",
+      "type": "Script",
+      "path": "npm run verify-gate",
+      "purpose": "Local/CI technical gate verification."
+    },
+    {
+      "id": "push-rules",
+      "type": "Script",
+      "path": "npm run push-rules",
+      "purpose": "DNA/Shell asset synchronization."
+    },
+    {
+      "id": "pull-code",
+      "type": "Script",
+      "path": "npm run pull-code",
+      "purpose": "CI-gated code harvesting into Brain."
+    },
+    {
+      "id": "ls-gitpush",
+      "type": "Script",
+      "path": "npm run ls-gitpush",
+      "purpose": "Agent-led secure delivery to main."
+    },
+    {
+      "id": "active-projects",
+      "type": "Dataset",
+      "path": "active-projects.json",
+      "purpose": "Registry of managed Brain Workspaces."
+    }
+  ]
+}

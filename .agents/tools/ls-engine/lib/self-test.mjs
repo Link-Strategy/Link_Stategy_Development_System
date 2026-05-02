@@ -147,8 +147,9 @@ function seedSelfTestBrain(runtime, targetRoot) {
   copyDir(runtime.resolvePath(".agents/tools/ls-engine"), path.join(targetRoot, ".agents/tools/ls-engine"));
   copyDir(runtime.resolvePath(".github"), path.join(targetRoot, ".github"));
   copyFile(runtime.resolvePath("package.json"), path.join(targetRoot, "package.json"));
-  copyFile(runtime.resolvePath("ASSET_INDEX.md"), path.join(targetRoot, "ASSET_INDEX.md"));
-  writeText(path.join(targetRoot, "active-projects.json"), `${JSON.stringify({ projects: [] }, null, 2)}\n`);
+  copyFile(runtime.resolvePath("asset-index.json"), path.join(targetRoot, "asset-index.json"));
+  const masterRegistry = readJson(runtime.resolvePath("active-projects.json"));
+  writeText(path.join(targetRoot, "active-projects.json"), `${JSON.stringify({ projects: [], blueprint: masterRegistry.blueprint }, null, 2)}\n`);
 }
 
 function hardenSelfTestProject(projectPath) {

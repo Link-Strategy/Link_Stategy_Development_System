@@ -24,7 +24,7 @@ description: "Mô tả vai trò của Rule"
 
 ## 3. Hierarchy (Thứ tự ưu tiên nạp Context)
 1. **`GEMINI.md`** (Root): Hiến pháp vận hành tối cao.
-2. **`ASSET_INDEX.md`**: Bản đồ tài sản đã được hóa cứng (Hardened) theo tầng.
+2. **`asset-index.json`**: Bản đồ tài sản Agent-Native được sinh tự động theo Blueprint.
 3. **`.agents/rules/*.md`**: Quy tắc quản trị cấp độ dự án/vệ tinh.
 4. **`.agents/workflows/` & `.agents/skills/`**: Quy trình và kỹ năng bổ trợ.
 

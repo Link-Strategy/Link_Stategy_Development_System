@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
+import { assetFromMapping, validateAssetRegistry } from "./asset-registry.mjs";
 
 export function toPosix(value) {
   return value.split(path.sep).join("/");
@@ -100,33 +101,30 @@ export function copyDirWithRuleActivation(src, dest, activate = true) {
   }
 }
 
-export function copyAndHardenAssetIndex(src, dest, targetTier) {
-  if (!exists(src)) return;
-  let content = readText(src);
-  const lines = content.split("\n");
+export function generateTierAssetRegistry(src, dest, targetTier, mappings = [], projectName = "Satellite") {
+  const assets = [];
+  const registryRoot = path.dirname(dest);
 
-  // Phase 1: Filter rows belonging to higher tiers
-  const filteredLines = lines.filter(line => {
-    // Both Brain and Hands projects exclude Master assets
-    if (line.includes("/master/")) return false;
-    // Hands projects also exclude Brain assets
-    if (targetTier === "hands" && line.includes("/brain/")) return false;
-    return true;
-  });
-
-  let updated = filteredLines.join("\n");
-
-  // Phase 2: Remap paths to flattened structure
-  if (targetTier === "brain") {
-    updated = updated.replace(/\.agents\/rules\/brain\//g, ".agents/rules/");
-    updated = updated.replace(/\.agents\/workflows\/brain\//g, ".agents/workflows/");
-    updated = updated.replace(/\.agents\/skills\/brain\//g, ".agents/skills/");
-  } else if (targetTier === "hands") {
-    // Note: Hands targets .agents/rules/ root because of flattening
-    updated = updated.replace(/\.agents\/rules\/hands\//g, ".agents/rules/");
-    updated = updated.replace(/\.agents\/workflows\/hands\//g, ".agents/workflows/");
-    updated = updated.replace(/\.agents\/skills\/hands\//g, ".agents/skills/");
+  for (const m of mappings) {
+    const target = m.target || m.dest;
+    if (!target) continue;
+    const targetPath = path.join(registryRoot, target);
+    if (path.resolve(targetPath) !== path.resolve(dest) && !exists(targetPath)) continue;
+    assets.push(assetFromMapping(m, { fallbackPurpose: "Synchronized satellite assets." }));
   }
 
-  writeText(dest, updated);
+  const registry = {
+    identity: {
+      name: `${projectName} Registry`,
+      tier: targetTier,
+      version: "1.1.0",
+      generated_at: new Date().toISOString()
+    },
+    assets
+  };
+
+  const errors = validateAssetRegistry(registry, { rootPath: registryRoot, requireGeneratedAt: true });
+  if (errors.length) throw new Error(`Invalid generated asset registry:\n${errors.map((error) => ` - ${error}`).join("\n")}`);
+
+  fs.writeFileSync(dest, JSON.stringify(registry, null, 2) + "\n", "utf8");
 }

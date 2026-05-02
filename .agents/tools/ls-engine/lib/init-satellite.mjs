@@ -135,6 +135,7 @@ function isInitialSatelliteAllowed(file) {
     normalized === "01_TASK_SPEC.md" ||
     normalized === "02_DECISION_LOGS.md" ||
     normalized === "03_LOGS.md" ||
+    normalized === "asset-index.json" ||
     normalized === "slicing-profile.json" ||
     normalized === "package.json" ||
     normalized === "package-lock.json" ||

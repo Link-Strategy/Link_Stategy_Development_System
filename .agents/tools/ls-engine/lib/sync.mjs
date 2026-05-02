@@ -2,7 +2,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { harvestForbiddenTargets, harvestProtectedPaths } from "./constants.mjs";
-import { copyAndHardenAssetIndex, copyDir, copyDirWithRuleActivation, copyFile, copyFileWithRuleActivation, ensureDir, exists, listFiles, readJson, removeContents, toPosix } from "./fs-utils.mjs";
+import { copyDir, copyDirWithRuleActivation, copyFile, copyFileWithRuleActivation, ensureDir, exists, generateTierAssetRegistry, listFiles, readJson, removeContents, toPosix } from "./fs-utils.mjs";
 import { mergePackageContract } from "./package-contract.mjs";
 import { run, runOut } from "./process-utils.mjs";
 import { verifyGate } from "./gate.mjs";
@@ -109,10 +109,10 @@ function pushRulesToPath(runtime, projectPath, args) {
     if (fileName === "package.json") {
       mergePackageContract(dest);
       console.log(`[SYNC] Merged package contract: ${dest}`);
-    } else if (fileName === "ASSET_INDEX.md") {
+    } else if (fileName === "asset-index.json") {
       const isMaster = exists(runtime.resolvePath(".agents/rules/ls-rule-master-governance.md"));
-      copyAndHardenAssetIndex(src, dest, isMaster ? "brain" : "hands");
-      console.log(`[SYNC] Hardened Asset Index: ${dest}`);
+      generateTierAssetRegistry(src, dest, isMaster ? "brain" : "hands", allMappings);
+      console.log(`[SYNC] Generated Asset Registry: ${dest}`);
     } else if ((fileName === "02_DECISION_LOGS.md" || fileName === "03_LOGS.md") && exists(dest)) {
       // Protect Hands' reports (Decision & Implementation logs) from being overwritten by Brain
       console.log(`[SYNC] Skipped (Protected Report): ${dest}`);

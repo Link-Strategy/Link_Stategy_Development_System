@@ -8,11 +8,10 @@ Quy trình này là đường nộp bài bắt buộc của **AI Hands Agent** t
 
 1. **Nạp Ngữ cảnh (Context Loading)**:
    Đọc các file sau để xác định giới hạn thi công và tiêu chuẩn nghiệm thu:
-   - [GEMINI.md](file:///d:/Business%20Analyze/Link_Stategy_Development_System/GEMINI.md)
-   - `.agents/rules/*.md`
-   - [01_TASK_SPEC.md](file:///d:/Business%20Analyze/Link_Stategy_Development_System/01_TASK_SPEC.md)
-   - [02_DECISION_LOGS.md](file:///d:/Business%20Analyze/Link_Stategy_Development_System/02_DECISION_LOGS.md)
-   - [03_LOGS.md](file:///d:/Business%20Analyze/Link_Stategy_Development_System/03_LOGS.md)
+   - [GEMINI.md](../../../GEMINI.md)
+   - [01_TASK_SPEC.md](../../../01_TASK_SPEC.md)
+   - [02_DECISION_LOGS.md](../../../02_DECISION_LOGS.md)
+   - [03_LOGS.md](../../../03_LOGS.md)
 
 2. **Kiểm tra Kỹ thuật (Technical Testing)**:
    // turbo

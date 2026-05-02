@@ -1,7 +1,7 @@
 import path from "node:path";
 import { exists, readJson } from "./fs-utils.mjs";
 
-export function detectIdentity(runtime) {
+export function detectIdentity(runtime, options = {}) {
   const root = runtime.root;
   
   const isMaster = exists(path.join(root, "active-projects.json")) && 
@@ -30,7 +30,7 @@ export function detectIdentity(runtime) {
     color = "\x1b[32m"; // Green
   }
 
-  printIdentityCard(tier, role, color, root);
+  if (!options.silent) printIdentityCard(tier, role, color, root);
   return { tier, role, isMaster, isBrain, isHands };
 }
 

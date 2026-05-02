@@ -4,17 +4,18 @@ import { exists, readJson } from "./fs-utils.mjs";
 export function detectIdentity(runtime, options = {}) {
   const root = runtime.root;
   
+  let tier = "UNKNOWN";
+  let role = "Inquiry Only";
+  let color = "\x1b[37m"; // White
+
+  // Tier detection based on key indicator files
   const isMaster = exists(path.join(root, "active-projects.json")) && 
                    exists(path.join(root, ".agents/rules/brain"));
   
   const isBrain = exists(path.join(root, "active-hands.json"));
   
-  const isHands = exists(path.join(root, "01_TASK_SPEC.md")) && 
-                  exists(path.join(root, "03_LOGS.md"));
-
-  let tier = "UNKNOWN";
-  let role = "Inquiry Only";
-  let color = "\x1b[37m"; // White
+  const isHands = (exists(path.join(root, "01_TASK_SPEC.md")) && exists(path.join(root, "03_LOGS.md"))) ||
+                  exists(path.join(root, "slicing-profile.json"));
 
   if (isMaster) {
     tier = "MASTER (The Root)";

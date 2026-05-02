@@ -345,14 +345,38 @@ function initializeProjectRemote(runtime, projectPath, projectDirName) {
       allowFailure: true
     });
 
+    // If origin still doesn't exist, it means gh repo create failed (likely because repo existed)
+    // and didn't add the remote. We must add it manually.
+    const currentRemotes = runOut("git", ["remote"], projectPath, true);
+    if (!currentRemotes.includes("origin")) {
+      const targetUrl = `https://github.com/${organization}/${repoName}`;
+      run("git", ["remote", "add", "origin", targetUrl], { cwd: projectPath });
+    }
+
     const remoteUrl = runOut("git", ["remote", "get-url", "origin"], projectPath, true) || `https://github.com/${organization}/${repoName}`;
     
+    // Check if remote has existing content
+    const remoteRefs = runOut("git", ["ls-remote", "origin"], projectPath, true);
+    const isDirtyRemote = remoteRefs.trim().length > 0;
+    const forcePush = runtime.args["overwrite-remote"];
+
+    if (isDirtyRemote && !forcePush) {
+      console.warn(`[REMOTE SAFETY] Remote repository already has content. Initialization will NOT overwrite it.`);
+      console.warn(`[REMOTE SAFETY] To force overwrite, run with: --overwrite-remote`);
+      return remoteUrl.trim(); // Exit early but return URL for registry
+    }
+
     run("git", ["add", "."], { cwd: projectPath });
     if (runOut("git", ["status", "--porcelain"], projectPath)) {
       run("git", ["commit", "-m", "chore(init): initialize brain project"], { cwd: projectPath });
     }
     run("git", ["branch", "-M", "main"], { cwd: projectPath });
-    run("git", ["push", "-u", "origin", "main", "--force-with-lease"], { cwd: projectPath, allowFailure: true });
+    
+    // Use --force-with-lease only if we are overwriting, otherwise just push
+    const pushArgs = ["push", "-u", "origin", "main"];
+    if (forcePush) pushArgs.push("--force");
+    
+    run("git", pushArgs, { cwd: projectPath, allowFailure: true });
     
     return remoteUrl.trim();
   } catch (error) {

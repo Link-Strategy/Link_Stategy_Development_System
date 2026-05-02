@@ -1,13 +1,5 @@
 {
-  "projects": [
-    {
-      "id": "Letron-Leos",
-      "path": "../Letron-Leos",
-      "remote_url": "https://github.com/Link-Strategy/Letron-Leos",
-      "status": "active",
-      "description": "Automatically generated Brain Project."
-    }
-  ],
+  "projects": [],
   "blueprint": {
     "description": "Cấu hình chuẩn để khởi tạo Brain Project Workspace từ Master",
     "ensure_dirs": [

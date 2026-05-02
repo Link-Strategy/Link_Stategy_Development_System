@@ -15,8 +15,11 @@ Quy trình này tự động hóa việc khởi tạo một trạm điều phố
 
    // turbo
    ```bash
-   npm run new-project -- --project-name "<NAME>"
+   npm run new-project -- --project-name "<NAME>" [--overwrite-remote]
    ```
+
+   > [!TIP]
+   > Nếu GitHub Repository đã tồn tại và có dữ liệu, hãy thêm flag `--overwrite-remote` để AI thực hiện ghi đè Master DNA vào repo đó. Nếu không có flag này, AI sẽ dừng lại ở bước gán Remote để đảm bảo an toàn.
 
 3. **Kiểm tra Kết quả (Verification)**:
    - Kiểm tra bảng **System Snapshot** tại terminal để xác nhận Master DNA hợp lệ.

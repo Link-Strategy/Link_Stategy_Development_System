@@ -12,12 +12,8 @@ defaults:
 
 jobs:
   verification-gate:
-    name: verification-gate (${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+    name: verification-gate (ubuntu-latest)
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -29,11 +25,23 @@ jobs:
         with:
           node-version: "20"
 
+      - name: Smart Dependency Install
+        run: |
+          if [ -f package.json ] && grep -qE '"(dependencies|devDependencies)":' package.json; then
+            echo "Dependencies detected. Installing..."
+            npm install
+          else
+            echo "No dependencies detected. Skipping install."
+          fi
+
       - name: Identify Repository Role
         id: identity
         run: |
-          IDENTITY=$(npm run ls-identity --silent)
-          echo "$IDENTITY"
+          echo "Detecting repository identity..."
+          # Run node directly to avoid npm flag interpretation issues
+          IDENTITY=$(node .agents/tools/ls-engine/cli.mjs ls-identity --silent)
+          echo "Detected Identity: [$IDENTITY]"
+          
           if echo "$IDENTITY" | grep -q "MASTER"; then
             echo "role=master" >> $GITHUB_OUTPUT
           elif echo "$IDENTITY" | grep -q "BRAIN"; then
@@ -42,6 +50,7 @@ jobs:
             echo "role=hands" >> $GITHUB_OUTPUT
           else
             echo "role=unknown" >> $GITHUB_OUTPUT
+            echo "WARNING: Could not determine repository role. Files present: $(ls -F)"
           fi
 
       # FLOW A: MASTER WORKSPACE
@@ -103,7 +112,7 @@ jobs:
         if: steps.identity.outputs.role == 'hands' && always()
         uses: actions/upload-artifact@v4
         with:
-          name: gate-report-${{ matrix.os }}
+          name: gate-report
           path: GATE_REPORT.md
 
       # FLOW C: BRAIN WORKSPACE

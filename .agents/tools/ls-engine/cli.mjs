@@ -42,9 +42,11 @@ async function main() {
       return selfTest(runtime);
     case "stress-test":
       return stressTest(runtime);
-    case "ls-identity":
-      detectIdentity(runtime);
+    case "ls-identity": {
+      const id = detectIdentity(runtime, runtime.args);
+      if (runtime.args.silent) console.log(id.tier);
       break;
+    }
     case "verify-brain":
       verifyBrain(runtime);
       break;
@@ -75,7 +77,7 @@ function printUsage() {
   console.log(`Link Strategy Engine Ops
 
 Commands:
-  new-project --project-name NAME
+  new-project --project-name NAME [--overwrite-remote]
   new-hand-folder --path PATH
 
   verify-gate --project-path PATH

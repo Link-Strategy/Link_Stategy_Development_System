@@ -4,61 +4,40 @@ description: "Mandatory technical acceptance criteria for all satellites."
 ---
 # LS-RULE-GATE-ACCEPTANCE
 
-Quy tắc này định nghĩa **Phase 1 Technical Gate** cho Satellite delivery. Trong Phase 1, gate là cơ chế **PASS/FAIL kỹ thuật**, không phải scorecard nghiệm thu hoặc quyết định giải ngân của Brain.
+Quy tắc này định nghĩa **Phase 1 Technical Gate** cho Satellite delivery. Gate là cơ chế **PASS/FAIL kỹ thuật** tự động.
 
-## 1. Verification-First
+## 1. Ưu tiên Xác minh (Verification-First)
 
-Không tin báo cáo miệng. Chỉ tin bằng chứng có thể kiểm chứng:
-- `npm test`
-- `npm run verify-gate -- --project-path .`
-- `GATE_REPORT.md`
-- `03_LOGS.md`
-- GitHub Actions `verification-gate` trên latest Satellite `main` commit
+> [!IMPORTANT]
+> Không tin báo cáo miệng. Chỉ tin bằng chứng có thể kiểm chứng được từ:
+> - `npm test`
+> - `npm run verify-gate -- --project-path .`
+> - GitHub Actions `verification-gate` trên Satellite `main`.
 
 ## 2. Điều Kiện PASS Phase 1
 
-Delivery chỉ được push bằng `ls-gitpush` khi tất cả điều kiện local sau đạt:
+> [!CAUTION]
+> Delivery chỉ được push bằng `ls-gitpush` khi tất cả điều kiện local sau đạt 100%:
+> - **Governance Integrity:** Không sửa đổi trái phép các file quản trị.
+> - **Contract Compliance:** `package.json` đúng chuẩn, Spec không còn placeholder.
+> - **Technical Health:** `npm test` PASS và `tests/` có code kiểm thử thật.
+> - **Security:** Không có secret hoặc file `.env` thật bị leak.
 
-- Governance integrity PASS: `.agents/`, `.github/`, `GEMINI.md`, engine `.agents/tools/ls-engine/**/*.mjs` khớp Master.
-- `package.json` PASS contract: có `verify-gate`, `ls-gitpush`; không expose Brain-only scripts.
-- `01_TASK_SPEC.md` đủ 5 phần bắt buộc và không còn placeholder.
-- `src/` tồn tại và chứa implementation theo Spec.
-- `tests/` tồn tại, không rỗng, có test thật.
-- `npm test` PASS.
-- Secret scan cơ bản PASS.
-- `GATE_REPORT.md` có `Integrity-Hash` SHA256.
+## 3. Quy Trình cho Hands Agent
 
-Nếu một điều kiện FAIL, Agent phải sửa trong phạm vi được phép hoặc ghi blocker vào `03_LOGS.md`.
+1. Tự rà lại implementation so với Technical Contract và DoD trong Spec.
+2. Chạy `npm test`.
+3. Chạy `npm run verify-gate -- --project-path .`.
+4. Nếu PASS, nộp bài qua [ls-workflow-gitpush](file:///d:/Business%20Analyze/Link_Stategy_Development_System/.agents/workflows/hands/ls-workflow-gitpush.md).
 
-Brain chỉ được harvest delivery về Brain Project khi GitHub Actions `verification-gate` của latest Satellite `main` commit PASS. Harvest lấy đúng các mapping an toàn trong `slicing-profile.json`, không lấy `.git/`, governance/runtime hoặc file local/untracked. Satellite `main` có thể tạm fail CI, nhưng commit fail không được coi là nguồn sạch.
+## 4. Cách thức Xác minh (Verification for Agent)
 
-## 3. Điều Không Thuộc Phase 1 Gate
-
-Các mục sau không phải điều kiện bắt buộc để Hands Agent nộp Phase 1, trừ khi Spec yêu cầu rõ:
-
-- Scorecard 100 điểm.
-- Quyết định nghiệm thu nghiệp vụ cuối.
-- Quyết định giải ngân.
-- Full SAST/dependency scan.
-- Evidence archive dài hạn.
-- Hardening proposal đầy đủ.
-- 8-pillar handover package hoàn chỉnh.
-
-Các mục này thuộc Brain acceptance hoặc Phase 2+.
-
-## 4. Quy Trình Internal Review Cho Hands Agent
-
-1. Đọc Spec, logs, rules.
-2. Tự rà lại implementation so với Technical Contract và DoD.
-3. Chạy `npm test`.
-4. Chạy `npm run verify-gate -- --project-path .`.
-5. Nếu PASS, push delivery bằng `npm run ls-gitpush -- --title "feat: delivery"`.
-6. Nếu FAIL, sửa lỗi trong phạm vi được phép; nếu lỗi do thiếu thông tin từ Spec, ghi blocker vào `03_LOGS.md` và quyết định/giả định vào `02_DECISION_LOGS.md`.
-
-## 5. Scorecard Phase 2
-
-Scorecard 100 điểm chỉ dùng khi Brain hoặc Brain Delegate thực hiện nghiệm thu sâu. Hands Agent không được coi scorecard là thay thế cho `verify-gate`, và cũng không được tự quyết định giải ngân.
+Agent phải tự kiểm tra trước khi nộp bài:
+1. Tôi có đang hack/skip test nào không?
+2. `GATE_REPORT.md` có được tạo ra với mã băm Integrity-Hash không?
+3. Tôi đã tick hết Task List trong `03_LOGS.md` Progress Snapshot chưa?
 
 ---
 **Status:** ACTIVE PHASE 1 TECHNICAL GATE RULE  
 **Priority:** LEVEL 1
+**See also:** [ls-workflow-gitpush](file:///d:/Business%20Analyze/Link_Stategy_Development_System/.agents/workflows/hands/ls-workflow-gitpush.md)

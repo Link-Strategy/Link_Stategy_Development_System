@@ -1,30 +1,29 @@
 ---
-trigger: "on_demand"
-description: "Agent instruction for provisioning a Satellite repository from a local folder"
+description: "Kích hoạt hạ tầng Satellite repository từ folder local"
 ---
 
-# LS-WORKFLOW-INIT-SATELLITE (AGENT INSTRUCTION)
+# LS-WORKFLOW-INIT-SATELLITE
 
-Workflow này hướng dẫn **Agent** cách kích hoạt hạ tầng (Provisioning) khi User phê duyệt gói bàn giao.
+Quy trình này hướng dẫn Agent kích hoạt hạ tầng (Provisioning) trên Cloud/GitHub khi gói bàn giao đã sẵn sàng.
 
-## 1. Kích hoạt Hạ tầng (Provisioning)
-Khi User yêu cầu kích hoạt vệ tinh (ví dụ: "Kích hoạt repo cho task Login"), Agent phải:
-1. Xác định đường dẫn folder task và tên repo mục tiêu.
-2. Sử dụng lệnh `run_command` để thực hiện:
+1. **Chuẩn bị (Preparation)**:
+   Xác định đường dẫn thư mục task (`folder-path`) và tên repository mục tiêu (`repo-name`).
+
+2. **Kích hoạt Hạ tầng (Provisioning)**:
+   // turbo
    ```bash
    npm run init-satellite -- --path "[folder-path]" --repo-name "[repo-name]"
    ```
-3. Kiểm tra log để xác nhận:
+
+3. **Xác nhận kết quả (Verification)**:
+   Kiểm tra terminal output để đảm bảo:
    - Repo đã được tạo trên GitHub.
-   - Selective Push đã hoàn tất dựa trên Profile.
+   - Files đã được đẩy lên dựa trên Slicing Profile.
    - Satellite đã được đăng ký vào `active-hands.json`.
 
-## 2. Bàn giao & Thông báo
-Sau khi kích hoạt thành công, Agent phải:
-1. Cung cấp URL GitHub của Satellite cho User.
-2. Xác nhận trạng thái "READY" của vệ tinh.
-3. Hướng dẫn User (nếu cần) cách gửi link này cho Hands/Freelancer.
+4. **Bàn giao (Handover)**:
+   Cung cấp URL GitHub cho User và xác nhận trạng thái **READY**.
 
 ---
-**Status:** ACTIVE AGENT WORKFLOW
+**Status:** ACTIVE HARDENED WORKFLOW (Antigravity Optimized)
 **Target:** AI Agent (Executor)

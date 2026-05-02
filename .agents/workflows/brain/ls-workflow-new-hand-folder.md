@@ -1,27 +1,27 @@
 ---
-trigger: "on_demand"
-description: "Agent instruction for packaging a feature task into a local folder"
+description: "Đóng gói nhiệm vụ (Packaging) vào folder local"
 ---
 
-# LS-WORKFLOW-NEW-HAND-FOLDER (AGENT INSTRUCTION)
+# LS-WORKFLOW-NEW-HAND-FOLDER
 
-Workflow này hướng dẫn **Agent** cách đóng gói một nhiệm vụ (Packaging) khi nhận được yêu cầu từ User.
+Quy trình này hướng dẫn Agent khởi tạo và đóng gói một nhiệm vụ mới để chuẩn bị bàn giao cho Hands.
 
-## 1. Khởi tạo Gói bàn giao (Packaging)
-Khi User yêu cầu tạo một Hand/Folder mới (ví dụ: "Tạo folder cho task Login"), Agent phải:
-1. Xác định đường dẫn mục tiêu (ví dụ: `src/features/login`).
-2. Sử dụng lệnh `run_command` để thực hiện:
+1. **Khởi tạo Gói bàn giao (Packaging)**:
+   Xác định đường dẫn thư mục nhiệm vụ (ví dụ: `src/features/auth`).
+   
+   // turbo
    ```bash
-   npm run new-hand-folder -- --path "src/features/login"
+   npm run new-hand-folder -- --path "[folder-path]"
    ```
-3. Xác nhận 4 file hộ chiếu đã được tạo thành công trong folder.
 
-## 2. Soạn thảo Đặc tả (Drafting)
-Sau khi khởi tạo, Agent **KHÔNG DỪNG LẠI**, mà phải tiếp tục:
-1. Đọc yêu cầu từ User để soạn thảo nội dung sơ bộ cho `01_TASK_SPEC.md`.
-2. Review lại `slicing-profile.json` để đảm bảo các Shell Assets cần thiết đã được đưa vào whitelist.
-3. Thông báo cho User khi gói bàn giao đã sẵn sàng để User review hoặc phê duyệt.
+2. **Soạn thảo Đặc tả (Drafting)**:
+   Sau khi folder được tạo, Agent thực hiện:
+   - Soạn thảo nội dung sơ bộ cho `01_TASK_SPEC.md` dựa trên yêu cầu của User.
+   - Kiểm tra `slicing-profile.json` để đảm bảo whitelist file chính xác.
+
+3. **Thông báo (Notification)**:
+   Xác nhận với User khi gói bàn giao (Task Folder) đã sẵn sàng để review.
 
 ---
-**Status:** ACTIVE AGENT WORKFLOW
+**Status:** ACTIVE HARDENED WORKFLOW (Antigravity Optimized)
 **Target:** AI Agent (Executor)

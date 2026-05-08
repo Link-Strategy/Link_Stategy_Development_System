@@ -1,0 +1,48 @@
+# --- Terraform ---
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfplan*
+tfplan*
+*.tfvars
+.terraform.lock.hcl
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+
+# --- Node ---
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# --- OS / IDE ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+.agents/reports/gate-manifest.json
+
+# --- Project Specific ---
+scripts/debug/query_results.txt
+infra/terraform/envs/dev/plan_output.txt
+infra/terraform/envs/dev/plan_private_dev.txt
+infra/terraform/envs/dev/.artifacts/
+infra/terraform/envs/prod/.artifacts/
+.env.local.vault
+
+# --- Infrastructure Assets ---
+.aws_assets/
+
+# --- Session Progress Snapshots ---
+.backlog/*.tmp

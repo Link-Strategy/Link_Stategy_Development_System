@@ -1,0 +1,39 @@
+name: Link Strategy Brain Orchestrator
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  brain-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Smart Install
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          elif [ -f package.json ]; then
+            npm install
+          fi
+
+      - name: "[BRAIN] Verify Gate"
+        run: node .agents/tools/ls-engine/cli.mjs verify-gate
+
+      - name: "[BRAIN] Registry Audit"
+        run: node .agents/tools/ls-engine/cli.mjs verify-brain

@@ -1,5 +1,5 @@
 import path from "node:path";
-import { exists, readJson } from "./fs-utils.mjs";
+import { exists } from "./fs-utils.mjs";
 
 export function detectIdentity(runtime, options = {}) {
   const root = runtime.root;

@@ -1,15 +1,15 @@
 #!/usr/bin/env node
-import { lsGitPush } from "./lib/delivery.mjs";
+import { lsGitPush, verifyDelivery } from "./lib/delivery.mjs";
 import { newHandFolder, newProject } from "./lib/factory.mjs";
-
-
 import { verifyGate } from "./lib/gate.mjs";
-import { initSatellite } from "./lib/init-satellite.mjs";
+import { initHand } from "./lib/init-hand.mjs";
 import { createRuntime } from "./lib/runtime.mjs";
 import { selfTest, stressTest } from "./lib/self-test.mjs";
 import { detectIdentity } from "./lib/identity.mjs";
-import { verifyBrain } from "./lib/audit-brain.mjs";
+import { verifyBrain } from "./lib/verify-brain.mjs";
 import { pullCode, pushRules } from "./lib/sync.mjs";
+import { verifyContracts } from "./lib/contracts.mjs";
+import { showDocs } from "./lib/docs.mjs";
 
 const command = process.argv[2];
 const args = parseArgs(process.argv.slice(3));
@@ -24,20 +24,24 @@ async function main() {
   switch (command) {
     case "new-project":
       return newProject(runtime);
-    case "new-hand-folder":
+    case "new-hand":
       return newHandFolder(runtime);
-
+    case "cast-dna": {
+      const { castDna } = await import("./lib/cast-dna.mjs");
+      return castDna(runtime);
+    }
     case "verify-gate":
-      return verifyGate(runtime, { projectPath: args["project-path"] || "." });
+      return verifyGate(runtime);
     case "ls-gitpush":
       return lsGitPush(runtime);
-    case "push-rules-to-satellite":
+    case "verify-delivery":
+      return verifyDelivery(runtime);
+    case "push-rules":
       return pushRules(runtime);
-    case "pull-code-from-satellite":
+    case "pull-code":
       return pullCode(runtime);
-    case "new-hands":
-    case "init-satellite":
-      return initSatellite(runtime);
+    case "init-hand":
+      return initHand(runtime);
     case "self-test":
       return selfTest(runtime);
     case "stress-test":
@@ -47,9 +51,12 @@ async function main() {
       if (runtime.args.silent) console.log(id.tier);
       break;
     }
+    case "verify-contracts":
+      return verifyContracts(runtime);
     case "verify-brain":
-      verifyBrain(runtime);
-      break;
+      return verifyBrain(runtime);
+    case "docs":
+      return showDocs(runtime);
     default:
       printUsage();
       process.exit(command ? 1 : 0);
@@ -76,17 +83,25 @@ function parseArgs(argv) {
 function printUsage() {
   console.log(`Link Strategy Engine Ops
 
-Commands:
+Brain Commands (Orchestration):
   new-project --project-name NAME [--overwrite-remote]
-  new-hand-folder --path PATH
+  new-hand --path PATH
+  init-hand --project-path PATH --repo-name NAME [--public] [--organization Link-Strategy]
+  push-rules --hand HAND_ID
+  pull-code --hand HAND_ID [--remote-branch main]
+  cast-dna
+  verify-brain
 
-  verify-gate --project-path PATH
-  ls-gitpush --title TITLE [--body BODY] [--commit-message MSG] [--project-path PATH]
-  push-rules-to-satellite [--project-path PATH] [--all] [--commit-message MSG] [--git-push] [--dry-run]
-  pull-code-from-satellite --project-path PATH [--remote-url URL] [--remote-branch main] [--dry-run] [--skip-ci-check]
-  new-hands --project-path PATH --repo-name NAME [--public] [--organization Link-Strategy]
-  init-satellite --project-path PATH --repo-name NAME [--public] [--organization Link-Strategy]
+Hands Commands (Execution):
+  verify-gate
+  ls-gitpush
+  verify-delivery
+  verify-contracts
+  ls-identity
+
+System:
   self-test
   stress-test [--iterations 10]
+  docs <SERVICE_NAME>
 `);
 }

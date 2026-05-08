@@ -1,54 +1,100 @@
+import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { brainOnlyPackageScripts, requiredSatellitePaths } from "./constants.mjs";
-import { copyFile, ensureDir, exists, readJson, readText, writeText } from "./fs-utils.mjs";
+import { copyDir, copyFile, ensureDir, exists, readJson, readText, writeText } from "./fs-utils.mjs";
 import { gitChangedFiles } from "./git-utils.mjs";
 import { run, runOut } from "./process-utils.mjs";
-import { pushRules } from "./sync.mjs";
+import { syncGovernanceToWorkspace } from "./sync.mjs";
 
-export function initSatellite(runtime) {
+export function initHand(runtime) {
   const projectPath = path.resolve(runtime.args.path || runtime.requireArg("project-path"));
   const repoName = runtime.requireArg("repo-name");
+
+  // 1. Prepare local folder (Brain workspace side)
+  // We keep it clean: only Spec, Logs, Profile, and empty mandatory folders
   ensureDir(projectPath);
   ensurePackagingTemplates(runtime, projectPath);
+
   const profilePath = path.join(projectPath, "slicing-profile.json");
   const profile = exists(profilePath) ? readJson(profilePath) : {};
   const organization = runtime.args.organization || profile.provisioning?.organization || "Link-Strategy";
 
-
-
-
-  if (!exists(path.join(projectPath, ".git"))) run("git", ["init"], { cwd: projectPath });
-  
   const mandatoryPaths = profile.provisioning?.mandatory_paths || ["src", "tests"];
   for (const p of mandatoryPaths) {
-    ensureDir(path.join(projectPath, p));
+    const fullPath = path.join(projectPath, p);
+    ensureDir(fullPath);
+    // Ensure directories exist locally for future harvesting
+    if (fs.readdirSync(fullPath).length === 0) {
+      writeText(path.join(fullPath, ".gitkeep"), "");
+    }
   }
 
-  ensureSatelliteGitignore(projectPath);
+  // 2. Setup Staging Area (Provisioning side)
+  const stagingPath = fs.mkdtempSync(path.join(os.tmpdir(), `ls-init-${repoName}-`));
+  console.log(`[INIT] Created staging area: ${stagingPath}`);
 
-
-  pushRules(runtime, { "project-path": projectPath, "git-push": false });
-  validateSatelliteLayout(projectPath);
-  stageInitialSatelliteFiles(projectPath);
-  if (runOut("git", ["status", "--porcelain"], projectPath)) {
-    run("git", ["commit", "-m", "chore(init): initialize satellite governance"], { cwd: projectPath });
-  }
-  run("git", ["branch", "-M", "main"], { cwd: projectPath });
-
-  const visibility = runtime.args.public ? "--public" : "--private";
-  let remoteUrl = "";
   try {
-    remoteUrl = ensureOriginRemote(projectPath, organization, repoName, visibility);
-    run("git", ["push", "-u", "origin", "main", "--force-with-lease"], { cwd: projectPath });
-  } catch (error) {
-    console.warn(`Remote setup failed: ${error.message}`);
-    remoteUrl = `https://github.com/${organization}/${repoName}`;
-  }
-  
-  registerHands(runtime, projectPath, repoName, organization, remoteUrl);
+    // 3. Populate Staging Area
+    // Copy whatever is in local folder (Spec, Profile, etc.) to the staging area
+    copyDir(projectPath, stagingPath);
 
-  console.log("Direct-main delivery enabled; Brain harvest is CI-gated.");
-  console.log(`SATELLITE READY: ${organization}/${repoName}`);
+    if (!exists(path.join(stagingPath, ".git"))) {
+      run("git", ["init"], { cwd: stagingPath });
+    }
+    ensureSatelliteGitignore(stagingPath);
+
+    // Sync Governance and Rules to Staging - this is where .agents and .github are added
+    console.log("[INIT] Synchronizing Governance and Rules to Staging...");
+    syncGovernanceToWorkspace(runtime, stagingPath);
+
+    validateSatelliteLayout(stagingPath);
+    stageInitialSatelliteFiles(stagingPath);
+
+    if (runOut("git", ["status", "--porcelain"], stagingPath)) {
+      run("git", ["commit", "-m", "chore(init): initialize satellite governance"], { cwd: stagingPath });
+    }
+    run("git", ["branch", "-M", "main"], { cwd: stagingPath });
+
+    const visibility = runtime.args.public ? "--public" : "--private";
+    let remoteUrl = "";
+    try {
+      // Create repo and push from staging area
+      remoteUrl = ensureOriginRemote(stagingPath, organization, repoName, visibility);
+      run("git", ["push", "-u", "origin", "main", "--force-with-lease"], { cwd: stagingPath });
+    } catch (error) {
+      console.warn(`Remote setup failed: ${error.message}`);
+      remoteUrl = `https://github.com/${organization}/${repoName}`;
+    }
+
+    // 4. Register satellite in Brain's registry (using the local projectPath)
+    registerHands(runtime, projectPath, repoName, organization, remoteUrl);
+
+    // 5. Final Cleanup Sweep on local projectPath
+    // Remove any accidental infrastructure that might have leaked or existed from before
+    const infrastructureToPrune = [".git", ".agents", ".github", "asset-index.json"];
+    for (const item of infrastructureToPrune) {
+      const fullPath = path.join(projectPath, item);
+      if (exists(fullPath)) {
+        fs.rmSync(fullPath, { recursive: true, force: true });
+        console.log(`[CLEANUP] Pruned infrastructure from local workspace: ${item}`);
+      }
+    }
+
+    console.log("\nSATELLITE INITIALIZED & PROVISIONED.");
+    console.log(`- Remote Repository: ${remoteUrl}`);
+    console.log(`- Local Workspace: ${projectPath} (Clean)`);
+
+  } catch (error) {
+    console.error(`[INIT ERROR] ${error.message}`);
+    throw error;
+  } finally {
+    // 6. Cleanup Staging Area
+    if (exists(stagingPath)) {
+      fs.rmSync(stagingPath, { recursive: true, force: true });
+      console.log(`[INIT] Staging area cleaned up: ${stagingPath}`);
+    }
+  }
 }
 
 function ensurePackagingTemplates(runtime, projectPath) {
@@ -70,7 +116,7 @@ function registerHands(runtime, projectPath, repoName, organization, remoteUrl) 
   const registry = readJson(registryPath);
   registry.hands ||= [];
   const relPath = path.relative(runtime.root, projectPath).replaceAll("\\", "/");
-  
+
   const entry = {
     id: repoName,
     path: relPath,
@@ -95,13 +141,13 @@ function registerHands(runtime, projectPath, repoName, organization, remoteUrl) 
   } else {
     registry.hands.push(entry);
   }
-  
+
   writeText(registryPath, JSON.stringify(registry, null, 2) + "\n");
 }
 
 export function ensureSatelliteGitignore(projectPath) {
   const gitignorePath = path.join(projectPath, ".gitignore");
-  const required = [".env", ".env.*", "!.env.example", "node_modules/", "dist/", "build/", ".gemini/", "GATE_REPORT.md"];
+  const required = [".env", ".env.*", "!.env.example", "node_modules/", "dist/", "build/", ".gemini/", "GATE_REPORT.md", ".agents/reports/gate-manifest.json"];
   const current = exists(gitignorePath) ? readText(gitignorePath).split(/\r?\n/) : [];
   const next = [...current];
   for (const line of required) {
@@ -147,21 +193,32 @@ function isInitialSatelliteAllowed(file) {
     normalized.startsWith("assets/") ||
     normalized.startsWith("components/") ||
     normalized.startsWith("docs/") ||
+    normalized.startsWith("infra/") ||
+    normalized.startsWith("scripts/") ||
     normalized.startsWith("src/") ||
     normalized.startsWith("tests/");
 }
 
 function ensureOriginRemote(projectPath, organization, repoName, visibility) {
+  const targetUrl = `https://github.com/${organization}/${repoName}`;
   const existingOrigin = runOut("git", ["remote", "get-url", "origin"], projectPath, true);
   if (existingOrigin) return existingOrigin.trim();
+
   const result = run("gh", ["repo", "create", `${organization}/${repoName}`, visibility, "--source=.", "--remote=origin"], {
     cwd: projectPath,
     capture: true,
     allowFailure: true
   });
+
   if (result.status !== 0) {
     const detail = (result.stderr || result.stdout || "").trim();
+    // If repo exists, manually add origin so we can still push
+    if (detail.includes("already exists")) {
+      console.log(`[INIT] Repo already exists on GitHub. Mapping origin to: ${targetUrl}`);
+      run("git", ["remote", "add", "origin", targetUrl], { cwd: projectPath });
+      return targetUrl;
+    }
     throw new Error(`Failed to create GitHub repo or configure origin. Install/authenticate gh or add origin manually.\n${detail}`);
   }
-  return `https://github.com/${organization}/${repoName}`;
+  return targetUrl;
 }

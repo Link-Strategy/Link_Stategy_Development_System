@@ -1,8 +1,6 @@
 export {
   brainOnlyPackageScripts,
   brainPackageScripts,
-  harvestForbiddenTargets,
-  harvestProtectedPaths,
   requiredSatellitePaths,
   satellitePackageScripts,
   tierNames

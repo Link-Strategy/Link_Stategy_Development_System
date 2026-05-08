@@ -8,14 +8,16 @@
   },
   "scripts": {
     "new-project": "node .agents/tools/ls-engine/cli.mjs new-project",
-    "new-hand-folder": "node .agents/tools/ls-engine/cli.mjs new-hand-folder",
-    "init-satellite": "node .agents/tools/ls-engine/cli.mjs init-satellite",
-    "push-rules": "node .agents/tools/ls-engine/cli.mjs push-rules-to-satellite",
-    "pull-code": "node .agents/tools/ls-engine/cli.mjs pull-code-from-satellite",
+    "new-hand-folder": "node .agents/tools/ls-engine/cli.mjs new-hand",
+    "init-hand": "node .agents/tools/ls-engine/cli.mjs init-hand",
+    "push-rules": "node .agents/tools/ls-engine/cli.mjs push-rules",
+    "pull-code": "node .agents/tools/ls-engine/cli.mjs pull-code",
+    "verify-contracts": "node .agents/tools/ls-engine/cli.mjs verify-contracts",
     "verify-brain": "node .agents/tools/ls-engine/cli.mjs verify-brain",
     "verify-gate": "node .agents/tools/ls-engine/cli.mjs verify-gate",
     "ls-gitpush": "node .agents/tools/ls-engine/cli.mjs ls-gitpush",
     "ls-identity": "node .agents/tools/ls-engine/cli.mjs ls-identity",
+    "docs": "node .agents/tools/ls-engine/cli.mjs docs",
     "self-test": "node .agents/tools/ls-engine/cli.mjs self-test",
     "test": "node --test tests/*.test.mjs"
   }

@@ -1,57 +1,27 @@
-export const tierNames = new Set(["master", "brain", "hands"]);
+export const tierNames = new Set(["brain", "hands"]);
 
-export const harvestProtectedPaths = [".git"];
-
-export const harvestForbiddenTargets = [
-  ".agents",
-  ".github",
-  "GEMINI.md",
-  "asset-index.json",
-  "src/core",
-  "src/components/ui"
-];
+export const requiredSatellitePaths = ["src", "tests", "01_TASK_SPEC.md", "03_LOGS.md", "GEMINI.md", "README.md", "package.json"];
 
 export const satellitePackageScripts = {
   "verify-gate": "node .agents/tools/ls-engine/cli.mjs verify-gate",
+  "verify-delivery": "node .agents/tools/ls-engine/cli.mjs verify-delivery",
   "ls-gitpush": "node .agents/tools/ls-engine/cli.mjs ls-gitpush",
-  "ls-identity": "node .agents/tools/ls-engine/cli.mjs ls-identity"
+  "ls-identity": "node .agents/tools/ls-engine/cli.mjs ls-identity",
+  "verify-contracts": "node .agents/tools/ls-engine/cli.mjs verify-contracts"
 };
 
 export const brainPackageScripts = {
-  "new-hands": "node .agents/tools/ls-engine/cli.mjs new-hands",
-  "push-rules": "node .agents/tools/ls-engine/cli.mjs push-rules-to-satellite",
-  "pull-code": "node .agents/tools/ls-engine/cli.mjs pull-code-from-satellite",
+  "new-hand": "node .agents/tools/ls-engine/cli.mjs new-hand",
+  "init-hand": "node .agents/tools/ls-engine/cli.mjs init-hand",
+  "push-rules": "node .agents/tools/ls-engine/cli.mjs push-rules",
+  "pull-code": "node .agents/tools/ls-engine/cli.mjs pull-code",
+  "cast-dna": "node .agents/tools/ls-engine/cli.mjs cast-dna",
   "verify-brain": "node .agents/tools/ls-engine/cli.mjs verify-brain",
-  "verify-gate": "node .agents/tools/ls-engine/cli.mjs verify-gate",
-  "ls-identity": "node .agents/tools/ls-engine/cli.mjs ls-identity",
+  "verify-contracts": "node .agents/tools/ls-engine/cli.mjs verify-contracts",
   "self-test": "node .agents/tools/ls-engine/cli.mjs self-test"
 };
 
-export const brainOnlyPackageScripts = new Set([
-  "new-project",
-  "new-hands",
-  "push-rules",
-  "pull-code",
-  "init-satellite",
-  "self-test",
-  "stress-test"
-]);
-
-export const requiredSatellitePaths = [
-  ".agents/rules",
-  ".agents/templates",
-  ".agents/tools/ls-engine/cli.mjs",
-  ".agents/workflows",
-  ".github/CODEOWNERS",
-  ".github/workflows/link-strategy-ci.yml",
-  "01_TASK_SPEC.md",
-  "02_DECISION_LOGS.md",
-  "03_LOGS.md",
-  "asset-index.json",
-  "GEMINI.md",
-  "README.md",
-  "slicing-profile.json",
-  "package.json",
-  "src",
-  "tests"
-];
+// Alias for backward compatibility
+export const brainOnlyPackageScripts = Object.keys(brainPackageScripts).filter(
+  (name) => !Object.keys(satellitePackageScripts).includes(name)
+);

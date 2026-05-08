@@ -70,8 +70,16 @@ export function sha256(content) {
   return createHash("sha256").update(content).digest("hex").toUpperCase();
 }
 
+export function textSha256(content) {
+  return sha256(content.replace(/\r\n/g, "\n").trim());
+}
+
 export function fileSha256(file) {
   return createHash("sha256").update(fs.readFileSync(file)).digest("hex").toUpperCase();
+}
+
+export function textFileSha256(file) {
+  return textSha256(fs.readFileSync(file, "utf8"));
 }
 
 export function relative(rootPath, file) {

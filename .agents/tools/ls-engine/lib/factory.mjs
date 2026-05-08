@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { assetFromMapping, validateAssetRegistry } from "./asset-registry.mjs";
-import { copyDir, copyDirWithRuleActivation, copyFile, copyIfExists, ensureDir, exists, readJson, toPosix, writeText } from "./fs-utils.mjs";
+import { copyDir, copyDirWithRuleActivation, copyFile, copyIfExists, ensureDir, exists, readJson, readText, toPosix, writeText } from "./fs-utils.mjs";
 import { mergeBrainPackageContract } from "./package-contract.mjs";
 import { run, runOut } from "./process-utils.mjs";
 
@@ -23,13 +23,13 @@ export async function newProject(runtime) {
 
   if (exists(projectPath)) {
     if (isUpdate) {
-      console.log(`[UPDATE] Existing project detected. Synchronizing DNA to: ${projectPath}`);
+      console.log(`[UPDATE] Existing project detected. Synchronizing Governance to: ${projectPath}`);
     } else if (isForce) {
       console.log(`[FORCE] Removing existing project directory for clean initialization: ${projectPath}`);
       fs.rmSync(projectPath, { recursive: true, force: true });
     } else {
       console.warn(`Project already exists: ${projectPath}`);
-      console.warn(`To update DNA without deleting data, use: --update`);
+      console.warn(`To update Governance without deleting data, use: --update`);
       console.warn(`To overwrite the local workspace completely, use: --force-local`);
       return;
     }
@@ -63,7 +63,7 @@ export async function newProject(runtime) {
     for (const item of syncs) {
       const src = runtime.resolvePath(item.src);
       const dest = path.join(projectPath, item.dest);
-      
+
       if (!exists(src)) continue;
 
       const stat = fs.statSync(src);
@@ -80,10 +80,10 @@ export async function newProject(runtime) {
           // Replace placeholders
           content = content.replace(/\[PROJECT_NAME\]/g, projectName);
           content = content.replace(/\[PROJECT_ID\]/g, projectName.toLowerCase());
-          
+
           // Trigger activation
           content = content.replace(/trigger:\s*["']?on_demand["']?/g, 'trigger: always_on');
-          
+
           writeText(dest, content);
         } else if (path.basename(item.dest) === ".env.example") {
           copyIfExists(src, dest);
@@ -129,9 +129,9 @@ export async function newProject(runtime) {
 ## Project Operations
 
 - Choose the architecture path for Hands, for example \`./services/[NAME]\` or \`./app/[NAME]\`
-- Create Hands: \`npm run new-hands -- --project-path ./services/[NAME] --repo-name [REPO]\`
-- Harvest Code: \`npm run pull-code -- --project-path ./services/[NAME]\`
-- Sync Rules: \`npm run push-rules -- --project-path ./services/[NAME]\`
+- Create Hands folder: \`npm run new-hand -- --path ./services/[NAME]\`, then provision it with \`npm run init-hand -- --project-path ./services/[NAME] --repo-name [REPO]\`
+- Harvest Code: \`npm run pull-code -- --hand [HAND_ID]\`
+- Sync Rules: \`npm run push-rules -- --hand [HAND_ID]\`
 `;
   writeText(path.join(projectPath, "README.md"), readmeContent);
 
@@ -142,22 +142,22 @@ export async function newProject(runtime) {
       remoteUrl = initializeProjectRemote(runtime, projectPath, projectDirName);
       updateRegistry(runtime, projectDirName, projectPath, remoteUrl, `Automatically generated Brain Project.`);
     } else {
-      console.log(`[UPDATE] DNA synchronization complete for '${projectDirName}'.`);
-      // Auto-commit and push DNA updates if Git is present
+      console.log(`[UPDATE] Governance synchronization complete for '${projectDirName}'.`);
+      // Auto-commit and push Governance updates if Git is present
       try {
         if (exists(path.join(projectPath, ".git"))) {
           run("git", ["add", "."], { cwd: projectPath });
           const status = runOut("git", ["status", "--porcelain"], projectPath);
           if (status) {
-            run("git", ["commit", "-m", "chore(sync): update DNA assets from master"], { cwd: projectPath });
+            run("git", ["commit", "-m", "chore(sync): update Governance assets from master"], { cwd: projectPath });
             run("git", ["push", "origin", "main"], { cwd: projectPath, allowFailure: true });
-            console.log(`[UPDATE] DNA changes pushed to remote repository.`);
+            console.log(`[UPDATE] Governance changes pushed to remote repository.`);
           } else {
             console.log(`[UPDATE] No changes detected. Remote is already in sync.`);
           }
         }
       } catch (pushError) {
-        console.warn(`[UPDATE WARNING] DNA sync push failed: ${pushError.message}`);
+        console.warn(`[UPDATE WARNING] Governance sync push failed: ${pushError.message}`);
       }
     }
 
@@ -189,7 +189,7 @@ function printSystemSnapshot(runtime) {
   const registryPath = runtime.resolvePath("active-projects.json");
   const registry = exists(registryPath) ? readJson(registryPath) : { projects: [] };
   const projectCount = registry.projects?.length || 0;
-  
+
   console.log("\n" + "-".repeat(60));
   console.log("LINK STRATEGY MASTER - SYSTEM SNAPSHOT");
   console.log("-".repeat(60));
@@ -226,7 +226,7 @@ function checkDependencies(runtime) {
 function validateIsolation(runtime, projectPath) {
   const absoluteMaster = path.resolve(runtime.root);
   const absoluteProject = path.resolve(projectPath);
-  
+
   // Prevent nesting project inside Master
   if (absoluteProject.startsWith(absoluteMaster) && absoluteProject !== absoluteMaster) {
     throw new Error(`[ISOLATION VIOLATION] Cannot create project workspace inside the Master Workspace directory.\nTarget: ${absoluteProject}\nMaster: ${absoluteMaster}\nUse '--base-path ..' to create it as a sibling.`);
@@ -277,7 +277,7 @@ function printVerificationReport(projectPath, projectName, remoteUrl) {
     `VERIFICATION REPORT: ${projectName}`,
     "=".repeat(60),
     `[x] Workspace      : ${projectPath}`,
-    `[x] DNA Sync       : Rules, Workflows, Engine, Skills`,
+    `[x] Governance Sync : Rules, Workflows, Engine, Skills`,
     `[x] Registry       : Registered in active-projects.json`,
     `[x] GitHub Remote  : ${remoteUrl || "SKIPPED/FAILED"}`,
     "=".repeat(60),
@@ -318,8 +318,74 @@ export function newHandFolder(runtime) {
     }
   }
 
+  // 1. Generate Filtered package.json (Whitelist for Hands)
+  const rootPackagePath = runtime.resolvePath("package.json");
+  if (exists(rootPackagePath)) {
+    const rootPkg = readJson(rootPackagePath);
+    const handPkg = {
+      name: path.basename(folderPath).toLowerCase(),
+      version: rootPkg.version || "1.0.0",
+      description: `Satellite service: ${path.basename(folderPath)}`,
+      private: true,
+      type: rootPkg.type || "module",
+      scripts: {},
+      dependencies: {},
+      devDependencies: {}
+    };
+
+    const scriptWhitelist = ["verify-gate", "verify-delivery", "ls-gitpush", "test", "verify-contracts"];
+    if (rootPkg.scripts) {
+      for (const key of scriptWhitelist) {
+        if (rootPkg.scripts[key]) {
+          handPkg.scripts[key] = rootPkg.scripts[key];
+        }
+      }
+    }
+
+    const devDepWhitelist = ["quicktype-core"];
+    if (rootPkg.devDependencies) {
+      for (const dep of devDepWhitelist) {
+        if (rootPkg.devDependencies[dep]) {
+          handPkg.devDependencies[dep] = rootPkg.devDependencies[dep];
+        }
+      }
+    }
+
+    writeText(path.join(folderPath, "package.json"), JSON.stringify(handPkg, null, 2) + "\n");
+    console.log(`[PACKAGING] Generated filtered package.json`);
+  }
+
+  // 2. Adjust Slicing Profile (Remove package-config to prevent overwriting during init)
+  const localProfilePath = path.join(folderPath, "slicing-profile.json");
+  if (exists(localProfilePath)) {
+    let profileContent = readText(localProfilePath);
+    const relPath = toPosix(path.relative(runtime.root, folderPath));
+
+    // Auto-replace {{SERVICE_PATH}} with the actual relative path
+    profileContent = profileContent.replace(/\{\{SERVICE_PATH\}\}/g, relPath);
+
+    const profile = JSON.parse(profileContent);
+    if (Array.isArray(profile.mappings)) {
+      profile.mappings = profile.mappings.filter(m => m.id !== "package-config");
+    }
+
+    writeText(localProfilePath, JSON.stringify(profile, null, 2) + "\n");
+    console.log(`[PACKAGING] Adjusted slicing-profile.json (replaced {{SERVICE_PATH}} and cleaned mappings)`);
+
+    // 3. Create Mandatory Paths early (Phase 1)
+    const mandatoryPaths = profile.provisioning?.mandatory_paths || ["src", "tests"];
+    for (const p of mandatoryPaths) {
+      const fullPath = path.join(folderPath, p);
+      ensureDir(fullPath);
+      if (fs.readdirSync(fullPath).length === 0) {
+        writeText(path.join(fullPath, ".gitkeep"), "");
+        console.log(`[PACKAGING] Created mandatory folder: ${p}/.gitkeep`);
+      }
+    }
+  }
+
   console.log(`\nSUCCESS: Handover Package initialized at ${folderPath}`);
-  console.log(`Next step: Edit Spec and Slicing Profile, then run 'init-satellite'.\n`);
+  console.log(`Next step: Edit Spec and Slicing Profile, then run 'init-hand'.\n`);
 }
 
 
@@ -328,23 +394,23 @@ export function newHandFolder(runtime) {
 
 function updateRegistry(runtime, id, projectPath, remoteUrl, description) {
   const registryPath = runtime.resolvePath("active-projects.json");
-  
+
   if (!exists(registryPath)) {
     throw new Error(`[REGISTRY ERROR] Mandatory file 'active-projects.json' is missing. Cannot register project.`);
   }
 
   const registry = readJson(registryPath);
   registry.projects ||= [];
-  
+
   // Normalize path to be relative to Master root for portability
   const relativePath = toPosix(path.relative(runtime.root, projectPath));
-  
-  const entry = { 
-    id, 
-    path: relativePath, 
-    remote_url: remoteUrl || "", 
-    status: "active", 
-    description: description || `Brain Project: ${id}` 
+
+  const entry = {
+    id,
+    path: relativePath,
+    remote_url: remoteUrl || "",
+    status: "active",
+    description: description || `Brain Project: ${id}`
   };
 
   const byId = registry.projects.findIndex((p) => p.id === id);
@@ -387,7 +453,7 @@ function initializeProjectRemote(runtime, projectPath, projectDirName) {
   try {
     if (!exists(path.join(projectPath, ".git"))) run("git", ["init"], { cwd: projectPath });
     ensureGitIdentity(projectPath);
-    
+
     // Attempt to create. If it fails, we will try to fetch the existing one.
     run("gh", ["repo", "create", `${organization}/${repoName}`, visibility, "--source=.", "--remote=origin"], {
       cwd: projectPath,
@@ -403,7 +469,7 @@ function initializeProjectRemote(runtime, projectPath, projectDirName) {
     }
 
     const remoteUrl = runOut("git", ["remote", "get-url", "origin"], projectPath, true) || `https://github.com/${organization}/${repoName}`;
-    
+
     // Check if remote has existing content
     const remoteRefs = runOut("git", ["ls-remote", "origin"], projectPath, true);
     const isDirtyRemote = remoteRefs.trim().length > 0;
@@ -420,13 +486,13 @@ function initializeProjectRemote(runtime, projectPath, projectDirName) {
       run("git", ["commit", "-m", "chore(init): initialize brain project"], { cwd: projectPath });
     }
     run("git", ["branch", "-M", "main"], { cwd: projectPath });
-    
+
     // Use --force-with-lease only if we are overwriting, otherwise just push
     const pushArgs = ["push", "-u", "origin", "main"];
     if (forcePush) pushArgs.push("--force");
-    
+
     run("git", pushArgs, { cwd: projectPath, allowFailure: true });
-    
+
     return remoteUrl.trim();
   } catch (error) {
     console.warn(`Project remote synchronization failed: ${error.message}`);

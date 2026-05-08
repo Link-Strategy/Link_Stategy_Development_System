@@ -19,33 +19,40 @@
       ".agents/templates",
       ".agents/tools/ls-engine",
       ".github",
-      "components/ui"
+      "components/ui",
+      ".backlog"
     ],
     "sync": [
+      {
+        "id": "gitignore",
+        "src": ".agents/templates/.gitignore",
+        "dest": ".gitignore",
+        "purpose": "Standard Link Strategy ignore policy."
+      },
       {
         "id": "rules-brain",
         "src": ".agents/rules/brain",
         "dest": ".agents/rules",
         "activate": true,
-        "purpose": "Brain-tier governance and project orchestration rules."
+        "purpose": "Brain-tier governance (Flattened structure)."
       },
       {
         "id": "rules-hands",
         "src": ".agents/rules/hands",
         "dest": ".agents/rules/hands",
-        "purpose": "Hands-tier operational and delivery rules."
+        "purpose": "Hands-tier operational rules."
       },
       {
         "id": "workflows-brain",
         "src": ".agents/workflows/brain",
         "dest": ".agents/workflows",
-        "purpose": "Brain-tier project management workflows."
+        "purpose": "Brain-tier workflows."
       },
       {
         "id": "workflows-hands",
         "src": ".agents/workflows/hands",
         "dest": ".agents/workflows/hands",
-        "purpose": "Hands-tier task execution workflows."
+        "purpose": "Hands-tier workflows."
       },
       {
         "id": "skills-brain",
@@ -60,41 +67,39 @@
         "purpose": "Hands-tier domain-specific skills."
       },
       {
-        "id": "ls-engine",
-        "src": ".agents/tools/ls-engine",
-        "dest": ".agents/tools/ls-engine",
-        "purpose": "Core Link Strategy platform engine."
+        "id": "slicing-profile",
+        "src": ".agents/templates/SLICING_PROFILE_TEMPLATE.json",
+        "dest": "slicing-profile.json",
+        "purpose": "Sovereign DNA: Slicing Profile"
       },
       {
-        "id": "templates",
-        "src": ".agents/templates",
-        "dest": ".agents/templates",
-        "purpose": "Standardized task and documentation templates."
+        "id": "tsconfig-base",
+        "src": ".agents/templates/tsconfig.json",
+        "dest": "tsconfig.json",
+        "purpose": "Sovereign DNA: TypeScript Contract Portability"
       },
       {
-        "id": "ci-suite",
-        "src": ".github",
-        "dest": ".github",
-        "purpose": "GitHub Actions CI/CD and verification gates."
-      },
-      {
-        "id": "ui-kit",
-        "src": "components/ui",
-        "dest": "components/ui",
-        "purpose": "Standardized Link Strategy UI component library."
+        "id": "ls-brain-ci",
+        "src": ".agents/templates/link-strategy-brain.yml",
+        "dest": ".github/workflows/link-strategy-brain.yml",
+        "purpose": "Automated Brain CI Orchestrator"
       },
       {
         "id": "constitution",
         "src": ".agents/templates/GEMINI_BRAIN_TEMPLATE.md",
         "dest": "GEMINI.md",
+        "activate": true,
         "purpose": "Brain-tier project constitution."
-      },
-      {
-        "id": "env-example",
-        "src": ".agents/templates/ENV_EXAMPLE_TEMPLATE",
-        "dest": ".env.example",
-        "purpose": "Standard environment variable template."
       }
+    ]
+  },
+  "governance": {
+    "version": "2.1.0",
+    "policy": "strict",
+    "allowed_actions": [
+      "new-project",
+      "sync-dna",
+      "audit-brain"
     ]
   }
 }

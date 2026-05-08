@@ -6,7 +6,7 @@ Trong lifecycle mặc định hiện tại:
 
 - Brain Project chỉ harvest các mapping trong `slicing-profile.json` từ Satellite commit đã PASS gate.
 - Satellite `main` là execution lane của Hands.
-- Hands nộp bài bằng `npm run ls-gitpush`, tool push trực tiếp lên `origin/main`.
+- Hands nộp bài bằng `npm run ls-gitpush`, tool push lên `origin/main`; GitHub Actions xác minh receipt/hash và Brain chỉ harvest commit đã PASS.
 - GitHub Actions chạy trên push vào `main`.
 - Brain chỉ harvest commit có `verification-gate` success.
 
@@ -18,7 +18,7 @@ Trong lifecycle mặc định hiện tại:
 - [ ] Required check: `verification-gate (windows-latest)` from `.github/workflows/link-strategy-ci.yml`.
 - [ ] Required check: `verification-gate (macos-latest)` from `.github/workflows/link-strategy-ci.yml`.
 - [ ] Governance path protection remains enabled inside `.github/workflows/link-strategy-ci.yml`.
-- [ ] Restrict direct pushes to Brain or Brain Delegate only.
+- [ ] Optional hardening: restrict direct pushes nếu plan GitHub hỗ trợ. Nếu không, Brain harvest vẫn chặn commit fail qua CI status.
 
 ## Permissions
 

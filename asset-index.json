@@ -2,8 +2,8 @@
   "identity": {
     "name": "Link Strategy - MASTER Registry",
     "tier": "master",
-    "version": "2.1.0",
-    "updated_at": "2026-05-02T10:57:00Z"
+    "version": "2.2.0",
+    "updated_at": "2026-05-08T20:13:00Z"
   },
   "assets": [
     {
@@ -175,12 +175,6 @@
       "purpose": "Standard environment variable example."
     },
     {
-      "id": "ls-skill-engine-ops",
-      "type": "Skill",
-      "path": ".agents/skills/brain/ls-skill-engine-ops/",
-      "purpose": "Core engine management capability."
-    },
-    {
       "id": "nodejs-backend-patterns",
       "type": "Skill",
       "path": ".agents/skills/hands/nodejs-backend-patterns/",
@@ -257,6 +251,48 @@
       "type": "Script",
       "path": "npm run ls-gitpush",
       "purpose": "Agent-led secure delivery to main."
+    },
+    {
+      "id": "ls-rule-contract-imports",
+      "type": "Rule",
+      "path": ".agents/rules/hands/ls-rule-contract-imports.md",
+      "purpose": "Portable type-only contract import standards."
+    },
+    {
+      "id": "ls-workflow-session-snapshot",
+      "type": "Workflow",
+      "path": ".agents/workflows/brain/ls-workflow-session-snapshot.md",
+      "purpose": "Daily progress tracking and session management."
+    },
+    {
+      "id": "ls-progress-manager",
+      "type": "Skill",
+      "path": ".agents/skills/brain/ls-progress-manager/",
+      "purpose": "Automated backlog and snapshot transition orchestration."
+    },
+    {
+      "id": "ls-api-viewer",
+      "type": "Skill",
+      "path": ".agents/skills/brain/ls-api-viewer/",
+      "purpose": "Dynamic API documentation viewer for sovereign contracts."
+    },
+    {
+      "id": "link-strategy-brain-action",
+      "type": "Template",
+      "path": ".agents/templates/link-strategy-brain.yml",
+      "purpose": "CI/CD template for Brain Orchestrator projects."
+    },
+    {
+      "id": "tsconfig-template",
+      "type": "Template",
+      "path": ".agents/templates/tsconfig.json",
+      "purpose": "DNA template for TypeScript contract portability."
+    },
+    {
+      "id": "gitignore-template",
+      "type": "Template",
+      "path": ".agents/templates/.gitignore",
+      "purpose": "Standard Link Strategy ignore policy template."
     },
     {
       "id": "active-projects",

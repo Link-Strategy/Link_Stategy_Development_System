@@ -18,9 +18,21 @@ export async function newProject(runtime) {
   checkDependencies(runtime);
   validateIsolation(runtime, projectPath);
 
+  const isUpdate = !!runtime.args["update"];
+  const isForce = !!runtime.args["force-local"];
+
   if (exists(projectPath)) {
-    console.warn(`Project already exists: ${projectPath}`);
-    return;
+    if (isUpdate) {
+      console.log(`[UPDATE] Existing project detected. Synchronizing DNA to: ${projectPath}`);
+    } else if (isForce) {
+      console.log(`[FORCE] Removing existing project directory for clean initialization: ${projectPath}`);
+      fs.rmSync(projectPath, { recursive: true, force: true });
+    } else {
+      console.warn(`Project already exists: ${projectPath}`);
+      console.warn(`To update DNA without deleting data, use: --update`);
+      console.warn(`To overwrite the local workspace completely, use: --force-local`);
+      return;
+    }
   }
 
   const registryPath = runtime.resolvePath("active-projects.json");
@@ -41,7 +53,12 @@ export async function newProject(runtime) {
       ensureDir(path.join(projectPath, dir));
     }
 
-    // 2. Process all Sync blocks (Directories and Files)
+    // 2. Git Init (Skip if update)
+    if (!isUpdate) {
+      run("git", ["init"], { cwd: projectPath });
+    }
+
+    // 3. Process all Sync blocks (Directories and Files)
     const syncs = blueprint.sync || [];
     for (const item of syncs) {
       const src = runtime.resolvePath(item.src);
@@ -73,6 +90,15 @@ export async function newProject(runtime) {
         } else {
           copyFile(src, dest);
         }
+      }
+    }
+
+    // 4. Ensure empty blueprint directories are tracked by Git
+    for (const dir of (blueprint.ensure_dirs || [])) {
+      const fullDir = path.join(projectPath, dir);
+      if (exists(fullDir) && fs.readdirSync(fullDir).length === 0) {
+        const dirName = path.basename(dir).toUpperCase();
+        writeText(path.join(fullDir, "README.md"), `# ${dirName}\n\nThis directory is part of the Link Strategy project structure.`);
       }
     }
 
@@ -109,10 +135,33 @@ export async function newProject(runtime) {
 `;
   writeText(path.join(projectPath, "README.md"), readmeContent);
 
-  let remoteUrl = initializeProjectRemote(runtime, projectPath, projectDirName);
+    generateProjectRegistry(projectPath, projectDirName, blueprint, "brain");
 
-  updateRegistry(runtime, projectDirName, projectPath, remoteUrl, `Automatically generated Brain Project.`);
-  printVerificationReport(projectPath, projectDirName, remoteUrl);
+    let remoteUrl = "";
+    if (!isUpdate) {
+      remoteUrl = initializeProjectRemote(runtime, projectPath, projectDirName);
+      updateRegistry(runtime, projectDirName, projectPath, remoteUrl, `Automatically generated Brain Project.`);
+    } else {
+      console.log(`[UPDATE] DNA synchronization complete for '${projectDirName}'.`);
+      // Auto-commit and push DNA updates if Git is present
+      try {
+        if (exists(path.join(projectPath, ".git"))) {
+          run("git", ["add", "."], { cwd: projectPath });
+          const status = runOut("git", ["status", "--porcelain"], projectPath);
+          if (status) {
+            run("git", ["commit", "-m", "chore(sync): update DNA assets from master"], { cwd: projectPath });
+            run("git", ["push", "origin", "main"], { cwd: projectPath, allowFailure: true });
+            console.log(`[UPDATE] DNA changes pushed to remote repository.`);
+          } else {
+            console.log(`[UPDATE] No changes detected. Remote is already in sync.`);
+          }
+        }
+      } catch (pushError) {
+        console.warn(`[UPDATE WARNING] DNA sync push failed: ${pushError.message}`);
+      }
+    }
+
+    printVerificationReport(projectPath, projectDirName, remoteUrl);
   } catch (error) {
     console.error(`[FATAL ERROR] Project initialization failed: ${error.message}`);
     if (exists(projectPath)) {

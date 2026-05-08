@@ -1,9 +1,9 @@
 {
   "projects": [
     {
-      "id": "Letron-Leos",
-      "path": "../Letron-Leos",
-      "remote_url": "https://github.com/Link-Strategy/Letron-Leos",
+      "id": "letron-leos",
+      "path": "../../Letron/letron-leos",
+      "remote_url": "https://github.com/Link-Strategy/letron-leos",
       "status": "active",
       "description": "Automatically generated Brain Project."
     }

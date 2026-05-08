@@ -13,14 +13,17 @@ export const harvestForbiddenTargets = [
 
 export const satellitePackageScripts = {
   "verify-gate": "node .agents/tools/ls-engine/cli.mjs verify-gate",
-  "ls-gitpush": "node .agents/tools/ls-engine/cli.mjs ls-gitpush"
+  "ls-gitpush": "node .agents/tools/ls-engine/cli.mjs ls-gitpush",
+  "ls-identity": "node .agents/tools/ls-engine/cli.mjs ls-identity"
 };
 
 export const brainPackageScripts = {
   "new-hands": "node .agents/tools/ls-engine/cli.mjs new-hands",
   "push-rules": "node .agents/tools/ls-engine/cli.mjs push-rules-to-satellite",
   "pull-code": "node .agents/tools/ls-engine/cli.mjs pull-code-from-satellite",
+  "verify-brain": "node .agents/tools/ls-engine/cli.mjs verify-brain",
   "verify-gate": "node .agents/tools/ls-engine/cli.mjs verify-gate",
+  "ls-identity": "node .agents/tools/ls-engine/cli.mjs ls-identity",
   "self-test": "node .agents/tools/ls-engine/cli.mjs self-test"
 };
 
